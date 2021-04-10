@@ -1,0 +1,57 @@
+{
+	"name": "crayon.js",
+	"version": "1.0.0",
+	"description": "Terminal coloring done fast",
+	"main": "lib/index.js",
+	"types": "lib/index.d.ts",
+	"license": "MIT",
+	"private": false,
+	"engines": {
+		"node": ">=10"
+	},
+	"author": {
+		"name": "Im-Beast",
+		"url": "https://github.com/Im-Beast"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Im-Beast/crayon.js.git"
+	},
+	"keywords": [
+		"typescript",
+		"ts",
+		"color",
+		"colour",
+		"styling",
+		"formatting",
+		"style",
+		"ansi",
+		"rgb",
+		"256",
+		"hsl",
+		"terminal",
+		"console",
+		"cli",
+		"cmd",
+		"tty",
+		"text",
+		"log"
+	],
+	"scripts": {
+		"dev": "npx etsc",
+		"build": "tsc && node bundle-ts",
+		"bench": "tsc ./test/benchmark.ts && node test/require-times.js && node test/benchmark.js"
+	},
+	"files": [
+		"lib"
+	],
+	"devDependencies": {
+		"@types/node": "^14.14.37",
+		"@typescript-eslint/eslint-plugin": "^4.21.0",
+		"@typescript-eslint/parser": "^4.21.0",
+		"esbuild-node-tsc": "^1.3.0",
+		"eslint": "^7.23.0",
+		"typescript": "^4.2.3",
+		"uglify-js": "^3.13.3"
+	}
+}
