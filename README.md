@@ -22,6 +22,9 @@ Instead of straight up saying "use it, it's better" check yourself what meets yo
 </font>
 </details>
 
+<br />
+
+If you don't need all the features but still like crayon.js checkout [`@crayon.js/lite`](https://github.com/Im-Beast/crayon.js/tree/lite)
 
 ### Installation
 ```bash
