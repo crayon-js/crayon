@@ -126,25 +126,24 @@ const buildCrayon = (
 	return proxy
 }
 
-const literalStyleRegex = /{(\w+)((.|\s)*?)}/
+const literalStyleRegex = /{(\w+\s)((.|\s)*?)}/
 const compileLiteral = (...texts: string[]): string => {
 	const fullText = texts.join('')
 
 	let returned = fullText
 	let matches = returned.match(literalStyleRegex)
-	let style = ''
 
 	if (matches?.length) {
 		const styleMatch = matches[1]
-		style ||= styles[styleMatch.trim() as CrayonStyle]
+		const style = styles[styleMatch.trim() as CrayonStyle] || ''
 
-		const text = style + matches[2] + styles.reset
+		const text = style + matches[2]
 		returned = fullText.replace(matches[0], text)
 	}
 
 	return literalStyleRegex.test(returned)
-		? compileLiteral(style, returned)
-		: returned
+		? compileLiteral(returned)
+		: returned + styles.reset
 }
 
 const crayonHandler: ProxyHandler<Crayon> = {
