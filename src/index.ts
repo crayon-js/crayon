@@ -93,32 +93,32 @@ const buildCrayon = (
 			if (crayon.colorSupport.highColor)
 				crayon.$styleCache.value += `\x1b[38;5;${clamp(code, 0, 255)}m`
 			else crayon.$functions.ansi4(ansi8ToAnsi4(code))
-
 			return proxy
 		},
 		bgAnsi8: (code: number) => {
 			if (crayon.colorSupport.highColor)
 				crayon.$styleCache.value += `\x1b[48;5;${clamp(code, 0, 255)}m`
 			else crayon.$functions.bgAnsi4(ansi8ToAnsi4(code))
-
 			return proxy
 		},
 		ansi4: (code: number) => {
-			code = clamp(crayon.colorSupport.fourBitColor ? code : code % 8, 0, 15)
-			crayon.$styleCache.value += `\x1b[${code + (code > 8 ? 80 : 30)}m`
+			if (!crayon.colorSupport.fourBitColor) return crayon.$functions.ansi3(code)
+			code = clamp(code, 0, 15)
+			crayon.$styleCache.value += `\x1b[${code + (code > 7 ? 82 : 30)}m`
 			return proxy
 		},
 		bgAnsi4: (code: number) => {
-			code = clamp(crayon.colorSupport.fourBitColor ? code : code % 8, 0, 15)
-			crayon.$styleCache.value += `\x1b[${code + (code > 8 ? 90 : 40)}m`
+			if (!crayon.colorSupport.fourBitColor) return crayon.$functions.bgAnsi3(code)
+			code = clamp(code, 0, 15)
+			crayon.$styleCache.value += `\x1b[${code + (code > 7 ? 102 : 40)}m`
 			return proxy
 		},
 		ansi3: (code: number) => {
-			crayon.$styleCache.value += `\x1b[${clamp(code + 30, 30, 37)}m`
+			crayon.$styleCache.value += `\x1b[${clamp((code % 8) + 30, 30, 37)}m`
 			return proxy
 		},
 		bgAnsi3: (code: number) => {
-			crayon.$styleCache.value += `\x1b[${clamp(code + 40, 40, 47)}m`
+			crayon.$styleCache.value += `\x1b[${clamp((code % 8) + 40, 40, 47)}m`
 			return proxy
 		},
 	}
