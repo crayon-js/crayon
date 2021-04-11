@@ -337,6 +337,12 @@ Don't get me wrong, I have nothing to the authors of them but they either provid
 
 ## :handshake: Contributing
 #### Feel free to fork, add commits and pull requests
+<details>
+<summary>To-do List</summary>
+<ul>
+  <li>Add jest coverage tests</li>
+</ul>
+</details>
 
 ## :memo: Licensing
 #### This project is available under MIT License conditions.

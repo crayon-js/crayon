@@ -104,13 +104,13 @@ const buildCrayon = (
 			return proxy
 		},
 		ansi4: (code: number) => {
-			code = clamp(code, 0, colorSupport.fourBitColor ? 15 : 7)
-			crayon.$styleCache.value += `\x1b[${code + code > 8 ? 90 : 30}m`
+			code = clamp(crayon.colorSupport.fourBitColor ? code : code % 8, 0, 15)
+			crayon.$styleCache.value += `\x1b[${code + (code > 8 ? 80 : 30)}m`
 			return proxy
 		},
 		bgAnsi4: (code: number) => {
-			code = clamp(code, 0, colorSupport.fourBitColor ? 15 : 7)
-			crayon.$styleCache.value += `\x1b[${code + code > 8 ? 100 : 40}m`
+			code = clamp(crayon.colorSupport.fourBitColor ? code : code % 8, 0, 15)
+			crayon.$styleCache.value += `\x1b[${code + (code > 8 ? 90 : 40)}m`
 			return proxy
 		},
 		ansi3: (code: number) => {
@@ -126,11 +126,34 @@ const buildCrayon = (
 	return proxy
 }
 
+const literalStyleRegex = /{(\w+)((.|\s)*?)}/
+const compileLiteral = (...texts: string[]): string => {
+	const fullText = texts.join('')
+
+	let returned = fullText
+	let matches = returned.match(literalStyleRegex)
+	let style = ''
+
+	if (matches?.length) {
+		const styleMatch = matches[1]
+		style ||= styles[styleMatch.trim() as CrayonStyle]
+
+		const text = style + matches[2] + styles.reset
+		returned = fullText.replace(matches[0], text)
+	}
+
+	return literalStyleRegex.test(returned)
+		? compileLiteral(style, returned)
+		: returned
+}
+
 const crayonHandler: ProxyHandler<Crayon> = {
-	apply: (target, _, args) => {
-		return !args.length
-			? buildCrayon(true)
-			: target.$styleCache.reset() + args[0] + `\x1b[0m`
+	apply: (target: Crayon, _, args) => {
+		if (!args.length) return buildCrayon()
+		const [text] = args
+
+		if (literalStyleRegex.test(text)) return compileLiteral(text)
+		else return target.$styleCache.reset() + text + styles.reset
 	},
 	get(target: Crayon, prop: keyof Crayon, receiver: Crayon) {
 		const targeted =

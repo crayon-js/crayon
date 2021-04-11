@@ -3,6 +3,7 @@ export declare type Crayon = {
 	readonly [style in CrayonStyle]: Crayon
 } &
 	CrayonColorFunction &
+	CrayonTextCall &
 	{
 		readonly /** This is some test */
 		[style in CrayonStyle]: (text: unknown) => string
@@ -17,8 +18,9 @@ export declare type Crayon = {
 	}
 
 export type CrayonInstanceCall = () => Crayon
+export type CrayonTextCall = (text: unknown) => string
 
-export type CrayonMiscFunction = {
+export interface CrayonMiscFunction {
 	/**
 	 * @returns text with stripped ascii codes
 	 * * It can be used to get true text length
@@ -50,7 +52,7 @@ export type CrayonMiscFunction = {
 	readonly keyword: (keyword: ColorKeyword | CrayonStyle) => Crayon
 }
 
-export type CrayonColorFunction = {
+export interface CrayonColorFunction {
 	/**
 	 * Style text using HSL values
 	 *  * hue - number from 0 to 360
