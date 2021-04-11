@@ -159,13 +159,13 @@ Available base color names:
   </tr>
   <tr align="center">
     <th>syntax</th>
-    <td>(0-255, 0-255, number)</td>
+    <td>(0-255, 0-255, 0-255)</td>
     <td>(0-360, 0-100, 0-100)</td>
     <td>#000000 - #FFFFFF</td>
     <td>0-7</td>
     <td>0-15</td>
     <td>0-255</td>
-    <td><a href="https://github.com/bahamas10/css-color-names/blob/master/css-color-names.json">css keyword</a></td>
+    <td><a href="https://github.com/bahamas10/css-color-names/blob/master/css-color-names.json">keyword</a></td>
   </tr>
 </table>
 
