@@ -148,7 +148,7 @@ const compileLiteral = (...texts: string[]): string => {
 
 const crayonHandler: ProxyHandler<Crayon> = {
 	apply: (target: Crayon, _, args) => {
-		if (!args.length) return buildCrayon()
+		if (!args.length) return buildCrayon(true)
 		const [text] = args
 
 		if (literalStyleRegex.test(text)) return compileLiteral(text)
