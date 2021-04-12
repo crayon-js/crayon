@@ -26,7 +26,7 @@ export interface CrayonMiscFunction {
 	 * * It can be used to get true text length
 	 * @example
 	 * ```ts
-	 * import crayon = require('crayon.js')
+	 * import crayon from 'https://deno.land/x/crayon/src/index.ts'
 	 *
 	 * const styledText = color.red('text')
 	 * const strippedText = crayon.strip(styledText)
@@ -40,7 +40,7 @@ export interface CrayonMiscFunction {
 	 * keyword is any of the css color keywords from [bahamas10 json list](https://github.com/bahamas10/css-color-names/blob/master/css-color-names.json)
 	 * @example
 	 * ```ts
-	 * import crayon = require('crayon.js')
+	 * import crayon from 'https://deno.land/x/crayon/src/index.ts'
 	 *
 	 * const styledText = color.red('text')
 	 * const strippedText = crayon.strip(styledText)
@@ -140,7 +140,7 @@ export type ColorKeywordsObject = {
 
 /** CSS Color Keywords [bahamas10 json list](https://github.com/bahamas10/css-color-names/blob/master/css-color-names.json) */
 export type ColorKeyword = ForegroundColorKeyword | BackgroundColorKeyword
-import { cssColorKeywords } from './styles'
+import { cssColorKeywords } from './styles.ts'
 export type ForegroundColorKeyword = keyof typeof cssColorKeywords
 export type BackgroundColorKeyword = `bg${Capitalize<ForegroundColorKeyword>}`
 

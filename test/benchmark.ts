@@ -1,7 +1,5 @@
-import chalk = require('chalk')
-import ansiColors = require('ansi-colors')
-import kleur = require('kleur')
-import crayon = require('crayon.js')
+import crayon from '../src/index.ts'
+import { Crayon, MainCrayon } from '../src/types.ts'
 
 const benchSettings = {
 	iterations: 1000,
@@ -10,8 +8,16 @@ const benchSettings = {
 
 interface BenchFunction extends Function {
 	id: string
-	time?: number
-	fluctuation?: number
+	time: number
+	fluctuation: number
+}
+interface BenchResult {
+	bench: Bench
+	func: BenchFunction
+}
+
+interface BenchResults {
+	[id: string]: BenchResult
 }
 
 class Bench {
@@ -19,41 +25,41 @@ class Bench {
 	id: string
 
 	static compare(...benches: Bench[]) {
-		let fastest: any = {}
+		const results: BenchResults = {}
 
 		benches.forEach((bench) => {
 			bench.funcs.forEach((func) => {
-				fastest[func.id] ||= { f: func, b: bench }
-				fastest[func.id] =
-					fastest[func.id].f.time > func.time
-						? { f: func, b: bench }
-						: fastest[func.id]
+				results[func.id] ||= { func: func, bench: bench }
+				results[func.id] =
+					results[func.id].func.time > func.time
+						? { func: func, bench: bench }
+						: results[func.id]
 			})
 		})
 
-		for (let fast in fastest) {
-			const fastero = fastest[fast]
+		for (const id in results) {
+			const fastest = results[id]
 
-			let string = `⚡ ${
-				crayon.yellow.bold(fastero.b.id) +
-				crayon.green(` was the fastest in ${fastero.f.id} test\n`)
+			let result = `⚡ ${
+				crayon.yellow.bold(fastest.bench.id) +
+				crayon.green(` was the fastest in ${fastest.func.id} test\n`)
 			}`
 
 			const tempBenches = Array.from(benches)
-			tempBenches.splice(tempBenches.indexOf(fastero.b), 1)
+			tempBenches.splice(tempBenches.indexOf(fastest.bench), 1)
 
 			tempBenches.forEach((bench) => {
-				const time = (bench.funcs.filter((o) => {
-					if (o.id == fast) return o
-				}) as any)[0].time
-				string += `\t${crayon.cyan('➜')} Faster than ${crayon.yellow.bold(
+				const time = bench.funcs.filter((o) => {
+					if (o.id == id) return o
+				})[0].time
+				result += `\t${crayon.cyan('➜')} Faster than ${crayon.yellow.bold(
 					bench.id
 				)} by ${crayon.bold(
-					`${(100 - (fastero.f.time / time) * 100).toFixed(2)}%\n`
+					`${(100 - (fastest.func.time / time) * 100).toFixed(2)}%\n`
 				)}`
 			})
 
-			console.log(string)
+			console.log(result)
 		}
 	}
 
@@ -100,13 +106,14 @@ class Bench {
 	}
 }
 
-const sleep = (time: number): Promise<any> =>
-	new Promise((resolve) => setTimeout(resolve, time))
-
 const generateTest = (
-	...objects: { id: string; func: (i: number) => void; endFunc?: () => void }[]
+	...objects: {
+		id: string
+		func: (i: number) => void
+		endFunc?: () => void
+	}[]
 ): BenchFunction[] => {
-	const funcs: BenchFunction[] = []
+	const functions: BenchFunction[] = []
 	for (const object of objects) {
 		const benchFunc = async () => {
 			let min = Date.now() * 100,
@@ -114,21 +121,27 @@ const generateTest = (
 
 			for (let r = 0; r < benchSettings.repeats; ++r) {
 				const start = Date.now()
-				for (let i = 0; i < benchSettings.iterations; ++i) object.func(i)
+				for (let i = 0; i < benchSettings.iterations; ++i) await object.func(i)
 				min = Math.min(Date.now() - start, min)
 				max = Math.max(Date.now() - start, max)
 			}
-			if (typeof object.endFunc === 'function') object.endFunc()
+
+			if (typeof object.endFunc === 'function') await object.endFunc()
 
 			const fluctuation = Math.abs(max - min)
 			return [Date.now(), fluctuation]
 		}
+
+		benchFunc.time = 0
 		benchFunc.id = object.id
-		funcs.push(benchFunc)
+		benchFunc.fluctuation = 0
+		functions.push(benchFunc)
 	}
 
-	return funcs
+	return functions
 }
+
+const te = new TextEncoder()
 
 const crayonFuncTests = generateTest(
 	{
@@ -138,40 +151,25 @@ const crayonFuncTests = generateTest(
 	},
 	{
 		id: 'render',
-		func: (i: number) =>
-			process.stdout.write(
-				`\r${crayon.keyword('bgBlue').keyword('underline').keyword('bold').red(i)}`
+		func: async (i: number) =>
+			await Deno.stdout.write(
+				te.encode(
+					`\r${crayon.keyword('bgBlue').keyword('underline').keyword('bold').red(i)}`
+				)
 			),
-		endFunc: () =>
-			process.stdout.write(
-				'\r' + ' '.repeat(String(benchSettings.iterations).length)
-			),
-	}
-)
-
-const kleurTests = generateTest(
-	{
-		id: 'access time',
-		func: (i: number) => kleur.red().bgBlue().underline().bold(i),
-	},
-	{
-		id: 'render',
-		func: (i: number) =>
-			process.stdout.write(`\r${kleur.red().bgBlue().underline().bold(i)}`),
-		endFunc: () =>
-			process.stdout.write(
-				'\r' + ' '.repeat(String(benchSettings.iterations).length)
+		endFunc: async () =>
+			await Deno.stdout.write(
+				te.encode('\r' + ' '.repeat(String(benchSettings.iterations).length))
 			),
 	}
 )
 
-const kleurBench = new Bench('kleur', kleurTests)
 const crayonFuncBench = new Bench('crayon (func)', crayonFuncTests)
 
-const testLibs = { chalk, crayon, ansiColors } //libs with compatible API
-const libBenches = []
+const testLibs: { [name: string]: Crayon } = { crayon } //libs with compatible API
+const libBenches: Bench[] = []
 for (const name in testLibs) {
-	const lib = testLibs[name]
+	const lib = testLibs[name as string]
 	libBenches.push(
 		new Bench(
 			name,
@@ -182,18 +180,23 @@ for (const name in testLibs) {
 				},
 				{
 					id: 'render',
-					func: (i: number) =>
-						process.stdout.write(`\r${lib.red.bgBlue.underline.bold(i)}`),
-					endFunc: () =>
-						process.stdout.write(
-							'\r' + ' '.repeat(String(benchSettings.iterations).length)
+					func: async (i: number) =>
+						await Deno.stdout.write(
+							te.encode(
+								`\r${lib.keyword('bgBlue').keyword('underline').keyword('bold').red(i)}`
+							)
+						),
+					endFunc: async () =>
+						await Deno.stdout.write(
+							te.encode('\r' + ' '.repeat(String(benchSettings.iterations).length))
 						),
 				}
 			)
 		)
 	)
 
-	const cached = (lib == crayon ? lib() : lib).red.bgBlue.underline.bold
+	const cached = (lib === crayon ? (lib as MainCrayon)() : lib).red.bgBlue
+		.underline.bold
 	libBenches.push(
 		new Bench(
 			`${name} (cached)`,
@@ -204,10 +207,11 @@ for (const name in testLibs) {
 				},
 				{
 					id: 'render',
-					func: (i: number) => process.stdout.write(`\r${cached(i)}`),
-					endFunc: () =>
-						process.stdout.write(
-							'\r' + ' '.repeat(String(benchSettings.iterations).length)
+					func: async (i: number) =>
+						await Deno.stdout.write(te.encode(`\r${cached(i)}`)),
+					endFunc: async () =>
+						await Deno.stdout.write(
+							te.encode('\r' + ' '.repeat(String(benchSettings.iterations).length))
 						),
 				}
 			)
@@ -215,9 +219,7 @@ for (const name in testLibs) {
 	)
 }
 
-Promise.resolve().then(async () => {
-	const benches: Bench[] = [...libBenches, kleurBench, crayonFuncBench]
+const benches: Bench[] = [...libBenches, crayonFuncBench]
 
-	for await (const bench of benches) bench.run()
-	Bench.compare(...benches)
-})
+for (const bench of benches) await bench.run()
+Bench.compare(...benches)

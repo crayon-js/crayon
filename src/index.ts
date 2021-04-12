@@ -1,8 +1,15 @@
-import { getColorSupport } from './support'
-import { styles } from './styles'
-import { ColorKeyword, Crayon, MainCrayon, CrayonStyle } from './types'
-import { ansi8ToAnsi4, hslToRgb, rgbToAnsi4, rgbToAnsi8 } from './conversions'
-import { clamp, crayonError } from './util'
+// deno-lint-ignore-file no-control-regex
+
+import { getColorSupport } from './support.ts'
+import { styles } from './styles.ts'
+import { ColorKeyword, Crayon, MainCrayon, CrayonStyle } from './types.ts'
+import {
+	ansi8ToAnsi4,
+	hslToRgb,
+	rgbToAnsi4,
+	rgbToAnsi8,
+} from './conversions.ts'
+import { clamp, crayonError } from './util.ts'
 
 const colorSupport = new Proxy(getColorSupport(), {})
 
@@ -28,7 +35,7 @@ const buildCrayon = (
 	preserveCache?: boolean,
 	styleCache?: string
 ): MainCrayon => {
-	const crayon: MainCrayon = (() => {}) as any
+	const crayon: MainCrayon = (() => {}) as MainCrayon
 	const proxy = new Proxy<MainCrayon>(crayon, crayonHandler)
 
 	crayon.colorSupport = colorSupport
@@ -131,7 +138,7 @@ const compileLiteral = (...texts: string[]): string => {
 	const fullText = texts.join('')
 
 	let returned = fullText
-	let matches = returned.match(literalStyleRegex)
+	const matches = returned.match(literalStyleRegex)
 
 	if (matches?.length) {
 		const styleMatch = matches[1]
@@ -148,7 +155,7 @@ const compileLiteral = (...texts: string[]): string => {
 
 const crayonHandler: ProxyHandler<Crayon> = {
 	apply: (target: Crayon, _, args) => {
-		if (!args.length) return buildCrayon()
+		if (!args.length) return buildCrayon(true)
 		const [text] = args
 
 		if (literalStyleRegex.test(text)) return compileLiteral(text)
@@ -192,4 +199,4 @@ const crayonHandler: ProxyHandler<Crayon> = {
  */
 const crayon = buildCrayon(false)
 
-export = crayon
+export default crayon

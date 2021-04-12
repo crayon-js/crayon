@@ -1,4 +1,4 @@
-<font size="6"><p align="center"><b>🖍️ Crayon.js</b></p></font>
+<font size="6"><p align="center"><b>🖍️ Crayon.js for 🦕 Deno</b></p></font>
 <hr />
 
 ## :books: About
@@ -32,11 +32,7 @@ npm install crayon.js #yarn add crayon.js
 ```
 ### Usage
 ```ts
-const crayon = require('crayon.js')
-/* In TypeScript you can do: 
- * import * as crayon from 'crayon.js'
- * import crayon = require('crayon.js')
- */
+import crayon from 'https://deno.land/x/crayon/src/index.ts'
 
 // Chainable API
 console.log(crayon.bgYellow.black('Hello!'))
@@ -185,16 +181,9 @@ Available base color names:
   </tr>
 </table>
 
-If numerical arguments are out of given range they get automatically clamped.
+If numerical arguments are out of given range they get automatically clamped / overlapped depending on situation.
 
 <br/>
-<details>
-<summary><font size="2">1 - More on that</font></summary>
-
-<b>X</b> packages define themself as the fastest one, however most of them just lie. <br /> <br />
-<b>Kleur</b> and <b>ansi-colors</b> advertise themself as "The fastest Node.js library for terminal styling". <br /> However in later tests they fall far behind chalk, which is probably the most popular package for that right now. <br /> <br />
-Don't get me wrong, I have nothing to the authors of them but they either provide outdated info (chalk 3.0 received very big performance boost) or straight lie.
-</details>
 
 ## :package: Feature set
 <details>
@@ -273,65 +262,12 @@ Don't get me wrong, I have nothing to the authors of them but they either provid
   ##### Methodology:
   All tests were done on my PC which is not in any way fast.
 
-  Require times have been measured using [this script](/test/require-times.js). <br />
   Access and render performance have been measured using [this script](/test/benchmark.ts).
 
   Best performing subject (*± 10%*) has been marked with bold font
 
   ##### Results:
-
-  <table>
-    <tr align="center">
-      <th>Test subject</th>
-      <th>⏱️ Require times (ms)</th>
-      <th>🧪 Access time (kops)</th>
-      <th>🖍️ Render test (kops)</th>
-    </tr>
-    <tr align="center">
-      <td>crayon.js (chain)</td>
-      <td rowspan="3"><b color="green">6.6 ±0.13<b></td>
-      <td>246</td>
-      <td>18</td>
-    </tr>
-    <tr align="center">
-      <td>crayon.js (func)</td>
-      <td>450</td>
-      <td>20</td>
-    </tr>
-    <tr align="center">
-      <td>crayon.js (cached)</td>
-      <td><b color="green">4000</b></td>
-      <td><b color="green">22</b></td>
-    </tr>
-    <tr align="center">
-      <td>chalk (chain)</td>
-      <td rowspan="2">8.8 ±1.22</td>
-      <td>3333</td>
-      <td>16</td>
-    </tr>
-    <tr align="center">
-      <td>chalk (cached)</td>
-      <td><b color="green">4000</b></td>
-      <td><b color="green">21</b></td>
-    </tr>
-    <tr align="center">
-      <td>ansi-colors (chain)</td>
-      <td rowspan="2">6.9 ±0.60</td>
-      <td>199</td>
-      <td>14</td>
-    </tr>
-    <tr align="center">
-      <td>ansi-colors (cached)</td>
-      <td>788</td>
-      <td>16</td>
-    </tr>
-    <tr align="center">
-      <td>kleur</td>
-      <td><b color="green">6.1 ±0.05</b></td>
-      <td>495</td>
-      <td>15</td>
-    </tr>
-  </table>
+  todo
 
 </details>
 

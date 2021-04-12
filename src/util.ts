@@ -1,4 +1,4 @@
-import { styles } from './styles'
+import { styles } from './styles.ts'
 
 export const clamp = (num: number, min: number, max: number) =>
 	Math.min(Math.max(num, min), max)
