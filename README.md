@@ -273,12 +273,6 @@ If numerical arguments are out of given range they get automatically clamped / o
 
 ## :handshake: Contributing
 #### Feel free to fork, add commits and pull requests
-<details>
-<summary>To-do List</summary>
-<ul>
-  <li>Add jest coverage tests</li>
-</ul>
-</details>
 
 ## :memo: Licensing
 #### This project is available under MIT License conditions.
