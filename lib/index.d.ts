@@ -22,5 +22,5 @@ import { MainCrayon } from './types';
  * console.log(warning('something failed'))
  * ```
  */
-declare const crayon: MainCrayon;
-export = crayon;
+declare const crayonInstance: MainCrayon;
+export = crayonInstance;

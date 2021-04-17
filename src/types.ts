@@ -5,22 +5,45 @@ export declare type Crayon = {
 	CrayonColorFunction &
 	CrayonTextCall &
 	{
-		readonly /** This is some test */
-		[style in CrayonStyle]: (text: unknown) => string
+		readonly [style in CrayonStyle]: (...text: unknown[]) => string
 	} &
-	CrayonMiscFunction & {
-		/** Internal object which holds all functions */
-		$functions: CrayonColorFunction & CrayonMiscFunction
-		/** Internal object which holds used styles */
-		$styleCache: StyleCache
-		/** Object which stores information about supported color palette, can be overwritten */
-		colorSupport: ColorSupport
-	}
+	CrayonMiscFunction &
+	CrayonInstance
 
-export type CrayonInstanceCall = () => Crayon
-export type CrayonTextCall = (text: unknown) => string
+type CrayonInstanceCall = () => Crayon
+type CrayonTextCall = (...text: unknown[]) => string
+
+/** @internal */
+export type CrayonPrototype = CrayonMiscFunction &
+	CrayonColorFunction &
+	CrayonInstance
+export interface CrayonInstance {
+	/** Generates new independent crayon based on current one */
+	clone: (clear: boolean, addCache?: string) => MainCrayon
+	/** Generates new independent crayon */
+	instance: (preserveCache: boolean, styleCache?: string) => MainCrayon
+	/** Internal object which holds used styles */
+	styleCache: string
+	preserveCache: boolean
+	/** Object which stores information about supported color palette, can be overwritten */
+	colorSupport: ColorSupport
+	/** Crayon's config settings object, global by default */
+	config: CrayonConfig
+}
+
+export interface CrayonConfig {
+	optimizeStyles: {
+		chain: boolean
+		literal: boolean
+	}
+	error: {
+		throw: boolean
+		log: boolean
+	}
+}
 
 export interface CrayonMiscFunction {
+	readonly clearCache: () => string
 	/**
 	 * @returns text with stripped ascii codes
 	 * * It can be used to get true text length
@@ -49,7 +72,7 @@ export interface CrayonMiscFunction {
 	 * console.log(strippedText) // returns raw "text" with no styling
 	 * ```
 	 */
-	readonly keyword: (keyword: ColorKeyword | CrayonStyle) => Crayon
+	readonly keyword: (keyword: CrayonStyle) => Crayon
 }
 
 export interface CrayonColorFunction {
@@ -99,12 +122,6 @@ export interface CrayonColorFunction {
 	readonly bgAnsi3: (code: number) => Crayon
 }
 
-export interface StyleCache {
-	value: string
-	preserve: boolean
-	reset: () => string
-}
-
 /**
  * Detected terminal color support, can be modified to override settings
  */
@@ -119,32 +136,156 @@ export interface ColorSupport {
 	threeBitColor: boolean
 }
 
+export type StyleObject = {
+	[name: string]: CrayonStyle
+}
+
 /** Crayon styles (CSS Keywords + Basic 16 Colors + Attributes) */
 export type CrayonStyle = FourBitColor | Attribute | ColorKeyword
 
-export type StylesObject = {
-	[name in CrayonStyle]: string
-}
-
-export type AttributesObject = {
-	[name in Attribute]: string
-}
-
-export type FourBitColorsObject = {
-	[name in FourBitColor]?: string
-}
-
-export type ColorKeywordsObject = {
-	[name in ColorKeyword]?: string
-}
-
 /** CSS Color Keywords [bahamas10 json list](https://github.com/bahamas10/css-color-names/blob/master/css-color-names.json) */
 export type ColorKeyword = ForegroundColorKeyword | BackgroundColorKeyword
-import { cssColorKeywords } from './styles'
-export type ForegroundColorKeyword = keyof typeof cssColorKeywords
+export type ForegroundColorKeyword =
+	| 'aliceBlue'
+	| 'antiqueWhite'
+	| 'aqua'
+	| 'aquamarine'
+	| 'azure'
+	| 'beige'
+	| 'bisque'
+	| 'blanchedalMond'
+	| 'blueViolet'
+	| 'brown'
+	| 'burlyWood'
+	| 'cadetBlue'
+	| 'chartreuse'
+	| 'chocolate'
+	| 'coral'
+	| 'cornFlowerBlue'
+	| 'cornsilk'
+	| 'crimson'
+	| 'darkBlue'
+	| 'darkCyan'
+	| 'darkGoldenRod'
+	| 'darkGreen'
+	| 'darkGray'
+	| 'darkGrey'
+	| 'darkKhaki'
+	| 'darkMagenta'
+	| 'darkOliveGreen'
+	| 'darkOrange'
+	| 'darkOrchid'
+	| 'darkRed'
+	| 'darkSalmon'
+	| 'darkSeaGreen'
+	| 'darkSlateBlue'
+	| 'darkSlateGray'
+	| 'darkSlateGrey'
+	| 'darkTurquoise'
+	| 'darkViolet'
+	| 'deepPink'
+	| 'deepSkyBlue'
+	| 'dimGray'
+	| 'dimGrey'
+	| 'dodgerBlue'
+	| 'fireBrick'
+	| 'floralWhite'
+	| 'forestGreen'
+	| 'fuchsia'
+	| 'gainsboro'
+	| 'ghostWhite'
+	| 'goldenRod'
+	| 'gold'
+	| 'gray'
+	| 'greenYellow'
+	| 'grey'
+	| 'honeyDew'
+	| 'hotPink'
+	| 'indianRed'
+	| 'indigo'
+	| 'ivory'
+	| 'khaki'
+	| 'lavenderBlush'
+	| 'lavender'
+	| 'lawnGreen'
+	| 'lemonChiffon'
+	| 'lightCoral'
+	| 'lightGoldenRodYellow'
+	| 'lightGray'
+	| 'lightGrey'
+	| 'lightPink'
+	| 'lightSalmon'
+	| 'lightSeaGreen'
+	| 'lightSkyBlue'
+	| 'lightSlateGray'
+	| 'lightSlateGrey'
+	| 'lightSteelBlue'
+	| 'lime'
+	| 'limeGreen'
+	| 'linen'
+	| 'maroon'
+	| 'mediumAquamarine'
+	| 'mediumBlue'
+	| 'mediumOrchid'
+	| 'mediumPurple'
+	| 'mediumSeaGreen'
+	| 'mediumSlateBlue'
+	| 'mediumSpringGreen'
+	| 'mediumTurquoise'
+	| 'mediumVioletRed'
+	| 'midnightBlue'
+	| 'mintCream'
+	| 'mistyrose'
+	| 'moccasin'
+	| 'navajoWhite'
+	| 'navy'
+	| 'oldLace'
+	| 'olive'
+	| 'olivedRab'
+	| 'orange'
+	| 'orangeRed'
+	| 'orchid'
+	| 'paleGoldenRod'
+	| 'paleGreen'
+	| 'paleTurquoise'
+	| 'paleVioletRed'
+	| 'papayaWhip'
+	| 'peachPuff'
+	| 'peru'
+	| 'pink'
+	| 'plum'
+	| 'powderBlue'
+	| 'purple'
+	| 'rebeccaPurple'
+	| 'rosyBrown'
+	| 'royalBlue'
+	| 'saddleBrown'
+	| 'salmon'
+	| 'sandyBrown'
+	| 'seaGreen'
+	| 'seaShell'
+	| 'sienna'
+	| 'silver'
+	| 'skyBlue'
+	| 'slateBlue'
+	| 'slateGray'
+	| 'slateGrey'
+	| 'snow'
+	| 'springGreen'
+	| 'steelBlue'
+	| 'tan'
+	| 'teal'
+	| 'thistle'
+	| 'tomato'
+	| 'turquoise'
+	| 'violet'
+	| 'wheat'
+	| 'whiteSmoke'
+	| 'yellowGreen'
+
 export type BackgroundColorKeyword = `bg${Capitalize<ForegroundColorKeyword>}`
 
-export type ThreeBitForegroundColor =
+export type ForegroundThreeBitColor =
 	| 'black'
 	| 'red'
 	| 'green'
@@ -154,17 +295,14 @@ export type ThreeBitForegroundColor =
 	| 'cyan'
 	| 'white'
 
-export type ThreeBitBackgroundColor = `bg${Capitalize<ThreeBitForegroundColor>}`
+export type BackgroundThreeBitColor = `bg${Capitalize<ForegroundColorKeyword>}`
 
-export type FourBitColor = FourBitForegroundColors | FourBitBackgroundColors
+export type FourBitColor = ForegroundFourBitColor | BackgroundFourBitColor
 
-export type FourBitForegroundColors =
-	| ThreeBitForegroundColor
-	| `light${Capitalize<ThreeBitForegroundColor>}`
-
-export type FourBitBackgroundColors =
-	| ThreeBitBackgroundColor
-	| `light${Capitalize<ThreeBitBackgroundColor>}`
+export type ForegroundFourBitColor =
+	| ForegroundThreeBitColor
+	| `light${Capitalize<ForegroundThreeBitColor>}`
+export type BackgroundFourBitColor = `bg${Capitalize<ForegroundFourBitColor>}`
 
 export type Attribute =
 	| 'reset'

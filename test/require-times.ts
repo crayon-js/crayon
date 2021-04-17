@@ -64,7 +64,7 @@ for (const id in packages) {
 
 	try {
 		const start = Date.now()
-		const loaded = require(pkg)
+		require(pkg)
 		const time = Date.now() - start
 
 		info.times[id] ||= { value: 0, min: 999, max: 0 }

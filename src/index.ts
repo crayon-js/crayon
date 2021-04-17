@@ -1,170 +1,172 @@
-import { getColorSupport } from './support'
-import { styles } from './styles'
-import { ColorKeyword, Crayon, MainCrayon, CrayonStyle } from './types'
-import { ansi8ToAnsi4, hslToRgb, rgbToAnsi4, rgbToAnsi8 } from './conversions'
-import { clamp, crayonError } from './util'
+import { colorSupport, functions, styles } from './styles'
+import { MainCrayon, CrayonStyle, CrayonConfig } from './types'
+import { errorConfig } from './util'
 
-const colorSupport = new Proxy(getColorSupport(), {})
+const config = new Proxy(
+	{
+		optimizeStyles: {
+			chain: false,
+			literal: false,
+		},
+		error: errorConfig,
+	} as CrayonConfig,
+	{}
+)
 
-class StyleCache {
-	value: string
-	preserve: boolean
+const optimizeStyles = (string: string): string =>
+	string.replace(/(\x1b\[([0-9]|;|)+?m)+\x1b\[0m/, styles.reset) //TODO: improve that
 
-	constructor(preserve?: boolean, value?: string) {
-		this.preserve = preserve || false
-		this.value = value || ''
-	}
+const crayonPrototype: any = {
+	styleCache: '',
+	preserveCache: false,
 
-	reset(): string {
-		if (this.preserve) return this.value
+	config,
+	colorSupport,
 
-		const temp = this.value
-		this.value = ''
-		return temp
-	}
+	instance(preserveCache: boolean, styleCache?: string): MainCrayon {
+		return buildCrayon(preserveCache, styleCache)
+	},
+	clone(clear: boolean, addCache?: string): MainCrayon {
+		return buildCrayon(
+			this.preserveCache,
+			(clear ? this.clearCache() : this.styleCache) + addCache || ''
+		)
+	},
+	clearCache(): string {
+		const cache = this.styleCache
+		if (this.preserveCache) return cache
+		this.styleCache = ''
+		return cache
+	},
+	strip(text: string): string {
+		return text.replace(/\x1b\[[0-9]([0-9])?([0-9])?m/gi, '')
+	},
+}
+
+for (const value in styles) {
+	Object.defineProperty(crayonPrototype, value, {
+		get() {
+			return this.clone(true, styles[value as CrayonStyle])
+		},
+	})
+}
+
+for (const name in functions) {
+	if (name.startsWith('bg')) continue
+	const bgName = `bg${name[0].toUpperCase() + name.slice(1)}`
+
+	const func = (functions as any)[name]
+	let needsSpecification = false
+	const bgFunc =
+		(functions as any)[bgName] ||
+		(() => {
+			needsSpecification = true
+			return (functions as any)[name]
+		})()
+
+	Object.defineProperties(crayonPrototype, {
+		[name]: {
+			value(...args: unknown[]) {
+				const style = func(...args)
+				if (style) return this.clone(true, style)
+				return this
+			},
+		},
+		[bgName]: {
+			value(...args: unknown[]) {
+				if (needsSpecification) args.push(true)
+				const style = bgFunc(...args)
+				if (style) return this.clone(true, style)
+				return this
+			},
+		},
+	})
 }
 
 const buildCrayon = (
-	preserveCache?: boolean,
+	preserveCache: boolean,
 	styleCache?: string
 ): MainCrayon => {
-	const crayon: MainCrayon = (() => {}) as any
-	const proxy = new Proxy<MainCrayon>(crayon, crayonHandler)
-
-	crayon.colorSupport = colorSupport
-	crayon.$styleCache = new StyleCache(preserveCache, styleCache)
-	crayon.$functions = {
-		strip: (text: string): string =>
-			text.replace(/\x1b\[[0-9]([0-9])?([0-9])?m/gi, ''),
-		keyword: (keyword: ColorKeyword | CrayonStyle) => {
-			const style = styles[keyword]
-			style && (crayon.$styleCache.value += style)
-			return proxy
-		},
-		hsl: (hue: number, saturation: number, lightness: number) =>
-			crayon.$functions.rgb(...hslToRgb(hue, saturation, lightness)),
-		bgHsl: (hue: number, saturation: number, lightness: number) =>
-			crayon.$functions.bgRgb(...hslToRgb(hue, saturation, lightness)),
-		rgb: (red: number, green: number, blue: number): Crayon => {
-			if (crayon.colorSupport.trueColor) {
-				crayon.$styleCache.value += `\x1b[38;2;${red};${green};${blue}m`
-				return proxy
-			} else if (crayon.colorSupport.highColor)
-				return crayon.$functions.ansi8(rgbToAnsi8(red, green, blue))
-			else return crayon.$functions.ansi4(rgbToAnsi4(red, green, blue))
-		},
-		bgRgb: (red: number, green: number, blue: number): Crayon => {
-			if (crayon.colorSupport.trueColor) {
-				crayon.$styleCache.value += `\x1b[48;2;${red};${green};${blue}m`
-				return proxy
-			} else if (crayon.colorSupport.highColor)
-				return crayon.$functions.bgAnsi8(rgbToAnsi8(red, green, blue))
-			else return crayon.$functions.bgAnsi4(rgbToAnsi4(red, green, blue))
-		},
-		hex: (hex: string, ansi8?: boolean) => {
-			if (/#[0-F]{6}/.test(hex)) {
-				hex = hex.slice(1)
-				const chunks = hex.match(/.{2}/g) as string[]
-				const r = parseInt(chunks[0], 16),
-					g = parseInt(chunks[1], 16),
-					b = parseInt(chunks[2], 16)
-				return ansi8
-					? crayon.$functions.ansi8(rgbToAnsi8(r, g, b))
-					: crayon.$functions.rgb(r, g, b)
-			}
-			crayonError(`Incorrect usage of hex function`)
-			return proxy
-		},
-		bgHex: (hex: string, ansi8?: boolean) => {
-			if (/#[0-F]{6}/.test(hex)) {
-				hex = hex.slice(1)
-				const chunks = hex.match(/.{2}/g) as string[]
-				const r = parseInt(chunks[0], 16),
-					g = parseInt(chunks[1], 16),
-					b = parseInt(chunks[2], 16)
-				return ansi8
-					? crayon.$functions.bgAnsi8(rgbToAnsi8(r, g, b))
-					: crayon.$functions.bgRgb(r, g, b)
-			}
-			crayonError(`Incorrect usage of bgHex function`)
-			return proxy
-		},
-		ansi8: (code: number) => {
-			if (crayon.colorSupport.highColor)
-				crayon.$styleCache.value += `\x1b[38;5;${clamp(code, 0, 255)}m`
-			else crayon.$functions.ansi4(ansi8ToAnsi4(code))
-			return proxy
-		},
-		bgAnsi8: (code: number) => {
-			if (crayon.colorSupport.highColor)
-				crayon.$styleCache.value += `\x1b[48;5;${clamp(code, 0, 255)}m`
-			else crayon.$functions.bgAnsi4(ansi8ToAnsi4(code))
-			return proxy
-		},
-		ansi4: (code: number) => {
-			if (!crayon.colorSupport.fourBitColor) return crayon.$functions.ansi3(code)
-			code = clamp(code, 0, 15)
-			crayon.$styleCache.value += `\x1b[${code + (code > 7 ? 82 : 30)}m`
-			return proxy
-		},
-		bgAnsi4: (code: number) => {
-			if (!crayon.colorSupport.fourBitColor) return crayon.$functions.bgAnsi3(code)
-			code = clamp(code, 0, 15)
-			crayon.$styleCache.value += `\x1b[${code + (code > 7 ? 102 : 40)}m`
-			return proxy
-		},
-		ansi3: (code: number) => {
-			crayon.$styleCache.value += `\x1b[${clamp((code % 8) + 30, 30, 37)}m`
-			return proxy
-		},
-		bgAnsi3: (code: number) => {
-			crayon.$styleCache.value += `\x1b[${clamp((code % 8) + 40, 40, 47)}m`
-			return proxy
-		},
-	}
-
-	return proxy
-}
-
-const literalStyleRegex = /{(\w+\s)((.|\s)*?)}/
-const compileLiteral = (...texts: string[]): string => {
-	const fullText = texts.join('')
-
-	let returned = fullText
-	let matches = returned.match(literalStyleRegex)
-
-	if (matches?.length) {
-		const styleMatch = matches[1]
-		const style = styles[styleMatch.trim() as CrayonStyle] || ''
-
-		const text = style + matches[2]
-		returned = fullText.replace(matches[0], text)
-	}
-
-	return literalStyleRegex.test(returned)
-		? compileLiteral(returned)
-		: returned + styles.reset
-}
-
-const crayonHandler: ProxyHandler<Crayon> = {
-	apply: (target: Crayon, _, args) => {
+	const crayon = function (...args: unknown[]) {
 		if (!args.length) return buildCrayon(true)
-		const [text] = args
 
-		if (literalStyleRegex.test(text)) return compileLiteral(text)
-		else return target.$styleCache.reset() + text + styles.reset
-	},
-	get(target: Crayon, prop: keyof Crayon, receiver: Crayon) {
-		const targeted =
-			Reflect.get(target, prop, receiver) ||
-			Reflect.get(target.$functions, prop, receiver)
-		if (targeted) return targeted
+		if (Array.isArray((args[0] as any).raw)) {
+			const returned = compileLiteral(...args)
+			return crayon.config.optimizeStyles ? optimizeStyles(returned) : returned
+		}
 
-		const style = Reflect.get(styles, prop)
-		style && (target.$styleCache.value += style)
+		const text = String(args.join(' '))
+		const style = crayon.clearCache()
+		if (!style) return text
 
-		return buildCrayon(target.$styleCache.preserve, target.$styleCache.reset())
-	},
+		const returned =
+			style + text.replace(resetRegex, styles.reset + style) + styles.reset
+		return crayon.config.optimizeStyles.chain
+			? optimizeStyles(returned)
+			: returned
+	} as MainCrayon
+
+	Object.setPrototypeOf(crayon, crayonPrototype)
+	crayon.preserveCache = !!preserveCache
+	crayon.styleCache = styleCache || ''
+
+	return crayon
+}
+
+const resetRegex = /\x1b\[0m/gi
+const literalStyleRegex = /{([^\s]+\s)([^{}]+)}/
+const literalFuncRegex = /(\w+)\((.*)\)/
+const literalStringRegex = /^("|'|`)(.*)\1$/
+
+const compileLiteral = (...texts: any[]): string => {
+	const args = texts.slice(1) as string[]
+	const baseText = [...texts[0]]
+
+	let text = ''
+	while (args.length || baseText.length)
+		text += (baseText.shift() || '') + (args.shift() || '')
+
+	let matches = text.match(literalStyleRegex)
+
+	while (matches?.length) {
+		// Get value of given styles as one string
+		const style = matches[1]
+			.trimEnd()
+			.split('.')
+			.map((value) => {
+				const style: string = styles[value]
+				if (style) return style
+				else {
+					const match = value.match(literalFuncRegex)
+					if (match?.length) {
+						const name = match[1]
+						// Format arguments to proper types
+						const args = match[2].split(',').map((arg) => {
+							const stringMatch = arg.match(literalStringRegex)
+							if (stringMatch?.length) return stringMatch[2]
+							return Number(arg) || arg
+						})
+
+						if (!name.startsWith('bg')) {
+							const func = (functions as any)[name]
+							if (func) return func(...args)
+						} else {
+							const bgName = `bg${name[0].toUpperCase() + name.slice(1)}`
+							const func = (functions as any)[bgName] || (functions as any)[name]
+							if (func) return func(...args, true)
+						}
+					}
+				}
+			})
+			.join('')
+
+		const matchedText = matches[2].split(styles.reset).join(styles.reset + style)
+		text = text.replace(matches[0], style + matchedText + styles.reset)
+
+		matches = text.match(literalStyleRegex)
+	}
+
+	return text
 }
 
 /**
@@ -190,6 +192,6 @@ const crayonHandler: ProxyHandler<Crayon> = {
  * console.log(warning('something failed'))
  * ```
  */
-const crayon = buildCrayon(false)
+const crayonInstance = buildCrayon(false)
 
-export = crayon
+export = crayonInstance

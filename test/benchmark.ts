@@ -4,8 +4,8 @@ import ansiColors = require('ansi-colors')
 import kleur = require('kleur')
 
 const benchSettings = {
-	iterations: 1000,
-	repeats: 100,
+	iterations: 100,
+	repeats: 1000,
 }
 
 interface BenchFunction extends Function {
@@ -42,23 +42,18 @@ class Bench {
 		for (const id in results) {
 			const fastest = results[id]
 
-			let result = `⚡ ${
-				crayon.yellow.bold(fastest.bench.id) +
-				crayon.green(` was the fastest in ${fastest.func.id} test\n`)
-			}`
+			let result = crayon`\n⚡ {yellow {bold ${fastest.bench.id}}} {green was the fastest in {bold {italic ${fastest.func.id}}} test}\n`
 
 			const tempBenches = Array.from(benches)
 			tempBenches.splice(tempBenches.indexOf(fastest.bench), 1)
 
-			tempBenches.forEach((bench) => {
-				const time = bench.funcs.filter((o) => {
-					if (o.id == id) return o
-				})[0].time
-				result += `\t${crayon.cyan('➜')} Faster than ${crayon.yellow.bold(
-					bench.id
-				)} by ${crayon.bold(
-					`${(100 - (fastest.func.time / time) * 100).toFixed(2)}%\n`
-				)}`
+			tempBenches.forEach((bench: Bench) => {
+				const time = bench.funcs.filter((b) => b.id == id)[0].time
+				const delta = time - fastest.func.time
+				const percentageDiff = Math.abs(
+					100 - (time / fastest.func.time) * 100
+				).toFixed(2)
+				result += crayon`\t{cyan ➜} Faster than {yellow {bold ${bench.id}}} by {bold ${percentageDiff}%} (Δ ${delta}ms)\n`
 			})
 
 			console.log(result)
@@ -73,7 +68,7 @@ class Bench {
 	run() {
 		return new Promise<boolean>((resolve) => {
 			console.log(
-				crayon.blue(`⏱  Starting benchmark of `) + crayon.yellow.bold(this.id)
+				crayon`{blue ⏱  Starting benchmark of} {yellow {bold ${this.id}}}`
 			)
 
 			const check = async (index: number) => {
@@ -89,15 +84,13 @@ class Bench {
 				func.time = end - start
 
 				console.log(
-					`\r\t${crayon.bold.green('✓')} Finished ${func.id} task in ${crayon.bold(
-						func.time + 'ms'
-					)} ± ${((func.fluctuation / func.time) * 100).toFixed(2)}% | ${crayon.bold(
-						String(
-							Math.round(
-								(benchSettings.iterations * benchSettings.repeats) / (func.time / 1000)
-							)
-						)
-					)}ops/s`
+					crayon`\t{green {bold ✓}} Finished {bold ${func.id}} task in {bold {cyan ${
+						func.time
+					}ms}} ± ${((func.fluctuation / func.time) * 100).toFixed(
+						2
+					)}% | {bold ${Math.round(
+						(benchSettings.iterations * benchSettings.repeats) / (func.time / 1000)
+					)}ops/s}`
 				)
 
 				check(++index)
@@ -143,26 +136,38 @@ const generateTest = (
 	return functions
 }
 
-const crayonFuncTests = generateTest(
-	{
-		id: 'access time',
-		func: (i: number) =>
-			crayon.keyword('bgBlue').keyword('underline').keyword('bold').red(i),
-	},
-	{
-		id: 'render',
-		func: (i: number) =>
-			process.stdout.write(
-				`\r${crayon.keyword('bgBlue').keyword('underline').keyword('bold').red(i)}`
-			),
-		endFunc: async () =>
-			process.stdout.write(
-				'\r' + ' '.repeat(String(benchSettings.iterations).length)
-			),
-	}
-)
-const crayonFuncBench = new Bench('crayon (func)', crayonFuncTests)
+const testPhrase = 'This is test phrase'
+const checkmark = '\t\x1b[92m✓\x1b[0m '
 
+//#region kleur tests
+const kleurTests = generateTest({
+	id: 'access time',
+	func: (i: number) => kleur.bgBlue().underline().bold().red(i),
+	endFunc: () =>
+		console.log(checkmark + kleur.bgBlue().underline().bold().red(testPhrase)),
+})
+const kleurBench = new Bench('kleur', kleurTests)
+//#endregion
+
+//#region crayon func tests
+const crayonFuncTests = generateTest({
+	id: 'access time',
+	func: (i: number) =>
+		crayon.keyword('bgBlue').keyword('underline').keyword('bold').red(i),
+	endFunc: () =>
+		console.log(
+			checkmark +
+				crayon
+					.keyword('bgBlue')
+					.keyword('underline')
+					.keyword('bold')
+					.red(testPhrase)
+		),
+})
+const crayonFuncBench = new Bench('crayon (func)', crayonFuncTests)
+//#endregion
+
+//#region compatible libs chain tests
 const testLibs: { [name: string]: any } = { crayon, chalk, ansiColors } //libs with compatible API
 const libBenches: Bench[] = []
 for (const name in testLibs) {
@@ -170,21 +175,12 @@ for (const name in testLibs) {
 	libBenches.push(
 		new Bench(
 			name,
-			generateTest(
-				{
-					id: 'access time',
-					func: (i: number) => lib.bgBlue.red.underline.bold(i),
-				},
-				{
-					id: 'render',
-					func: (i: number) =>
-						process.stdout.write(`\r${lib.bgBlue.red.underline.bold(i)}`),
-					endFunc: () =>
-						process.stdout.write(
-							'\r' + ' '.repeat(String(benchSettings.iterations).length)
-						),
-				}
-			)
+			generateTest({
+				id: 'access time',
+				func: (i: number) => lib.bgBlue.red.underline.bold(i),
+				endFunc: () =>
+					console.log(checkmark + lib.bgBlue.red.underline.bold(testPhrase)),
+			})
 		)
 	)
 
@@ -192,27 +188,44 @@ for (const name in testLibs) {
 	libBenches.push(
 		new Bench(
 			`${name} (cached)`,
-			generateTest(
-				{
-					id: 'access time',
-					func: (i: number) => cached(i),
-				},
-				{
-					id: 'render',
-					func: (i: number) => process.stdout.write(`\r${cached(i)}`),
-					endFunc: () =>
-						process.stdout.write(
-							'\r' + ' '.repeat(String(benchSettings.iterations).length)
-						),
-				}
-			)
+			generateTest({
+				id: 'access time',
+				func: (i: number) => cached(i),
+				endFunc: () => console.log(checkmark + cached(testPhrase)),
+			})
 		)
 	)
 }
+//#endregion
 
-const benches: Bench[] = [...libBenches, crayonFuncBench]
+//#region compatible libs literal templates tests
+const literalTestLibs: { [name: string]: any } = { crayon, chalk } //libs with compatible API
+const literalLibBenches: Bench[] = []
+for (const name in literalTestLibs) {
+	const lib = literalTestLibs[name as string]
+	literalLibBenches.push(
+		new Bench(
+			`${name} (literal template)`,
+			generateTest({
+				id: 'access time',
+				func: (i: number) => lib`{bgBlue {red {underline {bold ${i}}}}}`,
+				endFunc: () =>
+					console.log(
+						checkmark + lib`{bgBlue {red {underline {bold ${testPhrase}}}}}`
+					),
+			})
+		)
+	)
+}
+//#endregion
 
+const chainBenches: Bench[] = [...libBenches, crayonFuncBench, kleurBench]
 Promise.resolve().then(async () => {
-	for (const bench of benches) await bench.run()
-	Bench.compare(...benches)
+	console.log(crayon`{bold Comparing performance of chaining API's}`)
+	for (const bench of chainBenches) await bench.run()
+	Bench.compare(...chainBenches)
+
+	console.log(crayon`{bold Comparing performance of ES6 literal templates}`)
+	for (const bench of literalLibBenches) await bench.run()
+	Bench.compare(...literalLibBenches)
 })

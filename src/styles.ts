@@ -1,16 +1,15 @@
-import {
-	AttributesObject,
-	ColorKeyword,
-	ColorKeywordsObject,
-	FourBitColor,
-	FourBitColorsObject,
-	StylesObject,
-} from './types'
+import { ansi4ToAnsi3, ansi8ToAnsi4, hslToRgb, rgbToAnsi8 } from './conversions'
+import { getColorSupport } from './support'
+import { CrayonStyle, StyleObject } from './types'
+import { clamp, crayonError } from './util'
 
-/* 
-    https://github.com/bahamas10/css-color-names/blob/master/css-color-names.json
-*/
-export const cssColorKeywords = {
+export const colorSupport = new Proxy(getColorSupport(), {})
+
+/**
+ *  @internal
+ *  @see https://github.com/bahamas10/css-color-names/blob/master/css-color-names.json
+ */
+export const colorKeywords = {
 	aliceBlue: '\x1b[38;2;240;248;255m',
 	antiqueWhite: '\x1b[38;2;250;235;215m',
 	aqua: '\x1b[38;2;0;255;255m',
@@ -149,10 +148,8 @@ export const cssColorKeywords = {
 	yellowGreen: '\x1b[38;2;154;205;50m',
 }
 
-export const colorKeywords = cssColorKeywords as ColorKeywordsObject
-
 for (const color in colorKeywords) {
-	const colorAscii: string = colorKeywords[color as ColorKeyword] || ''
+	const colorAscii: string = (colorKeywords as any)[color]
 
 	const matches = /\[38/.exec(colorAscii)
 	if (!matches) continue
@@ -160,12 +157,14 @@ for (const color in colorKeywords) {
 	const capitalized = color[0].toUpperCase() + color.slice(1)
 	const colorCode = matches[0]
 
-	colorKeywords[`bg${capitalized}` as ColorKeyword] = colorAscii.replace(
-		colorCode,
-		`[${parseInt(colorCode.replace('[', '')) + 10}`
+	Reflect.set(
+		colorKeywords,
+		`bg${capitalized}`,
+		colorAscii.replace(colorCode, `[${parseInt(colorCode.replace('[', '')) + 10}`)
 	)
 }
 
+/** @internal */
 export const fourBitColors = {
 	black: '\x1b[30m',
 	lightBlack: '\x1b[90m',
@@ -183,10 +182,10 @@ export const fourBitColors = {
 	lightCyan: '\x1b[96m',
 	white: '\x1b[37m',
 	lightWhite: '\x1b[97m',
-} as FourBitColorsObject
+}
 
 for (const color in fourBitColors) {
-	const colorAscii = fourBitColors[color as FourBitColor] || ''
+	const colorAscii = (fourBitColors as any)[color]
 
 	const matches = /[0-9][0-9]/.exec(colorAscii)
 	if (!matches) continue
@@ -194,12 +193,14 @@ for (const color in fourBitColors) {
 	const capitalized = color[0].toUpperCase() + color.slice(1)
 
 	const colorCode = matches[0]
-	fourBitColors[`bg${capitalized}` as FourBitColor] = colorAscii.replace(
-		colorCode,
-		String(parseInt(colorCode) + 10)
+	Reflect.set(
+		fourBitColors,
+		`bg${capitalized}`,
+		colorAscii.replace(colorCode, String(parseInt(colorCode) + 10))
 	)
 }
 
+/** @internal */
 export const attributes = {
 	reset: '\x1b[0m',
 	bold: '\x1b[1m',
@@ -220,7 +221,88 @@ export const attributes = {
 	invertOff: '\x1b[26m',
 	hiddenOff: '\x1b[27m',
 	strikethroughOff: '\x1b[28m',
-} as AttributesObject
+}
 
-export const styles = {} as StylesObject
-Object.assign(styles, colorKeywords, fourBitColors, attributes)
+export const functions = {
+	keyword(k: CrayonStyle) {
+		const style = styles[k]
+		if (style) return style
+		crayonError('Invalid keyword given in keyword function')
+		return undefined
+	},
+	ansi3(c: number, bg?: boolean) {
+		if (typeof c !== 'number' || c > 7 || c < 0)
+			crayonError('Invalid usage of ansi3 function, syntax: 0-7')
+		if (!colorSupport.threeBitColor) return ''
+		return `\x1b[${bg ? 40 : 30 + clamp(c, 0, 7)}m`
+	},
+	ansi4(c: number, bg?: boolean) {
+		if (typeof c !== 'number' || c > 15 || c < 0)
+			crayonError('Invalid usage of ansi4 function, syntax: 0-15')
+		if (!colorSupport.fourBitColor) return functions.ansi3(ansi4ToAnsi3(c), bg)
+		return `\x1b[${clamp(c, 0, 15) + (bg ? 10 : 0) + (c > 7 ? 82 : 30)}m`
+	},
+	ansi8(c: number, bg?: boolean) {
+		if (typeof c !== 'number' || c > 255 || c < 0)
+			crayonError('Invalid usage of ansi8 function, syntax: 0-255')
+		if (!colorSupport.highColor) return functions.ansi4(ansi8ToAnsi4(c), bg)
+		return `\x1b[${bg ? 48 : 38};5;${clamp(c, 0, 255)}m`
+	},
+	rgb(r: number, g: number, b: number, bg?: boolean): string {
+		if (
+			typeof r !== 'number' ||
+			typeof g !== 'number' ||
+			typeof b !== 'number' ||
+			r > 255 ||
+			r < 0 ||
+			g > 255 ||
+			g < 0 ||
+			b > 255 ||
+			b < 0
+		)
+			crayonError(
+				'Invalid usage of rgb function, syntax: r: 0-255, g: 0-255, b: 0-255'
+			)
+		if (!colorSupport.trueColor) return functions.ansi8(rgbToAnsi8(r, g, b), bg)
+		return `\x1b[${bg ? 48 : 38};2;${r};${g};${b}m`
+	},
+	hsl(h: number, s: number, l: number, bg?: boolean): string {
+		if (
+			typeof h !== 'number' ||
+			typeof s !== 'number' ||
+			typeof l !== 'number' ||
+			h > 360 ||
+			h < 0 ||
+			s > 100 ||
+			s < 0 ||
+			l > 100 ||
+			l < 0
+		)
+			crayonError(
+				'Incorrect usage of hsl function, syntax: h: 0-360, s: 0-100, l: 0-100'
+			)
+		const rgb = hslToRgb(h, s, l)
+		if (!colorSupport.trueColor) return functions.ansi8(rgbToAnsi8(...rgb), bg)
+		return functions.rgb(...rgb, bg)
+	},
+	hex(hex: string, ansi8?: boolean, bg?: boolean): string {
+		if (/#[0-F]{6}/.test(hex)) {
+			hex = hex.slice(1)
+			const chunks = hex.match(/.{2}/g) as [string, string, string]
+			const rgb = chunks.map((v) => parseInt(v, 16)) as [number, number, number]
+			return ansi8
+				? functions.ansi8(rgbToAnsi8(...rgb), bg)
+				: functions.rgb(...rgb, bg)
+		}
+		crayonError('Incorrect usage of hex function, syntax: "#[0-F]{6}"')
+		return ''
+	},
+	bgHex(hex: string, ansi8?: boolean): string {
+		return functions.hex(hex, ansi8, true)
+	},
+}
+
+/** @internal */
+export const styles = {} as StyleObject
+
+Object.assign(styles, attributes, fourBitColors, colorKeywords)

@@ -25,24 +25,19 @@ const supportedColors = (): ColorSupport => ({
 
 export const getColorSupport = (): ColorSupport => {
 	if (process.env.NO_COLOR) {
-		trueColor = false
-		highColor = false
-		fourBitColor = false
+		threeBitColor = fourBitColor = highColor = trueColor = false
 		return supportedColors()
 	}
 
 	switch (process.env.COLORTERM) {
 		case 'truecolor':
-			trueColor = true
-			highColor = true
-			fourBitColor = true
+			threeBitColor = fourBitColor = highColor = trueColor = true
 			return supportedColors()
 		// are there other settings for that variable?
 	}
 
 	if (/-?256(color)?/gi.test(process.env.TERM || '')) {
-		highColor = true
-		fourBitColor = true
+		fourBitColor = highColor = true
 		return supportedColors()
 	}
 

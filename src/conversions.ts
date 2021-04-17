@@ -1,5 +1,7 @@
 import { clamp } from './util'
 
+export const ansi4ToAnsi3 = (code: number) => code % 8
+
 export const rgbToAnsi4 = (r: number, g: number, b: number): number => {
 	const value = Math.round(Math.max(r, g, b) / 255)
 	return value > 0
@@ -58,4 +60,4 @@ export const hslToRgb = (
 	return [f(0), f(8), f(4)]
 }
 
-exports = { rgbToAnsi4, rgbToAnsi8, hslToRgb, ansi8ToAnsi4 }
+exports = { rgbToAnsi4, rgbToAnsi8, hslToRgb, ansi8ToAnsi4, ansi4ToAnsi3 }
