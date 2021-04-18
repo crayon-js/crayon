@@ -33,35 +33,35 @@ test('multiline template literal', () =>
 	))
 
 test('rgb->8bit color conversion', () => {
-	crayon.colorSupport.trueColor = false
+	crayon.config.colorSupport.trueColor = false
 	expect(crayon.rgb(255, 127, 127)('test')).toMatch('\x1B[38;5;213mtest\x1B[0m')
-	crayon.colorSupport.trueColor = true
+	crayon.config.colorSupport.trueColor = true
 })
 
 test('rgb->4bit color conversion', () => {
-	crayon.colorSupport.trueColor = false
-	crayon.colorSupport.highColor = false
+	crayon.config.colorSupport.trueColor = false
+	crayon.config.colorSupport.highColor = false
 	expect(crayon.rgb(255, 0, 255)('test')).toMatch('\x1B[35mtest\x1B[0m')
-	crayon.colorSupport.highColor = true
-	crayon.colorSupport.trueColor = true
+	crayon.config.colorSupport.highColor = true
+	crayon.config.colorSupport.trueColor = true
 })
 
 test('8bit->4bit color conversion', () => {
-	crayon.colorSupport.highColor = false
+	crayon.config.colorSupport.highColor = false
 	expect(crayon.ansi8(123)('test')).toMatch('\x1B[36mtest\x1B[0m')
-	crayon.colorSupport.highColor = true
+	crayon.config.colorSupport.highColor = true
 })
 
 test('8bit->3bit color conversion', () => {
-	crayon.colorSupport.highColor = false
-	crayon.colorSupport.fourBitColor = false
+	crayon.config.colorSupport.highColor = false
+	crayon.config.colorSupport.fourBitColor = false
 	expect(crayon.ansi8(123)('test')).toMatch('\x1B[36mtest\x1B[0m')
-	crayon.colorSupport.fourBitColor = true
-	crayon.colorSupport.highColor = true
+	crayon.config.colorSupport.fourBitColor = true
+	crayon.config.colorSupport.highColor = true
 })
 
 test('4bit->3bit color conversion', () => {
-	crayon.colorSupport.fourBitColor = false
+	crayon.config.colorSupport.fourBitColor = false
 	expect(crayon.ansi4(9)('test')).toMatch('\x1B[31mtest\x1B[0m')
-	crayon.colorSupport.fourBitColor = true
+	crayon.config.colorSupport.fourBitColor = true
 })

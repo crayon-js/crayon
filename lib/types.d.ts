@@ -1,35 +1,31 @@
-export declare type MainCrayon = CrayonInstanceCall & Crayon;
-export declare type Crayon = {
-    readonly [style in CrayonStyle]: Crayon;
-} & CrayonColorFunction & CrayonTextCall & {
-    readonly [style in CrayonStyle]: (...text: unknown[]) => string;
-} & CrayonMiscFunction & CrayonInstance;
-declare type CrayonInstanceCall = () => Crayon;
-declare type CrayonTextCall = (...text: unknown[]) => string;
-export interface CrayonInstance {
-    /** Generates new independent crayon based on current one */
-    clone: (clear: boolean, addCache?: string) => MainCrayon;
-    /** Generates new independent crayon */
-    instance: (preserveCache: boolean, styleCache?: string) => MainCrayon;
-    /** Internal object which holds used styles */
+export declare interface Crayon extends Function, CrayonInstanceCall, CrayonStyles, CrayonFunction {
     styleCache: string;
     preserveCache: boolean;
-    /** Object which stores information about supported color palette, can be overwritten */
-    colorSupport: ColorSupport;
-    /** Crayon's config settings object, global by default */
-    config: CrayonConfig;
-}
-export interface CrayonConfig {
-    optimizeStyles: {
-        chain: boolean;
-        literal: boolean;
-    };
-    error: {
-        throw: boolean;
-        log: boolean;
+    config: {
+        colorSupport: CrayonColorSupport;
+        optimizeStyles: {
+            chain: boolean;
+            literal: boolean;
+        };
+        errors: {
+            throw: boolean;
+            log: boolean;
+        };
     };
 }
-export interface CrayonMiscFunction {
+declare type CrayonInstanceCall = (() => Crayon) & ((...args: unknown[]) => string);
+declare type CrayonStyles = {
+    readonly [style in CrayonStyle]: ((...text: unknown[]) => string) & Crayon;
+};
+export interface CrayonFunction {
+    /** Generates new independent crayon instance based on current one */
+    readonly clone: (clear: boolean, addCache?: string) => Crayon;
+    /** Generates new independent crayon instance */
+    readonly instance: (preserveCache: boolean, styleCache?: string) => Crayon;
+    /**
+     *  Clears crayon instances cache and returns it
+     *  * If `this.preserveCache` is set to true it does not clear cache though it still returns it
+     */
     readonly clearCache: () => string;
     /**
      * @returns text with stripped ascii codes
@@ -60,8 +56,6 @@ export interface CrayonMiscFunction {
      * ```
      */
     readonly keyword: (keyword: CrayonStyle) => Crayon;
-}
-export interface CrayonColorFunction {
     /**
      * Style text using HSL values
      *  * hue - number from 0 to 360
@@ -107,17 +101,10 @@ export interface CrayonColorFunction {
     /**	Style text background using 3bit (8) color palette */
     readonly bgAnsi3: (code: number) => Crayon;
 }
-/**
- * Detected terminal color support, can be modified to override settings
- */
-export interface ColorSupport {
-    /** 24bit (16.7m) color palette */
+export interface CrayonColorSupport {
     trueColor: boolean;
-    /** 8bit (256) color palette */
     highColor: boolean;
-    /** 4bit (16) color palette */
     fourBitColor: boolean;
-    /** 3bit (8) color palette */
     threeBitColor: boolean;
 }
 export declare type StyleObject = {

@@ -1,15 +1,16 @@
 import { colorSupport, functions, styles } from './styles'
-import { MainCrayon, CrayonStyle, CrayonConfig } from './types'
+import { Crayon, CrayonStyle } from './types'
 import { errorConfig } from './util'
 
 const config = new Proxy(
 	{
+		colorSupport,
 		optimizeStyles: {
 			chain: false,
 			literal: false,
 		},
-		error: errorConfig,
-	} as CrayonConfig,
+		errors: errorConfig,
+	} as Crayon['config'],
 	{}
 )
 
@@ -23,10 +24,10 @@ const crayonPrototype: any = {
 	config,
 	colorSupport,
 
-	instance(preserveCache: boolean, styleCache?: string): MainCrayon {
+	instance(preserveCache: boolean, styleCache?: string): Crayon {
 		return buildCrayon(preserveCache, styleCache)
 	},
-	clone(clear: boolean, addCache?: string): MainCrayon {
+	clone(clear: boolean, addCache?: string): Crayon {
 		return buildCrayon(
 			this.preserveCache,
 			(clear ? this.clearCache() : this.styleCache) + addCache || ''
@@ -83,10 +84,7 @@ for (const name in functions) {
 	})
 }
 
-const buildCrayon = (
-	preserveCache: boolean,
-	styleCache?: string
-): MainCrayon => {
+const buildCrayon = (preserveCache: boolean, styleCache?: string): Crayon => {
 	const crayon = function (...args: unknown[]) {
 		if (!args.length) return buildCrayon(true)
 
@@ -104,7 +102,7 @@ const buildCrayon = (
 		return crayon.config.optimizeStyles.chain
 			? optimizeStyles(returned)
 			: returned
-	} as MainCrayon
+	} as Crayon
 
 	Object.setPrototypeOf(crayon, crayonPrototype)
 	crayon.preserveCache = !!preserveCache

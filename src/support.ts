@@ -1,4 +1,4 @@
-import { ColorSupport } from './types'
+import { CrayonColorSupport } from './types'
 
 let os: any, execSync: any
 
@@ -16,14 +16,14 @@ let fourBitColor = false
 let highColor = false
 let trueColor = false
 
-const supportedColors = (): ColorSupport => ({
+const supportedColors = (): CrayonColorSupport => ({
 	threeBitColor,
 	fourBitColor,
 	highColor,
 	trueColor,
 })
 
-export const getColorSupport = (): ColorSupport => {
+export const getColorSupport = (): CrayonColorSupport => {
 	if (process.env.NO_COLOR) {
 		threeBitColor = fourBitColor = highColor = trueColor = false
 		return supportedColors()

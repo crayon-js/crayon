@@ -1,2 +1,2 @@
-import { ColorSupport } from './types';
-export declare const getColorSupport: () => ColorSupport;
+import { CrayonColorSupport } from './types';
+export declare const getColorSupport: () => CrayonColorSupport;

@@ -1,4 +1,4 @@
-import { MainCrayon } from './types';
+import { Crayon } from './types';
 /**
  *
  * Main Crayon object used to chain styles:
@@ -22,5 +22,5 @@ import { MainCrayon } from './types';
  * console.log(warning('something failed'))
  * ```
  */
-declare const crayonInstance: MainCrayon;
+declare const crayonInstance: Crayon;
 export = crayonInstance;

@@ -1,5 +1,5 @@
 import { CrayonStyle } from './types';
-export declare const colorSupport: import("./types").ColorSupport;
+export declare const colorSupport: import("./types").CrayonColorSupport;
 export declare const functions: {
     keyword(k: CrayonStyle): CrayonStyle | undefined;
     ansi3(c: number, bg?: boolean | undefined): string;
