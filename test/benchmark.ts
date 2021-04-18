@@ -1,7 +1,7 @@
-import crayon = require('crayon.js')
-import chalk = require('chalk')
-import ansiColors = require('ansi-colors')
-import kleur = require('kleur')
+import crayon from 'crayon.js'
+import chalk from 'chalk'
+import ansiColors from 'ansi-colors'
+import kleur from 'kleur'
 
 const benchSettings = {
 	iterations: 100,
