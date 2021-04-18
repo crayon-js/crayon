@@ -27,7 +27,7 @@ npm install crayon.js #yarn add crayon.js
     * [`@crayon.js/lite`](https://github.com/Im-Beast/crayon.js/tree/lite)
 
 ### Wiki
-To learn more about Crayon and its API look [here]()
+To learn more about Crayon and its API look [here](https://github.com/crayon-js/crayon/wiki)
 
 ## :handshake: Contributing
 #### Feel free to add any commits, issues and pull requests
