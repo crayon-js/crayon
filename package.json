@@ -4,10 +4,11 @@
 	"description": "Terminal coloring done fast",
 	"main": "lib/index.js",
 	"types": "lib/index.d.ts",
+	"type": "module",
 	"license": "MIT",
 	"private": false,
 	"engines": {
-		"node": ">=10"
+		"node": ">=12"
 	},
 	"author": {
 		"name": "Im-Beast",
@@ -16,6 +17,20 @@
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Im-Beast/crayon.js.git"
+	},
+	"ava": {
+		"files": [
+			"test/ava.test.ts"
+		],
+		"extensions": {
+			"ts": "module"
+		},
+		"nodeArguments": [
+			"--loader=ts-node/esm"
+		],
+		"nonSemVerExperiments": {
+			"configurableModuleFormat": true
+		}
 	},
 	"keywords": [
 		"typescript",
@@ -38,22 +53,26 @@
 		"log"
 	],
 	"scripts": {
-		"dev": "npx etsc",
-		"build": "tsc && node bundle-ts",
-		"bench": "ts-node test/benchmark.ts"
+		"build": "tsc && node bundle.js",
+		"bench": "node --loader ts-node/esm test/benchmark.ts",
+		"test": "ava",
+		"coverage": "c8 ava",
+		"coverage-html": "c8 --reporter=html ava"
 	},
 	"files": [
 		"lib"
 	],
 	"devDependencies": {
-		"@types/jest": "^26.0.22",
-		"@types/node": "^14.14.37",
+		"@ava/typescript": "^1.1.1",
 		"@typescript-eslint/eslint-plugin": "^4.21.0",
 		"@typescript-eslint/parser": "^4.21.0",
+		"ava": "^3.15.0",
+		"c8": "^7.7.1",
 		"eslint": "^7.23.0",
-		"jest": "^26.6.3",
-		"ts-jest": "^26.5.4",
+		"ts-node": "^9.1.1",
 		"typescript": "^4.2.4",
-		"uglify-js": "^3.13.3"
+		"uglify-js": "^3.13.3",
+		"@types/node": "^14.14.41",
+		"@types/uglify-js": "^3.13.0"
 	}
 }
