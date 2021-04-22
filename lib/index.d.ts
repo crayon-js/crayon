@@ -1,5 +1,6 @@
-import { colorSupport, functions, styles } from './styles';
+import { colorSupport, functions, styles, addStyleAlias, addStyleFunction, addStyle, addStyles, addStyleAliases } from './styles';
 import { Crayon } from './types';
+import { getColorSupport } from './support';
 declare const optimizeStyles: (string: string) => string;
 /**
  *
@@ -25,5 +26,5 @@ declare const optimizeStyles: (string: string) => string;
  * ```
  */
 declare const crayonInstance: Crayon;
-export { crayonInstance as crayon, optimizeStyles, colorSupport, functions, styles, };
+export { crayonInstance as crayon, addStyleFunction, getColorSupport, addStyleAliases, optimizeStyles, addStyleAlias, addStyles, addStyle, colorSupport, functions, styles, };
 export default crayonInstance;

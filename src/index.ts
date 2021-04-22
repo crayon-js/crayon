@@ -1,6 +1,16 @@
-import { colorSupport, functions, styles } from './styles'
+import {
+	colorSupport,
+	functions,
+	styles,
+	addStyleAlias,
+	addStyleFunction,
+	addStyle,
+	addStyles,
+	addStyleAliases,
+} from './styles'
 import { Crayon, CrayonStyle } from './types'
 import { errorConfig } from './util'
+import { getColorSupport } from './support'
 
 /** @internal */
 type func = (...args: any[]) => string | ''
@@ -215,7 +225,13 @@ const crayonInstance = buildCrayon(false)
 
 export {
 	crayonInstance as crayon,
+	addStyleFunction,
+	getColorSupport,
+	addStyleAliases,
 	optimizeStyles,
+	addStyleAlias,
+	addStyles,
+	addStyle,
 	colorSupport,
 	functions,
 	styles,

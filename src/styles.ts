@@ -305,3 +305,51 @@ export const functions = {
 export const styles = {} as StyleObject
 
 Object.assign(styles, attributes, fourBitColors, colorKeywords)
+
+export const addStyleFunction = (
+	name: string,
+	func: (...any: any[]) => string
+): boolean => Reflect.set(functions, name, func)
+
+export const addStyleAlias = (
+	alias: string,
+	aliased: CrayonStyle & string
+): boolean => {
+	const style = styles[aliased]
+
+	if (style) {
+		crayonError(`Could not find style "${aliased}"`)
+		return false
+	}
+
+	return Reflect.set(styles, alias, style)
+}
+
+export const addStyleAliases = (aliases: {
+	[name: string]: CrayonStyle & string
+}): boolean => {
+	for (let alias in aliases) {
+		const aliased = aliases[alias]
+		const style = styles[aliased]
+
+		if (!style) {
+			crayonError(`Could not find style "${aliased}"`)
+			return false
+		}
+
+		Reflect.set(styles, alias, style)
+	}
+	return true
+}
+
+export const addStyle = (name: string, value: string): boolean =>
+	Reflect.set(styles, name, value)
+
+export const addStyles = (styleObject: { [name: string]: string }): boolean => {
+	try {
+		Object.assign(styles, styleObject)
+		return true
+	} catch (_) {
+		return false
+	}
+}
