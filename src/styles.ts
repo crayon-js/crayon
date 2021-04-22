@@ -228,13 +228,13 @@ export const functions = {
 		const style = styles[k]
 		if (style) return style
 		crayonError('Invalid keyword given in keyword function')
-		return undefined
+		return ''
 	},
 	ansi3(c: number, bg?: boolean) {
 		if (typeof c !== 'number' || c > 7 || c < 0)
 			crayonError('Invalid usage of ansi3 function, syntax: 0-7')
 		if (!colorSupport.threeBitColor) return ''
-		return `\x1b[${bg ? 40 : 30 + clamp(c, 0, 7)}m`
+		return `\x1b[${(bg ? 40 : 30) + clamp(c, 0, 7)}m`
 	},
 	ansi4(c: number, bg?: boolean) {
 		if (typeof c !== 'number' || c > 15 || c < 0)
@@ -302,7 +302,6 @@ export const functions = {
 	},
 }
 
-/** @internal */
 export const styles = {} as StyleObject
 
 Object.assign(styles, attributes, fourBitColors, colorKeywords)

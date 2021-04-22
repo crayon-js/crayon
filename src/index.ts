@@ -2,6 +2,13 @@ import { colorSupport, functions, styles } from './styles'
 import { Crayon, CrayonStyle } from './types'
 import { errorConfig } from './util'
 
+/** @internal */
+type func = (...args: any[]) => string | ''
+/** @internal */
+type funcs = {
+	[name: string]: func
+}
+
 const config = new Proxy(
 	{
 		colorSupport,
@@ -30,7 +37,7 @@ const crayonPrototype: any = {
 	clone(clear: boolean, addCache?: string): Crayon {
 		return buildCrayon(
 			this.preserveCache,
-			(clear ? this.clearCache() : this.styleCache) + addCache || ''
+			(clear ? this.clearCache() : this.styleCache) + (addCache || '')
 		)
 	},
 	clearCache(): string {
@@ -56,20 +63,21 @@ for (const name in functions) {
 	if (name.startsWith('bg')) continue
 	const bgName = `bg${name[0].toUpperCase() + name.slice(1)}`
 
-	const func = (functions as any)[name]
+	const func = (functions as funcs)[name]
+
 	let needsSpecification = false
 	const bgFunc =
 		(functions as any)[bgName] ||
 		(() => {
 			needsSpecification = true
-			return (functions as any)[name]
+			return (functions as funcs)[name]
 		})()
 
 	Object.defineProperties(crayonPrototype, {
 		[name]: {
 			value(...args: unknown[]) {
 				const style = func(...args)
-				if (style) return this.clone(true, style)
+				if (style !== '') return this.clone(true, style)
 				return this
 			},
 		},
@@ -77,7 +85,7 @@ for (const name in functions) {
 			value(...args: unknown[]) {
 				if (needsSpecification) args.push(true)
 				const style = bgFunc(...args)
-				if (style) return this.clone(true, style)
+				if (style !== '') return this.clone(true, style)
 				return this
 			},
 		},
@@ -90,7 +98,9 @@ const buildCrayon = (preserveCache: boolean, styleCache?: string): Crayon => {
 
 		if (Array.isArray((args[0] as any).raw)) {
 			const returned = compileLiteral(...args)
-			return crayon.config.optimizeStyles ? optimizeStyles(returned) : returned
+			return crayon.config.optimizeStyles.literal
+				? optimizeStyles(returned)
+				: returned
 		}
 
 		const text = String(args.join(' '))
@@ -121,8 +131,10 @@ const compileLiteral = (...texts: any[]): string => {
 	const baseText = [...texts[0]]
 
 	let text = ''
-	while (args.length || baseText.length)
-		text += (baseText.shift() || '') + (args.shift() || '')
+	while (args.length || baseText.length) {
+		if (baseText.length) text += baseText.shift()
+		if (args.length) text += args.shift()
+	}
 
 	let matches = text.match(literalStyleRegex)
 
@@ -132,7 +144,7 @@ const compileLiteral = (...texts: any[]): string => {
 			.trimEnd()
 			.split('.')
 			.map((value) => {
-				const style: string = styles[value]
+				const style: string = styles[value as CrayonStyle]
 				if (style) return style
 				else {
 					const match = value.match(literalFuncRegex)
@@ -142,16 +154,25 @@ const compileLiteral = (...texts: any[]): string => {
 						const args = match[2].split(',').map((arg) => {
 							const stringMatch = arg.match(literalStringRegex)
 							if (stringMatch?.length) return stringMatch[2]
-							return Number(arg) || arg
+							const num = Number(arg)
+							if (num) return num
+							return arg === 'false' || arg === 'true' ? Boolean(arg) : arg
 						})
 
 						if (!name.startsWith('bg')) {
-							const func = (functions as any)[name]
+							const func = (functions as funcs)[name]
 							if (func) return func(...args)
 						} else {
-							const bgName = `bg${name[0].toUpperCase() + name.slice(1)}`
-							const func = (functions as any)[bgName] || (functions as any)[name]
-							if (func) return func(...args, true)
+							const nameWithoutBg =
+								name[2].toLowerCase() + name.replace('bg', '').substr(1)
+							const bgFunc =
+								(functions as funcs)[name] ||
+								(() => {
+									args.push(true)
+									return (functions as funcs)[nameWithoutBg]
+								})()
+
+							if (bgFunc) return bgFunc(...args)
 						}
 					}
 				}
@@ -192,4 +213,11 @@ const compileLiteral = (...texts: any[]): string => {
  */
 const crayonInstance = buildCrayon(false)
 
-export = crayonInstance
+export {
+	crayonInstance as crayon,
+	optimizeStyles,
+	colorSupport,
+	functions,
+	styles,
+}
+export default crayonInstance
