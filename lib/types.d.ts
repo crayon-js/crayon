@@ -56,6 +56,7 @@ export interface CrayonFunction {
      * ```
      */
     readonly keyword: (keyword: CrayonStyle) => Crayon;
+    readonly bgKeyword: (keyword: CrayonStyle) => Crayon;
     /**
      * Style text using HSL values
      *  * hue - number from 0 to 360
@@ -108,7 +109,7 @@ export interface CrayonColorSupport {
     threeBitColor: boolean;
 }
 export declare type StyleObject = {
-    [name: string]: CrayonStyle;
+    [style in CrayonStyle]: string;
 };
 /** Crayon styles (CSS Keywords + Basic 16 Colors + Attributes) */
 export declare type CrayonStyle = FourBitColor | Attribute | ColorKeyword;

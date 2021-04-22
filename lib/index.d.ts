@@ -1,4 +1,6 @@
+import { colorSupport, functions, styles } from './styles';
 import { Crayon } from './types';
+declare const optimizeStyles: (string: string) => string;
 /**
  *
  * Main Crayon object used to chain styles:
@@ -23,4 +25,5 @@ import { Crayon } from './types';
  * ```
  */
 declare const crayonInstance: Crayon;
-export = crayonInstance;
+export { crayonInstance as crayon, optimizeStyles, colorSupport, functions, styles, };
+export default crayonInstance;
