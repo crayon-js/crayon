@@ -10,7 +10,6 @@ import {
 } from './styles'
 import { Crayon, CrayonStyle } from './types'
 import { errorConfig } from './util'
-import { getColorSupport } from './support'
 
 /** @internal */
 type func = (...args: any[]) => string | ''
@@ -61,46 +60,55 @@ const crayonPrototype: any = {
 	},
 }
 
-for (const value in styles) {
-	Object.defineProperty(crayonPrototype, value, {
-		get() {
-			return this.clone(true, styles[value as CrayonStyle])
-		},
-	})
-}
-
-for (const name in functions) {
-	if (name.startsWith('bg')) continue
-	const bgName = `bg${name[0].toUpperCase() + name.slice(1)}`
-
-	const func = (functions as funcs)[name]
-
-	let needsSpecification = false
-	const bgFunc =
-		(functions as any)[bgName] ||
-		(() => {
-			needsSpecification = true
-			return (functions as funcs)[name]
-		})()
-
-	Object.defineProperties(crayonPrototype, {
-		[name]: {
-			value(...args: unknown[]) {
-				const style = func(...args)
-				if (style !== '') return this.clone(true, style)
-				return this
+export const reloadStyles = () => {
+	for (const value in styles) {
+		Object.defineProperty(crayonPrototype, value, {
+			configurable: true,
+			get() {
+				return this.clone(true, styles[value as CrayonStyle])
 			},
-		},
-		[bgName]: {
-			value(...args: unknown[]) {
-				if (needsSpecification) args.push(true)
-				const style = bgFunc(...args)
-				if (style !== '') return this.clone(true, style)
-				return this
-			},
-		},
-	})
+		})
+	}
 }
+reloadStyles()
+
+export const reloadFunctions = () => {
+	for (const name in functions) {
+		if (name.startsWith('bg')) continue
+		const bgName = `bg${name[0].toUpperCase() + name.slice(1)}`
+
+		const func = (functions as funcs)[name]
+
+		let needsSpecification = false
+		const bgFunc =
+			(functions as any)[bgName] ||
+			(() => {
+				needsSpecification = true
+				return (functions as funcs)[name]
+			})()
+
+		Object.defineProperties(crayonPrototype, {
+			[name]: {
+				configurable: true,
+				value(...args: unknown[]) {
+					const style = func(...args)
+					if (style !== '') return this.clone(true, style)
+					return this
+				},
+			},
+			[bgName]: {
+				configurable: true,
+				value(...args: unknown[]) {
+					if (needsSpecification) args.push(true)
+					const style = bgFunc(...args)
+					if (style !== '') return this.clone(true, style)
+					return this
+				},
+			},
+		})
+	}
+}
+reloadFunctions()
 
 const buildCrayon = (preserveCache: boolean, styleCache?: string): Crayon => {
 	const crayon = function (...args: unknown[]) {
@@ -224,16 +232,14 @@ const compileLiteral = (...texts: any[]): string => {
 const crayonInstance = buildCrayon(false)
 
 export {
-	crayonInstance as crayon,
 	addStyleFunction,
-	getColorSupport,
 	addStyleAliases,
 	optimizeStyles,
 	addStyleAlias,
 	addStyles,
 	addStyle,
-	colorSupport,
 	functions,
 	styles,
 }
+
 export default crayonInstance

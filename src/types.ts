@@ -1,34 +1,43 @@
-export declare interface Crayon
-	extends Function,
-		CrayonInstanceCall,
-		CrayonStyles,
-		CrayonFunction {
-	styleCache: string
-	preserveCache: boolean
+export declare type Crayon<T = void> = Function &
+	CrayonInstanceCall<T> &
+	CrayonStyles<T> &
+	CrayonExtension<T> &
+	CrayonFunction<T> & {
+		styleCache: string
+		preserveCache: boolean
 
-	config: {
-		colorSupport: CrayonColorSupport
-		optimizeStyles: {
-			chain: boolean
-			literal: boolean
-		}
-		errors: {
-			throw: boolean
-			log: boolean
+		config: {
+			colorSupport: CrayonColorSupport
+			optimizeStyles: {
+				chain: boolean
+				literal: boolean
+			}
+			errors: {
+				throw: boolean
+				log: boolean
+			}
 		}
 	}
+
+type CrayonInstanceCall<T> = (() => Crayon<T>) &
+	((...args: unknown[]) => string)
+
+type CrayonExtension<T = void> = {
+	readonly [style in T extends string ? T : never]: ((
+		...text: unknown[]
+	) => string) &
+		Crayon<T>
 }
 
-type CrayonInstanceCall = (() => Crayon) & ((...args: unknown[]) => string)
-type CrayonStyles = {
-	readonly [style in CrayonStyle]: ((...text: unknown[]) => string) & Crayon
+export type CrayonStyles<T = void> = {
+	readonly [style in CrayonStyle]: ((...text: unknown[]) => string) & Crayon<T>
 }
 
-export interface CrayonFunction {
+export interface CrayonFunction<T = void> {
 	/** Generates new independent crayon instance based on current one */
-	readonly clone: (clear: boolean, addCache?: string) => Crayon
+	readonly clone: (clear: boolean, addCache?: string) => Crayon<T>
 	/** Generates new independent crayon instance */
-	readonly instance: (preserveCache: boolean, styleCache?: string) => Crayon
+	readonly instance: (preserveCache: boolean, styleCache?: string) => Crayon<T>
 	/**
 	 *  Clears crayon instances cache and returns it
 	 *  * If `this.preserveCache` is set to true it does not clear cache though it still returns it
@@ -62,52 +71,56 @@ export interface CrayonFunction {
 	 * console.log(strippedText) // returns raw "text" with no styling
 	 * ```
 	 */
-	readonly keyword: (keyword: CrayonStyle) => Crayon
-	readonly bgKeyword: (keyword: CrayonStyle) => Crayon
+	readonly keyword: (keyword: CrayonStyle | T) => Crayon<T>
+	readonly bgKeyword: (keyword: CrayonStyle | T) => Crayon<T>
 	/**
 	 * Style text using HSL values
 	 *  * hue - number from 0 to 360
 	 *  * saturation, lightness - number from 0 to 100
 	 */
-	readonly hsl: (hue: number, saturation: number, lightness: number) => Crayon
+	readonly hsl: (hue: number, saturation: number, lightness: number) => Crayon<T>
 	/**
 	 * Style text background using HSL values
 	 *  * hue - number from 0 to 360
 	 *  * saturation, lightness - number from 0 to 100
 	 */
-	readonly bgHsl: (hue: number, saturation: number, lightness: number) => Crayon
+	readonly bgHsl: (
+		hue: number,
+		saturation: number,
+		lightness: number
+	) => Crayon<T>
 	/**
 	 * Style text using RGB
 	 * * red, green, blue - number from 0 to 255
 	 */
-	readonly rgb: (red: number, green: number, blue: number) => Crayon
+	readonly rgb: (red: number, green: number, blue: number) => Crayon<T>
 	/**
 	 * Style text background using RGB
 	 * * red, green, blue - number from 0 to 255
 	 */
-	readonly bgRgb: (red: number, green: number, blue: number) => Crayon
+	readonly bgRgb: (red: number, green: number, blue: number) => Crayon<T>
 	/**
 	 * Style text using HEX
 	 *  * You can specify whether to explicitly color using 8bit color palette
 	 */
-	readonly hex: (hex: string, ansi8?: boolean) => Crayon
+	readonly hex: (hex: string, ansi8?: boolean) => Crayon<T>
 	/**
 	 * Style text background using HEX
 	 *  * You can specify whether to explicitly color using 8bit color palette
 	 */
-	readonly bgHex: (hex: string, ansi8?: boolean) => Crayon
+	readonly bgHex: (hex: string, ansi8?: boolean) => Crayon<T>
 	/**	Style text using 8bit (256) color palette */
-	readonly ansi8: (code: number) => Crayon
+	readonly ansi8: (code: number) => Crayon<T>
 	/**	Style text background using 8bit (256) color palette */
-	readonly bgAnsi8: (code: number) => Crayon
+	readonly bgAnsi8: (code: number) => Crayon<T>
 	/**	Style text using 4bit (16) color palette */
-	readonly ansi4: (code: number) => Crayon
+	readonly ansi4: (code: number) => Crayon<T>
 	/**	Style text background using 4bit (16) color palette */
-	readonly bgAnsi4: (code: number) => Crayon
+	readonly bgAnsi4: (code: number) => Crayon<T>
 	/**	Style text using 3bit (8) color palette */
-	readonly ansi3: (code: number) => Crayon
+	readonly ansi3: (code: number) => Crayon<T>
 	/**	Style text background using 3bit (8) color palette */
-	readonly bgAnsi3: (code: number) => Crayon
+	readonly bgAnsi3: (code: number) => Crayon<T>
 }
 
 export interface CrayonColorSupport {
@@ -122,149 +135,7 @@ export type StyleObject = {
 }
 
 /** Crayon styles (CSS Keywords + Basic 16 Colors + Attributes) */
-export type CrayonStyle = FourBitColor | Attribute | ColorKeyword
-
-/** CSS Color Keywords [bahamas10 json list](https://github.com/bahamas10/css-color-names/blob/master/css-color-names.json) */
-export type ColorKeyword = ForegroundColorKeyword | BackgroundColorKeyword
-export type ForegroundColorKeyword =
-	| 'aliceBlue'
-	| 'antiqueWhite'
-	| 'aqua'
-	| 'aquamarine'
-	| 'azure'
-	| 'beige'
-	| 'bisque'
-	| 'blanchedalMond'
-	| 'blueViolet'
-	| 'brown'
-	| 'burlyWood'
-	| 'cadetBlue'
-	| 'chartreuse'
-	| 'chocolate'
-	| 'coral'
-	| 'cornFlowerBlue'
-	| 'cornsilk'
-	| 'crimson'
-	| 'darkBlue'
-	| 'darkCyan'
-	| 'darkGoldenRod'
-	| 'darkGreen'
-	| 'darkGray'
-	| 'darkGrey'
-	| 'darkKhaki'
-	| 'darkMagenta'
-	| 'darkOliveGreen'
-	| 'darkOrange'
-	| 'darkOrchid'
-	| 'darkRed'
-	| 'darkSalmon'
-	| 'darkSeaGreen'
-	| 'darkSlateBlue'
-	| 'darkSlateGray'
-	| 'darkSlateGrey'
-	| 'darkTurquoise'
-	| 'darkViolet'
-	| 'deepPink'
-	| 'deepSkyBlue'
-	| 'dimGray'
-	| 'dimGrey'
-	| 'dodgerBlue'
-	| 'fireBrick'
-	| 'floralWhite'
-	| 'forestGreen'
-	| 'fuchsia'
-	| 'gainsboro'
-	| 'ghostWhite'
-	| 'goldenRod'
-	| 'gold'
-	| 'gray'
-	| 'greenYellow'
-	| 'grey'
-	| 'honeyDew'
-	| 'hotPink'
-	| 'indianRed'
-	| 'indigo'
-	| 'ivory'
-	| 'khaki'
-	| 'lavenderBlush'
-	| 'lavender'
-	| 'lawnGreen'
-	| 'lemonChiffon'
-	| 'lightCoral'
-	| 'lightGoldenRodYellow'
-	| 'lightGray'
-	| 'lightGrey'
-	| 'lightPink'
-	| 'lightSalmon'
-	| 'lightSeaGreen'
-	| 'lightSkyBlue'
-	| 'lightSlateGray'
-	| 'lightSlateGrey'
-	| 'lightSteelBlue'
-	| 'lime'
-	| 'limeGreen'
-	| 'linen'
-	| 'maroon'
-	| 'mediumAquamarine'
-	| 'mediumBlue'
-	| 'mediumOrchid'
-	| 'mediumPurple'
-	| 'mediumSeaGreen'
-	| 'mediumSlateBlue'
-	| 'mediumSpringGreen'
-	| 'mediumTurquoise'
-	| 'mediumVioletRed'
-	| 'midnightBlue'
-	| 'mintCream'
-	| 'mistyrose'
-	| 'moccasin'
-	| 'navajoWhite'
-	| 'navy'
-	| 'oldLace'
-	| 'olive'
-	| 'olivedRab'
-	| 'orange'
-	| 'orangeRed'
-	| 'orchid'
-	| 'paleGoldenRod'
-	| 'paleGreen'
-	| 'paleTurquoise'
-	| 'paleVioletRed'
-	| 'papayaWhip'
-	| 'peachPuff'
-	| 'peru'
-	| 'pink'
-	| 'plum'
-	| 'powderBlue'
-	| 'purple'
-	| 'rebeccaPurple'
-	| 'rosyBrown'
-	| 'royalBlue'
-	| 'saddleBrown'
-	| 'salmon'
-	| 'sandyBrown'
-	| 'seaGreen'
-	| 'seaShell'
-	| 'sienna'
-	| 'silver'
-	| 'skyBlue'
-	| 'slateBlue'
-	| 'slateGray'
-	| 'slateGrey'
-	| 'snow'
-	| 'springGreen'
-	| 'steelBlue'
-	| 'tan'
-	| 'teal'
-	| 'thistle'
-	| 'tomato'
-	| 'turquoise'
-	| 'violet'
-	| 'wheat'
-	| 'whiteSmoke'
-	| 'yellowGreen'
-
-export type BackgroundColorKeyword = `bg${Capitalize<ForegroundColorKeyword>}`
+export type CrayonStyle = FourBitColor | Attribute
 
 export type ForegroundThreeBitColor =
 	| 'black'
@@ -276,7 +147,7 @@ export type ForegroundThreeBitColor =
 	| 'cyan'
 	| 'white'
 
-export type BackgroundThreeBitColor = `bg${Capitalize<ForegroundColorKeyword>}`
+export type BackgroundThreeBitColor = `bg${Capitalize<ForegroundThreeBitColor>}`
 
 export type FourBitColor = ForegroundFourBitColor | BackgroundFourBitColor
 
