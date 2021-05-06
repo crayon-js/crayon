@@ -1,8 +1,11 @@
 'use strict'
 import uglifyjs from 'uglify-js'
-import { promises as fs } from 'fs'
+import { existsSync, promises as fs } from 'fs'
+import { promisify } from 'util'
+import { exec as _exec } from 'child_process'
+const exec = promisify(_exec)
 
-let fileAmount = 0
+let checksAmount = 0
 let checkedFiles = {
 	passed: 0,
 	failed: 0,
@@ -11,42 +14,70 @@ let checkedFiles = {
 let dir = './'
 
 const commentRegex = /(\/\/.+\n)|(\/\*(.|\n)*\*\/)/g
-const importRegex = /import\s.+\sfrom\s("|'|`)(.+(?<!\.js))\1/
+const importRegex = /import\s.+\sfrom\s("|'|`)((\.|\.\.)\/)+(.+(?<!\.js))\1/
 const exportsRegex = /exports\s?=.+(;|\s|$)/
 const jsFileRegex = /^.*.js*$/
 
 const checkmark = '\x1b[32m✓\x1b[0m'
 const crossmark = '\x1b[31m✗\x1b[0m'
 
+console.log(`📝 \x1b[34mParsing \x1b[1mtsconfig.json\x1b[0m`)
+
 fs
 	.readFile('tsconfig.json', { encoding: 'utf-8' })
-	.then((data) => {
+	.then(async (data) => {
+		data = data.replace(commentRegex, '')
+
+		checksAmount = 1
+		let tsconfig = {}
 		try {
-			data = data.replace(commentRegex, '')
-			const tsconfig = JSON.parse(data)
-
-			if (!tsconfig.compilerOptions) throw 'No compilerOptions object'
-			dir = './' + (tsconfig.compilerOptions.outDir || '')
-
-			console.log(`📦 \x1b[34mBundling ${dir} directory\x1b[0m`)
-
-			fs
-				.readdir(dir, {
-					encoding: 'utf-8',
-					withFileTypes: true,
-				})
-				.then((files) => {
-					const jsFiles = files.filter((file) => jsFileRegex.test(file.name))
-					fileAmount = jsFiles.length
-					jsFiles.forEach(minifyFile)
-				})
-				.catch((error) => {
-					console.log(error)
-				})
-		} catch (err) {
-			console.log(`\t${crossmark} Could not parse tsconfig.json`)
-			throw err
+			tsconfig = JSON.parse(data)
+			passOperation(`Parsed tsconfig.json`)
+		} catch (error) {
+			rejectOperation(`Couldn't parse tsconfig.json:\n`, error)
+			return
 		}
+
+		dir =
+			'./' + ((tsconfig.compilerOptions && tsconfig.compilerOptions.outDir) || '')
+
+		checksAmount = 2
+		console.log(`⚙️ \x1b[34m Compiling project\x1b[0m`)
+
+		if (existsSync(dir)) {
+			if (
+				!(await fs
+					.rm(dir, { recursive: true })
+					.then(() => passOperation(`Deleted ${dir}`, 'initial cleaning'))
+					.catch((error) => rejectOperation(`Failed deleting ${dir}:\n`, error)))
+			)
+				return summary()
+		} else passOperation(`Skipped ${dir} deletion`, `doesn't exist`)
+
+		if (
+			!(await exec('tsc')
+				.then(() => passOperation(`Compiled ${dir}`))
+				.catch((error) => rejectOperation(`Failed compiling ${dir}:\n`, error)))
+		)
+			return
+
+		console.log(
+			`📦 \x1b[34mBundling \x1b[1m${dir}\x1b[0m\x1b[34m directory\x1b[0m`
+		)
+
+		fs
+			.readdir(dir, {
+				encoding: 'utf-8',
+				withFileTypes: true,
+			})
+			.then((files) => {
+				const jsFiles = files.filter((file) => jsFileRegex.test(file.name))
+				checksAmount = jsFiles.length
+				jsFiles.forEach(minifyFile)
+			})
+			.catch((error) => {
+				console.log(error)
+			})
 	})
 	.catch((error) => {
 		console.log(`\t ${crossmark} Failed loading tsconfig.json file:\n`, error)
@@ -60,11 +91,15 @@ const minifyFile = async (file) => {
 	let importMatches = fileContent.match(importRegex)
 	while (importMatches?.length) {
 		const importMatch = importMatches[0]
-		const importedFile = importMatches[2]
+		const relativePath = importMatches[2]
+		const importedFile = importMatches[4]
 
 		fileContent = fileContent.replace(
 			importMatch,
-			importMatch.replace(importedFile, importedFile + '.js')
+			importMatch.replace(
+				relativePath + importedFile,
+				`${relativePath}${importedFile}.js`
+			)
 		)
 
 		importMatches = fileContent.match(importRegex)
@@ -89,45 +124,46 @@ const minifyFile = async (file) => {
 	})
 
 	if (minifiedContent.error) {
-		return rejectFile(fileDir, `minifying - ${minifiedContent.error}`)
+		fs.writeFile(fileDir, fileContent).catch(() => {})
+		return rejectOperation(`Failed minifying ${fileDir}`, minifiedContent.error)
 	}
 
 	if (minifiedContent.code === '') {
-		fs
+		return fs
 			.unlink(fileDir)
-			.then(() => passFile(fileDir, 'deleted - empty file'))
-			.catch((error) => rejectFile(fileDir, `deletion - ${error}`))
-		return
+			.then(() => passOperation(`Deleted ${fileDir}`, 'empty file'))
+			.catch((error) => rejectOperation(`Failed deleting ${fileDir}: \n`, error))
 	}
 
 	fs
 		.writeFile(fileDir, minifiedContent.code)
-		.then(() => passFile(fileDir))
-		.catch((error) => rejectFile(fileDir, `writing file - ${error}`))
+		.then(() => passOperation(`Minified ${fileDir}`))
+		.catch((error) => rejectOperation(`Failed minifying ${fileDir}:\n`, error))
 }
 
-const rejectFile = (fileDir, reason) => {
+const rejectOperation = (operation, reason) => {
 	++checkedFiles.failed
-	console.log(
-		`\t${crossmark} Couldn't minify ${fileDir}  ${reason ? `(${reason})` : ''}:`
-	)
-	if (checkedFiles.passed + checkedFiles.failed >= fileAmount) summary()
+	console.log(`\t${crossmark} ${operation}  ${reason ? `(${reason})` : ''}:`)
+	if (checkedFiles.passed + checkedFiles.failed >= checksAmount) summary()
+	return false
 }
 
-const passFile = (fileDir, reason) => {
+const passOperation = (operation, reason) => {
 	++checkedFiles.passed
-	console.log(
-		`\t${checkmark} Minified ${fileDir} ${reason ? `(${reason})` : ''}`
-	)
-	if (checkedFiles.passed + checkedFiles.failed >= fileAmount) summary()
+	console.log(`\t${checkmark} ${operation} ${reason ? `(${reason})` : ''}`)
+	if (checkedFiles.passed + checkedFiles.failed >= checksAmount) summary()
+	return true
 }
 
 const summary = () => {
 	const { passed, failed } = checkedFiles
-	const passedAll = passed >= fileAmount
+	const passedAll = passed >= checksAmount
 	console.log(
-		`\t${' -'.repeat(16)}\n\t${
+		`\t${' -'.repeat(12)}\n\t${
 			passedAll ? checkmark : crossmark
-		} ${passed}/${fileAmount} operations on files passed`
+		} ${passed}/${checksAmount} operations passed`
 	)
+
+	checkedFiles.passed = 0
+	checkedFiles.failed = 0
 }
