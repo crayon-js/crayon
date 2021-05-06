@@ -1,7 +1,8 @@
 import test from 'ava'
 
-import crayon, { optimizeStyles } from 'crayon.js'
+import { optimizeStyles } from 'crayon.js'
 import { CrayonStyle } from 'crayon.js/lib/types'
+import crayon from '@crayon.js/keywords'
 
 crayon.config.optimizeStyles = {
 	chain: true,
@@ -10,6 +11,10 @@ crayon.config.optimizeStyles = {
 
 const errors: unknown[] = []
 console.log = (...any: unknown[]) => errors.push(any) // disable logs
+
+test('loading extensions', (t) => {
+	t.true(!!crayon.olive)
+})
 
 test('global config', (t) => {
 	const crayonA = crayon()
