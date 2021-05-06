@@ -1,7 +1,8 @@
-import { colorSupport, functions, styles, addStyleAlias, addStyleFunction, addStyle, addStyles, addStyleAliases } from './styles';
+import { functions, styles, addStyleAlias, addStyleFunction, addStyle, addStyles, addStyleAliases } from './styles';
 import { Crayon } from './types';
-import { getColorSupport } from './support';
 declare const optimizeStyles: (string: string) => string;
+export declare const reloadStyles: () => void;
+export declare const reloadFunctions: () => void;
 /**
  *
  * Main Crayon object used to chain styles:
@@ -25,6 +26,6 @@ declare const optimizeStyles: (string: string) => string;
  * console.log(warning('something failed'))
  * ```
  */
-declare const crayonInstance: Crayon;
-export { crayonInstance as crayon, addStyleFunction, getColorSupport, addStyleAliases, optimizeStyles, addStyleAlias, addStyles, addStyle, colorSupport, functions, styles, };
+declare const crayonInstance: Crayon<void>;
+export { addStyleFunction, addStyleAliases, optimizeStyles, addStyleAlias, addStyles, addStyle, functions, styles, };
 export default crayonInstance;
