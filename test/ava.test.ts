@@ -1,7 +1,7 @@
 import crayon from '@crayon.js/keywords'
 import test from 'ava'
-import { CrayonStyle } from 'crayon.js/lib/types'
-import { optimizeStyles } from '../lib/index'
+import { optimizeStyles } from '../lib/index.js'
+import { CrayonStyle } from '../lib/types'
 
 crayon.config.optimizeStyles = {
 	chain: true,
