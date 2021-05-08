@@ -1,8 +1,8 @@
 'use strict'
-import uglifyjs from 'uglify-js'
-import { existsSync, promises as fs } from 'fs'
-import { promisify } from 'util'
 import { exec as _exec } from 'child_process'
+import { existsSync, promises as fs } from 'fs'
+import uglifyjs from 'uglify-js'
+import { promisify } from 'util'
 const exec = promisify(_exec)
 
 let checksAmount = 0
@@ -14,7 +14,7 @@ let checkedFiles = {
 let dir = './'
 
 const commentRegex = /(\/\/.+\n)|(\/\*(.|\n)*\*\/)/g
-const importRegex = /import\s.+\sfrom\s("|'|`)((\.|\.\.)\/)+(.+(?<!\.js))\1/
+const importRegex = /import[\S\s]+?\s?from\s?("|'|`)((\.|\.\.)\/)+(.+(?<!\.js))\1/
 const exportsRegex = /exports\s?=.+(;|\s|$)/
 const jsFileRegex = /^.*.js*$/
 
