@@ -59,5 +59,3 @@ export const hslToRgb = (
 
 	return [f(0), f(8), f(4)]
 }
-
-exports = { rgbToAnsi4, rgbToAnsi8, hslToRgb, ansi8ToAnsi4, ansi4ToAnsi3 }

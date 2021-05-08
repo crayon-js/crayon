@@ -1,4 +1,4 @@
-import { functions, styles, addStyleAlias, addStyleFunction, addStyle, addStyles, addStyleAliases } from './styles';
+import { addStyle, addStyleAlias, addStyleAliases, addStyleFunction, addStyles, functions, styles } from './styles';
 import { Crayon } from './types';
 declare const optimizeStyles: (string: string) => string;
 export declare const reloadStyles: () => void;

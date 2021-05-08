@@ -1,5 +1,5 @@
-import { reloadFunctions, reloadStyles } from './index'
 import { ansi4ToAnsi3, ansi8ToAnsi4, hslToRgb, rgbToAnsi8 } from './conversions'
+import { reloadFunctions, reloadStyles } from './index'
 import { CrayonColorSupport, CrayonStyle, StyleObject } from './types'
 import { clamp, crayonError } from './util'
 

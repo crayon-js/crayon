@@ -1,12 +1,12 @@
 import {
+	addStyle,
+	addStyleAlias,
+	addStyleAliases,
+	addStyleFunction,
+	addStyles,
 	colorSupport,
 	functions,
 	styles,
-	addStyleAlias,
-	addStyleFunction,
-	addStyle,
-	addStyles,
-	addStyleAliases,
 } from './styles'
 import { Crayon, CrayonStyle } from './types'
 import { errorConfig } from './util'
