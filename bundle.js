@@ -156,7 +156,7 @@ const passOperation = (operation, reason) => {
 }
 
 const summary = () => {
-	const { passed, failed } = checkedFiles
+	const { passed } = checkedFiles
 	const passedAll = passed >= checksAmount
 	console.log(
 		`\t${' -'.repeat(12)}\n\t${

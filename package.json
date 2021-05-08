@@ -33,10 +33,7 @@
 		}
 	},
 	"denoify": {
-		"includes": [
-			"README.md",
-			"LICENSE.md"
-		]
+		"includes": []
 	},
 	"keywords": [
 		"typescript",
