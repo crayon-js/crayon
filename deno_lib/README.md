@@ -1,4 +1,4 @@
-<font size="6"><p align="center"><b>🖍️ Crayon.js</b></p></font>
+<font size="6"><p align="center"><b>🖍️ Crayon.js for 🦕 Deno</b></p></font>
 <hr />
 
 ## :books: About
@@ -15,9 +15,9 @@ Instead of straight up saying "use it, it's better" check yourself what meets yo
   * 🌈 8bit (256) and 24bit (16.7m) color support
   * 🌟 Emojis, really just bcs of that you should star this repo
 
-### Installation
-```bash
-npm install crayon.js #yarn add crayon.js
+### Usage
+```ts
+import crayon, {...} from 'https://deno.land/x/crayon/mod.ts'
 ```
 
 ### Wiki
