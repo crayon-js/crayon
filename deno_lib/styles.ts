@@ -166,11 +166,11 @@ export const addStyleFunction = (
 
 export const addStyleAlias = (
 	alias: string,
-	aliased: CrayonStyle & string
+	aliased: CrayonStyle | string
 ): boolean => {
-	const style = styles[aliased]
+	const style = styles[aliased as CrayonStyle]
 
-	if (style) {
+	if (!style) {
 		crayonError(`Could not find style "${aliased}"`)
 		return false
 	}
@@ -181,13 +181,13 @@ export const addStyleAlias = (
 }
 
 export const addStyleAliases = (aliases: {
-	[name: string]: CrayonStyle & string
+	[name: string]: CrayonStyle | string
 }): boolean => {
 	let status = true
 
 	for (let alias in aliases) {
 		const aliased = aliases[alias]
-		const style = styles[aliased]
+		const style = styles[aliased as CrayonStyle]
 
 		if (!style) {
 			crayonError(`Could not find style "${aliased}"`)

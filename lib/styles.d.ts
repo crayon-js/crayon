@@ -12,9 +12,9 @@ export declare const functions: {
 };
 export declare const styles: StyleObject;
 export declare const addStyleFunction: (name: string, func: (...any: any[]) => string) => boolean;
-export declare const addStyleAlias: (alias: string, aliased: CrayonStyle & string) => boolean;
+export declare const addStyleAlias: (alias: string, aliased: CrayonStyle | string) => boolean;
 export declare const addStyleAliases: (aliases: {
-    [name: string]: "black" | "red" | "green" | "yellow" | "blue" | "magenta" | "cyan" | "white" | "lightBlack" | "lightRed" | "lightGreen" | "lightYellow" | "lightBlue" | "lightMagenta" | "lightCyan" | "lightWhite" | "bgBlack" | "bgRed" | "bgGreen" | "bgYellow" | "bgBlue" | "bgMagenta" | "bgCyan" | "bgWhite" | "bgLightBlack" | "bgLightRed" | "bgLightGreen" | "bgLightYellow" | "bgLightBlue" | "bgLightMagenta" | "bgLightCyan" | "bgLightWhite" | "reset" | "bold" | "dim" | "italic" | "underline" | "blink" | "fastBlink" | "invert" | "hidden" | "strikethrough" | "boldOff" | "doubleUnderline" | "boldOrDimOff" | "italicOff" | "underlineOff" | "blinkOff" | "invertOff" | "hiddenOff" | "strikethroughOff";
+    [name: string]: string;
 }) => boolean;
 export declare const addStyle: (name: string, value: string) => boolean;
 export declare const addStyles: (styleObject: {
