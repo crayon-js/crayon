@@ -1,6 +1,15 @@
 import test from 'ava'
-import crayon, { optimizeStyles } from '../lib/index.js'
-import { CrayonStyle } from '../lib/types'
+import crayon, {
+	addStyle,
+	addStyleAlias,
+	addStyleAliases,
+	addStyleFunction,
+	addStyles,
+	functions,
+	optimizeStyles,
+	styles,
+} from '../lib/index.js'
+import { Crayon, CrayonStyle, StyleObject } from '../lib/types'
 
 crayon.config.optimizeStyles = {
 	chain: true,
@@ -149,27 +158,31 @@ test('literal functions', (t) => {
 
 test('hsl->8bit color conversion', (t) => {
 	crayon.config.colorSupport.trueColor = false
-	t.is(crayon.hsl(360, 50, 50)('test'), '\x1B[38;5;160mtest\x1B[0m')
+	t.is(crayon.hsl(360, 50, 50)('test'), '\x1B[38;5;167mtest\x1B[0m')
 	crayon.config.colorSupport.trueColor = true
 })
 
 test('rgb->8bit color conversion', (t) => {
 	crayon.config.colorSupport.trueColor = false
-	t.is(crayon.rgb(255, 127, 127)('test'), '\x1B[38;5;213mtest\x1B[0m')
+	t.is(crayon.rgb(255, 127, 127)('test'), '\x1B[38;5;210mtest\x1B[0m')
+	t.is(crayon.rgb(8, 15, 15)('test'), '\x1B[38;5;232mtest\x1B[0m')
+	t.is(crayon.rgb(7, 15, 15)('test'), '\x1B[38;5;16mtest\x1B[0m')
+	t.is(crayon.rgb(249, 249, 249)('test'), '\x1B[38;5;231mtest\x1B[0m')
 	crayon.config.colorSupport.trueColor = true
 })
 
 test('rgb->4bit color conversion', (t) => {
 	crayon.config.colorSupport.trueColor = false
 	crayon.config.colorSupport.highColor = false
-	t.is(crayon.rgb(255, 0, 255)('test'), '\x1B[35mtest\x1B[0m')
+	t.is(crayon.rgb(255, 0, 255)('test'), '\x1B[95mtest\x1B[0m')
+	t.is(crayon.rgb(128, 0, 0)('test'), '\x1B[31mtest\x1B[0m')
 	crayon.config.colorSupport.highColor = true
 	crayon.config.colorSupport.trueColor = true
 })
 
 test('8bit->4bit color conversion', (t) => {
 	crayon.config.colorSupport.highColor = false
-	t.is(crayon.ansi8(123)('test'), '\x1B[36mtest\x1B[0m')
+	t.is(crayon.ansi8(123)('test'), '\x1B[96mtest\x1B[0m')
 	crayon.config.colorSupport.highColor = true
 })
 
@@ -263,4 +276,86 @@ test('style optimizing', (t) => {
 	const unoptimizedLiteral = crayon`{red red {bgGreen green {bold bold} not bold} red}`
 
 	if (optimizeStyles(unoptimizedLiteral) === optimizedLiteral) t.pass()
+})
+
+test('extending crayon', (t) => {
+	t.is(
+		addStyleFunction('testFunction', () => 'works'),
+		true
+	)
+
+	const checkAlias = (alias: keyof StyleObject, aliased: keyof StyleObject) => {
+		if (typeof (styles as any)[alias] === 'string')
+			t.is(styles[alias], styles[aliased])
+		else t.fail()
+
+		t.is(extended[alias]('test'), crayon[aliased]('test'))
+	}
+
+	const extended: Crayon<
+		| 'testAlias'
+		| 'testAlias2'
+		| 'testAlias3'
+		| 'testStyle'
+		| 'testStyle2'
+		| 'testStyle3',
+		'testFunction'
+	> = crayon as any
+
+	if (typeof (functions as any).testFunction === 'function')
+		t.is((functions as any).testFunction(), 'works')
+	else t.fail()
+
+	t.is(extended.testFunction()('test'), 'workstest\x1b[0m')
+
+	t.is(addStyleAlias('testAlias', 'red'), true)
+	checkAlias('testAlias' as keyof StyleObject, 'red')
+
+	t.is(addStyleAlias('foo', 'bar'), false)
+
+	t.is(
+		addStyleAliases({
+			testAlias2: 'green',
+			testAlias3: 'bold',
+		}),
+		true
+	)
+
+	checkAlias('testAlias2' as keyof StyleObject, 'green')
+	checkAlias('testAlias3' as keyof StyleObject, 'bold')
+
+	t.is(
+		addStyleAliases({
+			foo: 'bar',
+		}),
+		false
+	)
+
+	t.is(addStyle('testStyle', 'foo'), true)
+	t.is(extended.testStyle('test'), 'footest\x1b[0m')
+
+	t.is(
+		addStyles({
+			testStyle2: 'bar',
+			testStyle3: 'box',
+		}),
+		true
+	)
+
+	t.is(extended.testStyle2('test'), 'bartest\x1b[0m')
+	t.is(extended.testStyle3('test'), 'boxtest\x1b[0m')
+
+	Object.defineProperty(styles, 'readOnly', {
+		value: 'sad',
+		writable: false,
+	})
+
+	t.is(
+		addStyles({
+			readOnly: 'test',
+		}),
+		false
+	)
+
+	t.is(addStyle('readOnly', 'test'), false)
 })

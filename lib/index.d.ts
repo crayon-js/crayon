@@ -1,5 +1,16 @@
 import { addStyle, addStyleAlias, addStyleAliases, addStyleFunction, addStyles, functions, styles } from './styles';
 import { Crayon } from './types';
+export declare const config: {
+    colorSupport: import("./types").CrayonColorSupport;
+    optimizeStyles: {
+        chain: boolean;
+        literal: boolean;
+    };
+    errors: {
+        throw: boolean;
+        log: boolean;
+    };
+};
 declare const optimizeStyles: (string: string) => string;
 export declare const reloadStyles: () => void;
 export declare const reloadFunctions: () => void;
@@ -26,6 +37,6 @@ export declare const reloadFunctions: () => void;
  * console.log(warning('something failed'))
  * ```
  */
-declare const crayonInstance: Crayon<void>;
+declare const crayonInstance: Crayon<void, void>;
 export { addStyleFunction, addStyleAliases, optimizeStyles, addStyleAlias, addStyles, addStyle, functions, styles, };
 export default crayonInstance;

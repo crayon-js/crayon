@@ -23,4 +23,5 @@ export const crayonError = (message: string) => {
 			}${message}${attributes.reset}`
 		)
 	if (errorConfig.throw) throw new Error(message)
+	return false
 }

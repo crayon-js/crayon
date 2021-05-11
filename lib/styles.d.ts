@@ -1,5 +1,4 @@
-import { CrayonColorSupport, CrayonStyle, StyleObject } from './types';
-export declare const colorSupport: CrayonColorSupport;
+import { CrayonStyle, StyleObject } from './types';
 export declare const functions: {
     keyword(k: CrayonStyle): string;
     ansi3(c: number, bg?: boolean | undefined): string;

@@ -1,17 +1,7 @@
 import { ansi4ToAnsi3, ansi8ToAnsi4, hslToRgb, rgbToAnsi8 } from './conversions'
-import { reloadFunctions, reloadStyles } from './index'
-import { CrayonColorSupport, CrayonStyle, StyleObject } from './types'
+import { config, reloadFunctions, reloadStyles } from './index'
+import { CrayonStyle, StyleObject } from './types'
 import { clamp, crayonError } from './util'
-
-export const colorSupport: CrayonColorSupport = new Proxy(
-	{
-		threeBitColor: true,
-		fourBitColor: true,
-		highColor: true,
-		trueColor: true,
-	},
-	{}
-)
 
 /** @internal */
 export const fourBitColors = {
@@ -82,19 +72,21 @@ export const functions = {
 	ansi3(c: number, bg?: boolean) {
 		if (typeof c !== 'number' || c > 7 || c < 0)
 			crayonError('Invalid usage of ansi3 function, syntax: 0-7')
-		if (!colorSupport.threeBitColor) return ''
+		if (!config.colorSupport.threeBitColor) return ''
 		return `\x1b[${(bg ? 40 : 30) + clamp(c, 0, 7)}m`
 	},
 	ansi4(c: number, bg?: boolean) {
 		if (typeof c !== 'number' || c > 15 || c < 0)
 			crayonError('Invalid usage of ansi4 function, syntax: 0-15')
-		if (!colorSupport.fourBitColor) return functions.ansi3(ansi4ToAnsi3(c), bg)
+		if (!config.colorSupport.fourBitColor)
+			return functions.ansi3(ansi4ToAnsi3(c), bg)
 		return `\x1b[${clamp(c, 0, 15) + (bg ? 10 : 0) + (c > 7 ? 82 : 30)}m`
 	},
 	ansi8(c: number, bg?: boolean) {
 		if (typeof c !== 'number' || c > 255 || c < 0)
 			crayonError('Invalid usage of ansi8 function, syntax: 0-255')
-		if (!colorSupport.highColor) return functions.ansi4(ansi8ToAnsi4(c), bg)
+		if (!config.colorSupport.highColor)
+			return functions.ansi4(ansi8ToAnsi4(c), bg)
 		return `\x1b[${bg ? 48 : 38};5;${clamp(c, 0, 255)}m`
 	},
 	rgb(r: number, g: number, b: number, bg?: boolean): string {
@@ -112,7 +104,8 @@ export const functions = {
 			crayonError(
 				'Invalid usage of rgb function, syntax: r: 0-255, g: 0-255, b: 0-255'
 			)
-		if (!colorSupport.trueColor) return functions.ansi8(rgbToAnsi8(r, g, b), bg)
+		if (!config.colorSupport.trueColor)
+			return functions.ansi8(rgbToAnsi8(r, g, b), bg)
 		return `\x1b[${bg ? 48 : 38};2;${r};${g};${b}m`
 	},
 	hsl(h: number, s: number, l: number, bg?: boolean): string {
@@ -131,7 +124,8 @@ export const functions = {
 				'Incorrect usage of hsl function, syntax: h: 0-360, s: 0-100, l: 0-100'
 			)
 		const rgb = hslToRgb(h, s, l)
-		if (!colorSupport.trueColor) return functions.ansi8(rgbToAnsi8(...rgb), bg)
+		if (!config.colorSupport.trueColor)
+			return functions.ansi8(rgbToAnsi8(...rgb), bg)
 		return functions.rgb(...rgb, bg)
 	},
 	hex(hex: string, ansi8?: boolean, bg?: boolean): string {
@@ -203,8 +197,8 @@ export const addStyleAliases = (aliases: {
 
 export const addStyle = (name: string, value: string): boolean => {
 	const status = Reflect.set(styles, name, value)
-	if (status) reloadStyles()
-	return status
+	if (status) return reloadStyles(), true
+	return crayonError(`Failed adding ${name} style`)
 }
 
 export const addStyles = (styleObject: { [name: string]: string }): boolean => {
@@ -213,7 +207,6 @@ export const addStyles = (styleObject: { [name: string]: string }): boolean => {
 		reloadStyles()
 		return true
 	} catch (err) {
-		crayonError(`Failed adding styles:\n${err}`)
-		return false
+		return crayonError(`Failed adding styles:\n${err}`)
 	}
 }

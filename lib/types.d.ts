@@ -1,4 +1,4 @@
-export declare type Crayon<T = void> = Function & CrayonInstanceCall<T> & CrayonStyles<T> & CrayonExtension<T> & CrayonFunction<T> & {
+export declare type Crayon<S = void, F = void> = Function & CrayonInstanceCall<S, F> & CrayonStyles<S, F> & CrayonStyleExtension<S, F> & CrayonFunctionExtension<S, F> & CrayonFunction<S, F> & {
     styleCache: string;
     preserveCache: boolean;
     config: {
@@ -13,18 +13,21 @@ export declare type Crayon<T = void> = Function & CrayonInstanceCall<T> & Crayon
         };
     };
 };
-declare type CrayonInstanceCall<T> = (() => Crayon<T>) & ((...args: unknown[]) => string);
-declare type CrayonExtension<T = void> = {
-    readonly [style in T extends string ? T : never]: ((...text: unknown[]) => string) & Crayon<T>;
+declare type CrayonInstanceCall<S, F> = (() => Crayon<S, F>) & ((...args: unknown[]) => string);
+declare type CrayonStyleExtension<S, F> = {
+    readonly [style in S extends string ? S : never]: ((...text: unknown[]) => string) & Crayon<S, F>;
 };
-export declare type CrayonStyles<T = void> = {
-    readonly [style in CrayonStyle]: ((...text: unknown[]) => string) & Crayon<T>;
+declare type CrayonFunctionExtension<S, F> = {
+    readonly [func in F extends string ? F : never]: (...args: any[]) => Crayon<S, F>;
 };
-export interface CrayonFunction<T = void> {
+export declare type CrayonStyles<S, F> = {
+    readonly [style in CrayonStyle]: ((...text: unknown[]) => string) & Crayon<S, F>;
+};
+export interface CrayonFunction<S, F> {
     /** Generates new independent crayon instance based on current one */
-    readonly clone: (clear: boolean, addCache?: string) => Crayon<T>;
+    readonly clone: (clear: boolean, addCache?: string) => Crayon<S, F>;
     /** Generates new independent crayon instance */
-    readonly instance: (preserveCache: boolean, styleCache?: string) => Crayon<T>;
+    readonly instance: (preserveCache: boolean, styleCache?: string) => Crayon<S, F>;
     /**
      *  Clears crayon instances cache and returns it
      *  * If `this.preserveCache` is set to true it does not clear cache though it still returns it
@@ -58,52 +61,52 @@ export interface CrayonFunction<T = void> {
      * console.log(strippedText) // returns raw "text" with no styling
      * ```
      */
-    readonly keyword: (keyword: CrayonStyle | T) => Crayon<T>;
-    readonly bgKeyword: (keyword: CrayonStyle | T) => Crayon<T>;
+    readonly keyword: (keyword: CrayonStyle | S) => Crayon<S, F>;
+    readonly bgKeyword: (keyword: CrayonStyle | S) => Crayon<S, F>;
     /**
      * Style text using HSL values
      *  * hue - number from 0 to 360
      *  * saturation, lightness - number from 0 to 100
      */
-    readonly hsl: (hue: number, saturation: number, lightness: number) => Crayon<T>;
-    /**
+    readonly hsl: (hue: number, saturation: number, lightness: number) => Crayon<S, F>;
+    /**ed to get true text length
      * Style text background using HSL values
      *  * hue - number from 0 to 360
      *  * saturation, lightness - number from 0 to 100
      */
-    readonly bgHsl: (hue: number, saturation: number, lightness: number) => Crayon<T>;
+    readonly bgHsl: (hue: number, saturation: number, lightness: number) => Crayon<S, F>;
     /**
      * Style text using RGB
      * * red, green, blue - number from 0 to 255
      */
-    readonly rgb: (red: number, green: number, blue: number) => Crayon<T>;
+    readonly rgb: (red: number, green: number, blue: number) => Crayon<S, F>;
     /**
      * Style text background using RGB
      * * red, green, blue - number from 0 to 255
      */
-    readonly bgRgb: (red: number, green: number, blue: number) => Crayon<T>;
+    readonly bgRgb: (red: number, green: number, blue: number) => Crayon<S, F>;
     /**
      * Style text using HEX
      *  * You can specify whether to explicitly color using 8bit color palette
      */
-    readonly hex: (hex: string, ansi8?: boolean) => Crayon<T>;
+    readonly hex: (hex: string, ansi8?: boolean) => Crayon<S, F>;
     /**
      * Style text background using HEX
      *  * You can specify whether to explicitly color using 8bit color palette
      */
-    readonly bgHex: (hex: string, ansi8?: boolean) => Crayon<T>;
+    readonly bgHex: (hex: string, ansi8?: boolean) => Crayon<S, F>;
     /**	Style text using 8bit (256) color palette */
-    readonly ansi8: (code: number) => Crayon<T>;
+    readonly ansi8: (code: number) => Crayon<S, F>;
     /**	Style text background using 8bit (256) color palette */
-    readonly bgAnsi8: (code: number) => Crayon<T>;
+    readonly bgAnsi8: (code: number) => Crayon<S, F>;
     /**	Style text using 4bit (16) color palette */
-    readonly ansi4: (code: number) => Crayon<T>;
+    readonly ansi4: (code: number) => Crayon<S, F>;
     /**	Style text background using 4bit (16) color palette */
-    readonly bgAnsi4: (code: number) => Crayon<T>;
+    readonly bgAnsi4: (code: number) => Crayon<S, F>;
     /**	Style text using 3bit (8) color palette */
-    readonly ansi3: (code: number) => Crayon<T>;
+    readonly ansi3: (code: number) => Crayon<S, F>;
     /**	Style text background using 3bit (8) color palette */
-    readonly bgAnsi3: (code: number) => Crayon<T>;
+    readonly bgAnsi3: (code: number) => Crayon<S, F>;
 }
 export interface CrayonColorSupport {
     trueColor: boolean;

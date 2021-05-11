@@ -3,28 +3,29 @@ import { clamp } from './util'
 export const ansi4ToAnsi3 = (code: number) => code % 8
 
 export const rgbToAnsi4 = (r: number, g: number, b: number): number => {
-	const value = Math.round(Math.max(r, g, b) / 255)
-	return value > 0
-		? (value === 1 ? 0 : -8) +
-				((Math.round(b / 255) << 2) |
-					(Math.round(g / 255) << 1) |
-					Math.round(r / 255))
-		: 0
+	const value = Math.round(Math.max(r, g, b) / 64)
+	return !value
+		? 0
+		: ((value >= 3 ? 8 : 0) + (Math.round(b / 255) << 2)) |
+				(Math.round(g / 255) << 1) |
+				Math.round(r / 255)
 }
 
 export const rgbToAnsi8 = (r: number, g: number, b: number): number => {
 	r = Math.round(r)
 	g = Math.round(g)
 	b = Math.round(b)
-	return Math.round(
-		r === g && b == g
-			? r < 8
-				? 16
-				: r > 248
-				? 231
-				: ((r - 8) / 247) * 24 + 232
-			: 36 * (r / 255) * 5 + 6 * (g / 255) * 5 + (b / 255) * 5 + 16
-	)
+
+	return r >> 4 === g >> 4 && g >> 4 === b >> 4
+		? r < 8
+			? 16
+			: r > 248
+			? 231
+			: Math.round(((r - 8) / 247) * 24) + 232
+		: 16 +
+				36 * Math.round((r / 255) * 5) +
+				6 * Math.round((g / 255) * 5) +
+				Math.round((b / 255) * 5)
 }
 
 // https://github.com/Qix-/color-convert/blob/master/conversions.js

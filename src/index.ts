@@ -4,7 +4,6 @@ import {
 	addStyleAliases,
 	addStyleFunction,
 	addStyles,
-	colorSupport,
 	functions,
 	styles,
 } from './styles'
@@ -18,9 +17,14 @@ type funcs = {
 	[name: string]: func
 }
 
-const config = new Proxy(
+export const config = new Proxy(
 	{
-		colorSupport,
+		colorSupport: {
+			highColor: true,
+			trueColor: true,
+			fourBitColor: true,
+			threeBitColor: true,
+		},
 		optimizeStyles: {
 			chain: false,
 			literal: false,
@@ -38,7 +42,6 @@ const crayonPrototype: any = {
 	preserveCache: false,
 
 	config,
-	colorSupport,
 
 	instance(preserveCache: boolean, styleCache?: string): Crayon {
 		return buildCrayon(preserveCache, styleCache)
