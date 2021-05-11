@@ -77,8 +77,6 @@
 		"ts-node": "^9.1.1",
 		"typescript": "^4.2.4",
 		"uglify-js": "^3.13.3",
-		"denoify": "^0.7.0",
-		"@crayon.js/color-support": "latest",
-		"@crayon.js/keywords": "latest"
+		"denoify": "^0.7.0"
 	}
 }
