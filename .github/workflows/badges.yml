@@ -7,3 +7,16 @@ on:
 jobs:
   badge:
     name: Generate badges
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 'Generate badges JSON'
+        run: 'npm run badges'
+
+      - name: 'Commit badges to repo'
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with: 
+          commit_message: "Update badges"
+          file_pattern: docs/badges
+          add_options: '-f'
+          push_options: '--force'
