@@ -44,10 +44,10 @@ const coverage = coveragePercentage / tests
 
 const color =
 	coverage >= 100
-		? 'brightgreen'
+		? 'lightgreen'
 		: colors[Math.round((coverage / 100) * (colors.length - 1))]
 
 fs.writeFile(
 	'./docs/badges/coverage.json',
-	generateBadgeJSON('coverage', coverage.toString(), color)
+	generateBadgeJSON('coverage', `${coverage}%`, color)
 )
