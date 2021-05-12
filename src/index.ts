@@ -37,7 +37,7 @@ export const config = new Proxy(
 const optimizeStyles = (string: string): string =>
 	string.replace(/(\x1b\[([0-9]|;|)+?m)+\x1b\[0m/, styles.reset) //TODO: improve that
 
-const crayonPrototype: any = {
+const crayonPrototype = {
 	styleCache: '',
 	preserveCache: false,
 

@@ -1,9 +1,15 @@
-export declare type Crayon<S = void, F = void> = Function &
+/**
+ * S - Styles extension (literal type)
+ * F - Functions extension (literal type)
+ * O - Object extension
+ */
+export declare type Crayon<S = void, F = void, O = void> = Function &
 	CrayonInstanceCall<S, F> &
 	CrayonStyles<S, F> &
 	CrayonStyleExtension<S, F> &
 	CrayonFunctionExtension<S, F> &
-	CrayonFunction<S, F> & {
+	CrayonFunction<S, F> &
+	O & {
 		styleCache: string
 		preserveCache: boolean
 
