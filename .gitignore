@@ -1,6 +1,9 @@
 .npmrc
 yarn.lock
+yarn-error.log
 package-lock.json
 node_modules
 .vscode
 coverage
+test-passed
+/docs/badges

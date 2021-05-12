@@ -1,0 +1,9 @@
+name: 'Badges'
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  badge:
+    name: Generate badges
