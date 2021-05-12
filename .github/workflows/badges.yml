@@ -30,7 +30,9 @@ jobs:
       - name: Commit badges to repo
         uses: stefanzweifel/git-auto-commit-action@v4
         with: 
+          branch: main
           commit_message: "Update badges"
           file_pattern: docs/badges/*
           add_options: "-f"
           push_options: "--force"
+          skip_dirty_check: true
