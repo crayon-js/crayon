@@ -21,13 +21,16 @@ jobs:
       - name: Install devDependencies
         run: npm install
 
-      - name: 'Generate badges JSON'
+      - name: Run tests
+        run: npm run test
+
+      - name: Generate badges JSON
         run: 'npm run badges'
 
-      - name: 'Commit badges to repo'
+      - name: Commit badges to repo
         uses: stefanzweifel/git-auto-commit-action@v4
         with: 
           commit_message: "Update badges"
-          file_pattern: docs/badges
-          add_options: '-f'
-          push_options: '--force'
+          file_pattern: "docs/badges"
+          add_options: "-f"
+          push_options: "--force"
