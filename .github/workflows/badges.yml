@@ -10,6 +10,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Setup repo
+        uses: actions/checkout@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - name: Install devDependencies
+        run: npm install
+
       - name: 'Generate badges JSON'
         run: 'npm run badges'
 
