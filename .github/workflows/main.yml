@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    name: Node ${{ matrix.node-ver }}
+    name: Node ${{ matrix.node-version }}
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -23,10 +23,10 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v2
         with:
-          node-version: ${{ matrix.node-ver }}
+          node-version: ${{ matrix.node-version }}
 
-      - name: Install Dev Dependencies
+      - name: Install devDependencies
         run: npm install
       
       - name: Run tests
-        run: npm run test && npm run coverage
+        run: npm run test
