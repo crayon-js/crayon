@@ -37,6 +37,6 @@ export declare const reloadFunctions: () => void;
  * console.log(warning('something failed'))
  * ```
  */
-declare const crayonInstance: Crayon<void, void>;
+declare const crayonInstance: Crayon<void, void, void>;
 export { addStyleFunction, addStyleAliases, optimizeStyles, addStyleAlias, addStyles, addStyle, functions, styles, };
 export default crayonInstance;

@@ -1,4 +1,9 @@
-export declare type Crayon<S = void, F = void> = Function & CrayonInstanceCall<S, F> & CrayonStyles<S, F> & CrayonStyleExtension<S, F> & CrayonFunctionExtension<S, F> & CrayonFunction<S, F> & {
+/**
+ * S - Styles extension (literal type)
+ * F - Functions extension (literal type)
+ * O - Object extension
+ */
+export declare type Crayon<S = void, F = void, O = void> = Function & CrayonInstanceCall<S, F, O> & CrayonStyles<S, F, O> & CrayonStyleExtension<S, F, O> & CrayonFunctionExtension<S, F, O> & CrayonFunction<S, F, O> & O & {
     styleCache: string;
     preserveCache: boolean;
     config: {
@@ -13,21 +18,21 @@ export declare type Crayon<S = void, F = void> = Function & CrayonInstanceCall<S
         };
     };
 };
-declare type CrayonInstanceCall<S, F> = (() => Crayon<S, F>) & ((...args: unknown[]) => string);
-declare type CrayonStyleExtension<S, F> = {
-    readonly [style in S extends string ? S : never]: ((...text: unknown[]) => string) & Crayon<S, F>;
+declare type CrayonInstanceCall<S, F, O> = (() => Crayon<S, F, O>) & ((...args: unknown[]) => string);
+declare type CrayonStyleExtension<S, F, O> = {
+    readonly [style in S extends string ? S : never]: ((...text: unknown[]) => string) & Crayon<S, F, O>;
 };
-declare type CrayonFunctionExtension<S, F> = {
-    readonly [func in F extends string ? F : never]: (...args: any[]) => Crayon<S, F>;
+declare type CrayonFunctionExtension<S, F, O> = {
+    readonly [func in F extends string ? F : never]: (...args: any[]) => Crayon<S, F, O>;
 };
-export declare type CrayonStyles<S, F> = {
-    readonly [style in CrayonStyle]: ((...text: unknown[]) => string) & Crayon<S, F>;
+export declare type CrayonStyles<S, F, O> = {
+    readonly [style in CrayonStyle]: ((...text: unknown[]) => string) & Crayon<S, F, O>;
 };
-export interface CrayonFunction<S, F> {
+export interface CrayonFunction<S, F, O> {
     /** Generates new independent crayon instance based on current one */
-    readonly clone: (clear: boolean, addCache?: string) => Crayon<S, F>;
+    readonly clone: (clear: boolean, addCache?: string) => Crayon<S, F, O>;
     /** Generates new independent crayon instance */
-    readonly instance: (preserveCache: boolean, styleCache?: string) => Crayon<S, F>;
+    readonly instance: (preserveCache: boolean, styleCache?: string) => Crayon<S, F, O>;
     /**
      *  Clears crayon instances cache and returns it
      *  * If `this.preserveCache` is set to true it does not clear cache though it still returns it
@@ -61,52 +66,52 @@ export interface CrayonFunction<S, F> {
      * console.log(strippedText) // returns raw "text" with no styling
      * ```
      */
-    readonly keyword: (keyword: CrayonStyle | S) => Crayon<S, F>;
-    readonly bgKeyword: (keyword: CrayonStyle | S) => Crayon<S, F>;
+    readonly keyword: (keyword: CrayonStyle | S) => Crayon<S, F, O>;
+    readonly bgKeyword: (keyword: CrayonStyle | S) => Crayon<S, F, O>;
     /**
      * Style text using HSL values
      *  * hue - number from 0 to 360
      *  * saturation, lightness - number from 0 to 100
      */
-    readonly hsl: (hue: number, saturation: number, lightness: number) => Crayon<S, F>;
+    readonly hsl: (hue: number, saturation: number, lightness: number) => Crayon<S, F, O>;
     /**ed to get true text length
      * Style text background using HSL values
      *  * hue - number from 0 to 360
      *  * saturation, lightness - number from 0 to 100
      */
-    readonly bgHsl: (hue: number, saturation: number, lightness: number) => Crayon<S, F>;
+    readonly bgHsl: (hue: number, saturation: number, lightness: number) => Crayon<S, F, O>;
     /**
      * Style text using RGB
      * * red, green, blue - number from 0 to 255
      */
-    readonly rgb: (red: number, green: number, blue: number) => Crayon<S, F>;
+    readonly rgb: (red: number, green: number, blue: number) => Crayon<S, F, O>;
     /**
      * Style text background using RGB
      * * red, green, blue - number from 0 to 255
      */
-    readonly bgRgb: (red: number, green: number, blue: number) => Crayon<S, F>;
+    readonly bgRgb: (red: number, green: number, blue: number) => Crayon<S, F, O>;
     /**
      * Style text using HEX
      *  * You can specify whether to explicitly color using 8bit color palette
      */
-    readonly hex: (hex: string, ansi8?: boolean) => Crayon<S, F>;
+    readonly hex: (hex: string, ansi8?: boolean) => Crayon<S, F, O>;
     /**
      * Style text background using HEX
      *  * You can specify whether to explicitly color using 8bit color palette
      */
-    readonly bgHex: (hex: string, ansi8?: boolean) => Crayon<S, F>;
+    readonly bgHex: (hex: string, ansi8?: boolean) => Crayon<S, F, O>;
     /**	Style text using 8bit (256) color palette */
-    readonly ansi8: (code: number) => Crayon<S, F>;
+    readonly ansi8: (code: number) => Crayon<S, F, O>;
     /**	Style text background using 8bit (256) color palette */
-    readonly bgAnsi8: (code: number) => Crayon<S, F>;
+    readonly bgAnsi8: (code: number) => Crayon<S, F, O>;
     /**	Style text using 4bit (16) color palette */
-    readonly ansi4: (code: number) => Crayon<S, F>;
+    readonly ansi4: (code: number) => Crayon<S, F, O>;
     /**	Style text background using 4bit (16) color palette */
-    readonly bgAnsi4: (code: number) => Crayon<S, F>;
+    readonly bgAnsi4: (code: number) => Crayon<S, F, O>;
     /**	Style text using 3bit (8) color palette */
-    readonly ansi3: (code: number) => Crayon<S, F>;
+    readonly ansi3: (code: number) => Crayon<S, F, O>;
     /**	Style text background using 3bit (8) color palette */
-    readonly bgAnsi3: (code: number) => Crayon<S, F>;
+    readonly bgAnsi3: (code: number) => Crayon<S, F, O>;
 }
 export interface CrayonColorSupport {
     trueColor: boolean;
