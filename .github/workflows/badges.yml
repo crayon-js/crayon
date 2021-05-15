@@ -31,7 +31,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: badges
-          path: docs/badges/*
+          path: *-badge.svg
           if-no-files-found: error
       
       - name: Commit badges
