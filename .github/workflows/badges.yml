@@ -24,15 +24,22 @@ jobs:
       - name: Run tests
         run: npm run test
 
-      - name: Generate badges JSON
-        run: 'npm run badges'
+      - name: Generate badges SVG
+        run: npm run badges
 
-      - name: Commit badges to repo
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with: 
-          branch: main
-          commit_message: "Update badges"
-          file_pattern: docs/badges/*
-          add_options: "-f"
-          push_options: "--force"
-          skip_dirty_check: true
+      - name: Upload badges as artifact
+        uses: actions/upload-artifact@v2
+          with:
+            name: badges
+            path: docs/badges/*
+            if-no-files-found: error
+      
+      - name: Commit badges
+        continue-on-error: true
+        run: |
+          git add docs/badges/*
+          git commit -m "Update badges"
+        
+      - name: Push badges commit
+        if: ${{ success() }}
+        run: git push https://$GITHUB_ACTOR:$secrets.GITHUB_TOKEN@github.com/$REPOSITORY.git HEAD:badges

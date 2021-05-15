@@ -1,14 +1,7 @@
-import { existsSync, promises as fs } from 'fs'
+import { createWriteStream, existsSync, PathLike, promises as fs } from 'fs'
+import https from 'https'
 
 const colors = ['red', 'orange', 'yellowgreen', 'green']
-
-const generateBadgeJSON = (label: string, message: string, color: string) =>
-	JSON.stringify({
-		schemaVersion: 1,
-		label,
-		message,
-		color,
-	})
 
 if (!existsSync('./docs')) await fs.mkdir('./docs')
 if (!existsSync('./docs/badges')) await fs.mkdir('./docs/badges')
@@ -19,13 +12,11 @@ const testsPassed =
 		.readFile('./test-passed')
 		.then((buffer) => JSON.parse(buffer.toString())))
 
-fs.writeFile(
-	'./docs/badges/tests.json',
-	generateBadgeJSON(
-		'tests',
-		testsPassed ? 'passing' : 'failing',
-		testsPassed ? 'lightgreen' : 'red'
-	)
+const testsColor = testsPassed ? 'lightgreen' : 'red'
+const testsMessage = testsPassed ? 'passing' : 'failing'
+
+const testsBadge = encodeURI(
+	`https://img.shields.io/badge/tests-${testsMessage}-${testsColor}`
 )
 
 const coverageSummary = JSON.parse(
@@ -42,12 +33,27 @@ for (const test in coverageSummary.total) {
 
 const coverage = coveragePercentage / tests
 
-const color =
+const coverageColor =
 	coverage >= 100
 		? 'lightgreen'
 		: colors[Math.round((coverage / 100) * (colors.length - 1))]
 
-fs.writeFile(
-	'./docs/badges/coverage.json',
-	generateBadgeJSON('coverage', `${coverage}%`, color)
+const coverageBadge = encodeURI(
+	`https://img.shields.io/badge/coverage-${coverage}%-${coverageColor}`
 )
+
+const download = (url: string, dest: PathLike) =>
+	new Promise<void>((resolve, reject) => {
+		const file = createWriteStream(dest)
+		https.get(url, (response) => {
+			response.pipe(file)
+			file.on('finish', () => {
+				file.close()
+				resolve()
+			})
+			file.on('error', reject)
+		})
+	})
+
+download(coverageBadge, './docs/badges/coverage.svg')
+download(testsBadge, './docs/badges/tests.svg')
