@@ -39,13 +39,8 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
+          git checkout --orphan badges
+          git rm --cached $(git ls-files)
           git add docs/badges/* -f
           git commit -m "Update badges"
-        
-      - name: Push badge commit
-        uses: ad-m/github-push-action@master
-        if: ${{ success() }}
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: badges
-          force: true
+          git push origin badges
