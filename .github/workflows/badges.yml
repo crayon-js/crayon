@@ -41,6 +41,6 @@ jobs:
           git config --local user.name "GitHub Action"
           git checkout --orphan badges
           git rm --cached $(git ls-files)
-          git add docs/badges/* -f
+          git add *-badge.svg -f
           git commit -m "Update badges"
           git push origin badges

@@ -3,9 +3,6 @@ import https from 'https'
 
 const colors = ['red', 'orange', 'yellowgreen', 'green']
 
-if (!existsSync('./docs')) await fs.mkdir('./docs')
-if (!existsSync('./docs/badges')) await fs.mkdir('./docs/badges')
-
 const testsPassed =
 	existsSync('./test-passed') &&
 	(await fs
@@ -55,5 +52,5 @@ const download = (url: string, dest: PathLike) =>
 		})
 	})
 
-download(coverageBadge, './docs/badges/coverage.svg')
-download(testsBadge, './docs/badges/tests.svg')
+download(coverageBadge, './coverage-badge.svg')
+download(testsBadge, './coverage-badge.svg')
