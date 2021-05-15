@@ -1,7 +1,9 @@
-name: 'Badges'
+name: Badges
 
 on:
   push:
+    branches: [main]
+  pull_request:
     branches: [main]
 
 jobs:
