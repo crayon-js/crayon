@@ -45,4 +45,4 @@ jobs:
           git rm --cached $(git ls-files)
           git add *-badge.svg -f
           git commit -m "Update badges"
-          git push origin badges
+          git push origin badges --force
