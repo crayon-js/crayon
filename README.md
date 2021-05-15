@@ -1,5 +1,9 @@
-![Tests](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/crayon-js/crayon/main/docs/badges/tests.json)
-![Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/crayon-js/crayon/main/docs/badges/coverage.json)
+[![Tests](https://raw.githubusercontent.com/crayon-js/crayon/badges/tests-badge.svg)](
+  https://github.com/crayon-js/crayon/actions
+)
+[![Coverage](https://raw.githubusercontent.com/crayon-js/crayon/badges/coverage-badge.svg)](
+  https://github.com/crayon-js/crayon/blob/main/test/ava.test.ts
+)
 
 <font size="6"><p align="center"><b>🖍️ Crayon.js</b></p></font>
 <hr />
