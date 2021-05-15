@@ -40,6 +40,9 @@ jobs:
           git add docs/badges/*
           git commit -m "Update badges"
         
-      - name: Push badges commit
+      - name: Push badge commit
+        uses: ad-m/github-push-action@master
         if: ${{ success() }}
-        run: git push https://$GITHUB_ACTOR:$secrets.GITHUB_TOKEN@github.com/$REPOSITORY.git HEAD:badges
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: badges
