@@ -74,7 +74,7 @@ export interface CrayonFunction<S, F, O> {
      *  * saturation, lightness - number from 0 to 100
      */
     readonly hsl: (hue: number, saturation: number, lightness: number) => Crayon<S, F, O>;
-    /**ed to get true text length
+    /**
      * Style text background using HSL values
      *  * hue - number from 0 to 360
      *  * saturation, lightness - number from 0 to 100
