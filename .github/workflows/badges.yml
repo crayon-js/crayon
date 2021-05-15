@@ -33,7 +33,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: badges
-          path: /*-badge.svg
+          path: "*-badge.svg"
           if-no-files-found: error
       
       - name: Commit badges

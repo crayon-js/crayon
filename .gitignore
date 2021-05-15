@@ -6,4 +6,4 @@ node_modules
 .vscode
 coverage
 test-passed
-/docs/badges
+*-badge.svg

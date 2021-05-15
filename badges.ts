@@ -53,4 +53,4 @@ const download = (url: string, dest: PathLike) =>
 	})
 
 download(coverageBadge, './coverage-badge.svg')
-download(testsBadge, './coverage-badge.svg')
+download(testsBadge, './tests-badge.svg')
