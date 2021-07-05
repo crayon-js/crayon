@@ -68,7 +68,7 @@
 	],
 	"devDependencies": {
 		"@ava/typescript": "^1.1.1",
-		"@types/node": "^15.0.2",
+		"@types/node": "^16.0.0",
 		"@types/uglify-js": "^3.13.0",
 		"@typescript-eslint/eslint-plugin": "^4.21.0",
 		"@typescript-eslint/parser": "^4.21.0",
