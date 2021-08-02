@@ -3,6 +3,7 @@ import {
 	addStyleAlias,
 	addStyleAliases,
 	addStyleFunction,
+	addStyleFunctions,
 	addStyles,
 	functions,
 	styles,
@@ -236,11 +237,12 @@ const crayonInstance = buildCrayon(false)
 
 export {
 	addStyleFunction,
-	addStyleAliases,
-	optimizeStyles,
+	addStyleFunctions,
 	addStyleAlias,
-	addStyles,
+	addStyleAliases,
 	addStyle,
+	addStyles,
+	optimizeStyles,
 	functions,
 	styles,
 }

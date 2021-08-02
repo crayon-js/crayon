@@ -158,6 +158,20 @@ export const addStyleFunction = (
 	return status
 }
 
+export const addStyleFunctions = (funcs: {
+	[name: string]: (...any: any[]) => string
+}): boolean => {
+	let status = false
+
+	for (const name in funcs) {
+		const func = funcs[name]
+		status ||= Reflect.set(functions, name, func)
+	}
+
+	if (status) reloadStyles()
+	return status
+}
+
 export const addStyleAlias = (
 	alias: string,
 	aliased: CrayonStyle | string
@@ -177,18 +191,15 @@ export const addStyleAlias = (
 export const addStyleAliases = (aliases: {
 	[name: string]: CrayonStyle | string
 }): boolean => {
-	let status = true
+	let status = false
 
-	for (let alias in aliases) {
+	for (const alias in aliases) {
 		const aliased = aliases[alias]
 		const style = styles[aliased as CrayonStyle]
 
-		if (!style) {
-			crayonError(`Could not find style "${aliased}"`)
-			status = false
-		}
+		if (!style) crayonError(`Could not find style "${aliased}"`)
 
-		status &&= Reflect.set(styles, alias, style)
+		status ||= Reflect.set(styles, alias, style)
 	}
 
 	if (status) reloadStyles()
