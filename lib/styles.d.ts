@@ -11,6 +11,9 @@ export declare const functions: {
 };
 export declare const styles: StyleObject;
 export declare const addStyleFunction: (name: string, func: (...any: any[]) => string) => boolean;
+export declare const addStyleFunctions: (funcs: {
+    [name: string]: (...any: any[]) => string;
+}) => boolean;
 export declare const addStyleAlias: (alias: string, aliased: CrayonStyle | string) => boolean;
 export declare const addStyleAliases: (aliases: {
     [name: string]: string;

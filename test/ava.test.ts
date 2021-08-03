@@ -4,6 +4,7 @@ import crayon, {
 	addStyleAlias,
 	addStyleAliases,
 	addStyleFunction,
+	addStyleFunctions,
 	addStyles,
 	functions,
 	optimizeStyles,
@@ -284,34 +285,52 @@ test('extending crayon', (t) => {
 		true
 	)
 
-	const checkAlias = (alias: keyof StyleObject, aliased: keyof StyleObject) => {
-		if (typeof (styles as any)[alias] === 'string')
-			t.is(styles[alias], styles[aliased])
-		else t.fail()
+	t.is(
+		addStyleFunctions({
+			testFunction2() {
+				return 'works'
+			},
+		}),
+		true
+	)
+
+	const checkAlias = (
+		alias: string | keyof StyleObject,
+		aliased: string | keyof StyleObject
+	) => {
+		if (typeof styles?.[alias as keyof StyleObject] === 'string')
+			t.is(
+				styles[alias as keyof StyleObject],
+				styles[aliased as keyof StyleObject]
+			)
+		else t.fail(`Failed at: checkAlias(${alias}, ${aliased})`)
 
 		t.is(extended[alias]('test'), crayon[aliased]('test'))
 	}
 
-	const extended: Crayon<
+	const extended = crayon as any as Crayon<
 		| 'testAlias'
 		| 'testAlias2'
 		| 'testAlias3'
 		| 'testStyle'
 		| 'testStyle2'
 		| 'testStyle3',
-		'testFunction'
-	> = crayon as any
+		'testFunction' | 'testFunction2'
+	>
 
 	if (typeof (functions as any).testFunction === 'function')
 		t.is((functions as any).testFunction(), 'works')
 	else t.fail()
 
+	if (typeof (functions as any).testFunction2 === 'function')
+		t.is((functions as any).testFunction2(), 'works')
+	else t.fail()
+
 	t.is(extended.testFunction()('test'), 'workstest\x1b[0m')
+	t.is(extended.testFunction2()('test'), 'workstest\x1b[0m')
 
 	t.is(addStyleAlias('testAlias', 'red'), true)
-	checkAlias('testAlias' as keyof StyleObject, 'red')
-
-	t.is(addStyleAlias('foo', 'bar'), false)
+	checkAlias('testAlias', 'red')
 
 	t.is(
 		addStyleAliases({
@@ -321,9 +340,10 @@ test('extending crayon', (t) => {
 		true
 	)
 
-	checkAlias('testAlias2' as keyof StyleObject, 'green')
-	checkAlias('testAlias3' as keyof StyleObject, 'bold')
+	checkAlias('testAlias2', 'green')
+	checkAlias('testAlias3', 'bold')
 
+	t.is(addStyleAlias('foo', 'bar'), false)
 	t.is(
 		addStyleAliases({
 			foo: 'bar',

@@ -1,4 +1,4 @@
-import { addStyle, addStyleAlias, addStyleAliases, addStyleFunction, addStyles, functions, styles } from './styles';
+import { addStyle, addStyleAlias, addStyleAliases, addStyleFunction, addStyleFunctions, addStyles, functions, styles } from './styles';
 import { Crayon } from './types';
 export declare const config: {
     colorSupport: import("./types").CrayonColorSupport;
@@ -38,5 +38,5 @@ export declare const reloadFunctions: () => void;
  * ```
  */
 declare const crayonInstance: Crayon<void, void, void>;
-export { addStyleFunction, addStyleAliases, optimizeStyles, addStyleAlias, addStyles, addStyle, functions, styles, };
+export { addStyleFunction, addStyleFunctions, addStyleAlias, addStyleAliases, addStyle, addStyles, optimizeStyles, functions, styles, };
 export default crayonInstance;
