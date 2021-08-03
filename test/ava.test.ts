@@ -365,6 +365,23 @@ test('extending crayon', (t) => {
 	t.is(extended.testStyle2('test'), 'bartest\x1b[0m')
 	t.is(extended.testStyle3('test'), 'boxtest\x1b[0m')
 
+	Object.defineProperty(functions, 'readOnly', {
+		value: () => 'sad',
+		writable: false,
+	})
+
+	t.is(
+		addStyleFunctions({
+			readOnly: () => 'happy',
+		}),
+		false
+	)
+
+	t.is(
+		addStyleFunction('readOnly', () => 'happy'),
+		false
+	)
+
 	Object.defineProperty(styles, 'readOnly', {
 		value: 'sad',
 		writable: false,
