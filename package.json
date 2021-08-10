@@ -74,7 +74,7 @@
 		"@typescript-eslint/parser": "^4.21.0",
 		"ava": "^3.15.0",
 		"c8": "^7.7.1",
-		"denoify": "^0.7.0",
+		"denoify": "^0.8.0",
 		"eslint": "^7.23.0",
 		"ts-node": "^10.0.0",
 		"typescript": "^4.2.4",
