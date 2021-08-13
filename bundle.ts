@@ -1,6 +1,7 @@
 'use strict'
 import { exec as _exec } from 'child_process'
 import { existsSync, promises as fs } from 'fs'
+import { Dirent } from 'node:fs'
 import uglifyjs from 'uglify-js'
 import { promisify } from 'util'
 const exec = promisify(_exec)
@@ -89,7 +90,7 @@ fs
 		console.log(`\t ${crossmark} Failed loading tsconfig.json file:\n`, error)
 	})
 
-const minifyFile = async (file) => {
+const minifyFile = async (file: Dirent) => {
 	const fileDir = `${dir}/${file.name}`
 
 	let fileContent = (await fs.readFile(fileDir)).toString()
