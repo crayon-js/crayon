@@ -2,7 +2,7 @@
 <hr />
 
 ## :books: About
-##### Crayon.js is **one of the best**<sup><sup>[1](https://github.com/crayon-js/crayon/wiki/Comparison)</sup></sup> performing terminal styling module. Additionaly written in TypeScript.
+##### Crayon is **one of the best**<sup><sup>[1](https://github.com/crayon-js/crayon/wiki/Comparison)</sup></sup> performing terminal styling module. Additionaly written in TypeScript.
 
 Instead of straight up saying "use it, it's better" check yourself what meets your requirements.
 
