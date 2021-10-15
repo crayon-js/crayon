@@ -70,7 +70,7 @@
 		"@ava/typescript": "^2.0.0",
 		"@types/node": "^16.0.0",
 		"@types/uglify-js": "^3.13.0",
-		"@typescript-eslint/eslint-plugin": "^4.21.0",
+		"@typescript-eslint/eslint-plugin": "^5.0.0",
 		"@typescript-eslint/parser": "^4.21.0",
 		"ava": "^3.15.0",
 		"c8": "^7.7.1",
