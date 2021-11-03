@@ -67,7 +67,7 @@
 		"lib"
 	],
 	"devDependencies": {
-		"@ava/typescript": "^2.0.0",
+		"@ava/typescript": "^3.0.0",
 		"@types/node": "^16.0.0",
 		"@types/uglify-js": "^3.13.0",
 		"@typescript-eslint/eslint-plugin": "^5.0.0",
