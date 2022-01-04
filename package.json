@@ -72,7 +72,7 @@
 		"@types/uglify-js": "^3.13.0",
 		"@typescript-eslint/eslint-plugin": "^5.0.0",
 		"@typescript-eslint/parser": "^5.0.0",
-		"ava": "^3.15.0",
+		"ava": "^4.0.0",
 		"c8": "^7.7.1",
 		"denoify": "^0.10.4",
 		"eslint": "^8.0.1",
