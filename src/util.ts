@@ -1,27 +1,18 @@
-import { attributes, fourBitColors } from './styles'
-import { Crayon } from './types'
-
-/** @internal */
-export const clamp = (num: number, min: number, max: number) =>
-	Math.min(Math.max(num, min), max)
-
-/** @internal */
-export const errorConfig: Crayon['config']['errors'] = new Proxy(
-	{
-		log: true,
-		throw: false,
-	},
-	{}
-)
-
-/** @internal */
-export const crayonError = (message: string) => {
-	if (errorConfig.log)
-		console.log(
-			`[${fourBitColors.red + attributes.bold}crayon${attributes.reset}] ${
-				fourBitColors.yellow
-			}${message}${attributes.reset}`
-		)
-	if (errorConfig.throw) throw new Error(message)
-	return false
+export function clamp(value: number, min: number, max: number): number {
+  return Math.max(Math.min(value, max), min);
 }
+
+export function capitalize<A extends string>(text: A): Capitalize<A> {
+  return (text[0].toUpperCase() + text.slice(1)) as Capitalize<A>;
+}
+
+export type GetMapKeys<M extends Map<unknown, unknown>> = Parameters<
+  M["set"]
+>[0];
+
+export type GetMapValues<M extends Map<unknown, unknown>> = Parameters<
+  M["set"]
+>[1];
+
+// deno-lint-ignore no-explicit-any
+export type AnyFunction = ((...args: any[]) => any);
