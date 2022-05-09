@@ -5,7 +5,7 @@ import {
   rgbToAnsi8,
 } from "./conversions.ts";
 import { colorSupport } from "./crayon.ts";
-import { clamp, GetMapKeys } from "./util.ts";
+import { GetMapKeys } from "./util.ts";
 
 /** ANSI escape code */
 export type StyleCode =
@@ -36,6 +36,8 @@ export type Color =
 
 /** Map containing all 4bit colors */
 export const colors = new Map<Color, StyleCode>();
+
+// Generate colors from baseColors
 for (const [i, color] of baseColors.entries()) {
   const capitalized = color[0].toUpperCase() + color.slice(1) as Capitalize<
     typeof color
@@ -47,7 +49,7 @@ for (const [i, color] of baseColors.entries()) {
   colors.set(`bgLight${capitalized}`, `\x1b[${100 + i}m`);
 }
 
-/** Map containing attributes */
+/** Map containing all supported attributes */
 export const attributes = new Map(
   [
     ["reset", "\x1b[0m"],
@@ -72,53 +74,89 @@ export const attributes = new Map(
   ] as const,
 );
 
-/** Names for all supported attributes */
+/** All supported attributes */
 export type Attribute = GetMapKeys<typeof attributes>;
 
+/** Every possible style */
 export type Style = Attribute | Color;
 
-export function keyword(style: Style): string {
-  return (colors.get(style as Color) ?? attributes.get(style as Attribute))!;
+/**
+ * Retrieve style using string
+ * @param style - map key
+ */
+export function keyword(style: Style): StyleCode;
+export function keyword(style: string): StyleCode | undefined;
+export function keyword(style: string | Style): StyleCode | undefined {
+  return colors.get(style as Color) ?? attributes.get(style as Attribute);
 }
 
-export function ansi3(code: number, bg?: boolean): string {
-  if (colorSupport.threeBitColor) return "";
-  return `\x1b[${bg ? 40 : 30 + clamp(code, 0, 7)}m`;
+/** Generate StyleCode from 3bit (8) color pallete */
+export function ansi3(code: number, bg?: boolean): StyleCode {
+  if (code > 7 || code < 0) {
+    throw new Error("ansi3 function code has to be within 0 and 7");
+  }
+  if (!colorSupport.threeBitColor) return "";
+  return `\x1b[${bg ? 40 : 30 + ~~code}m`;
 }
 
-export function ansi4(code: number, bg?: boolean): string {
-  if (colorSupport.fourBitColor) return ansi3(ansi4ToAnsi3(code), bg);
-  return `\x1b[${bg ? 10 : 0 + code > 7 ? 82 : 30 + clamp(code, 0, 15)}m`;
+/** Generate StyleCode from 4bit (16) color pallete */
+export function ansi4(code: number, bg?: boolean): StyleCode {
+  if (code > 15 || code < 0) {
+    throw new Error("ansi4 function code has to be within 0 and 15");
+  }
+  if (!colorSupport.fourBitColor) return ansi3(ansi4ToAnsi3(code), bg);
+  return `\x1b[${((bg ? 10 : 0) + (code > 7 ? 82 : 30)) + ~~code}m`;
 }
 
-export function ansi8(code: number, bg?: boolean): string {
-  if (colorSupport.highColor) return ansi4(ansi8ToAnsi4(code), bg);
-  return `\x1b[${bg ? 48 : 38};5;${clamp(code, 0, 255)}m`;
+/** Generate StyleCode from 8bit (256) color pallete */
+export function ansi8(code: number, bg?: boolean): StyleCode {
+  if (code > 255 || code < 0) {
+    throw new Error("ansi8 function code has to be within 0 and 255");
+  }
+  if (!colorSupport.highColor) return ansi4(ansi8ToAnsi4(code), bg);
+  return `\x1b[${bg ? 48 : 38};5;${~~code}m`;
 }
 
-export function rgb(r: number, g: number, b: number, bg?: boolean): string {
+/** Generate StyleCode from RGB values - 24bit (16.7m) color pallete */
+export function rgb(r: number, g: number, b: number, bg?: boolean): StyleCode {
+  if (Math.max(r, g, b) > 255 || Math.min(r, g, b) < 0) {
+    throw new Error(
+      "rgb function's r, g and b parameters have to have values between 0 and 255",
+    );
+  }
   if (!colorSupport.trueColor) return ansi8(rgbToAnsi8(r, g, b), bg);
-  return `\x1b[${bg ? 48 : 38};2;${r};${g};${b}m`;
+  return `\x1b[${bg ? 48 : 38};2;${~~r};${~~g};${~~b}m`;
 }
 
-export function hsl(h: number, s: number, l: number, bg?: boolean): string {
+/** Generate StyleCode from HSL values - 24bit (16.7m) color pallete */
+export function hsl(h: number, s: number, l: number, bg?: boolean): StyleCode {
+  if (h > 360 || Math.max(s, l) > 100 || Math.min(h, s, l) < 0) {
+    throw new Error(
+      "hsl function's h parameter can have values between 0 and 360, s and l parameters have to have values between 0 and 100",
+    );
+  }
   return rgb(...hslToRgb(h, s, l), bg);
 }
 
-export function hex(value: string | number, bg?: boolean): string {
-  if (typeof value === "number") {
-    return rgb(0xff & (value >> 16), 0xff & (value >> 8), 0xff & value, bg);
+/**
+ * Generate StyleCode from HEX value - 24bit (16.7m) color pallete
+ * @example
+ * ```ts
+ * hex(0xFF3060); // <- this is faster
+ * hex("#FF3060");
+ * ```
+ */
+export function hex(value: string | number, bg?: boolean): StyleCode {
+  let hexNum: number = value as number;
+
+  if (typeof value !== "number" && isNaN(hexNum)) {
+    hexNum = parseInt(value.slice(1), 16);
+    if (isNaN(hexNum)) {
+      throw new Error(
+        `Invalid HEX value: "${value}", e.g. expected string - "#ABCDEF" / "#abcdef" or number - 0xABCDEF`,
+      );
+    }
   }
 
-  if (/(#?)([0-F]|[0-f]){6}/.test(value)) {
-    const chunks = value.replace("#", "").match(/.{2}/g);
-    return rgb(
-      ...chunks!.map((v) => parseInt(v, 16)) as [number, number, number],
-      bg,
-    );
-  }
-
-  throw new Error(
-    `Invalid HEX value: "${value}", e.g. expected string - "#ABCDEF" or number - 0xABCDEF`,
-  );
+  return rgb(0xff & (hexNum >> 16), 0xff & (hexNum >> 8), 0xff & hexNum, bg);
 }
