@@ -1,0 +1,22 @@
+{
+  "fmt": {
+    "files": {
+      "exclude": ["node"]
+    }
+  },
+  "lint": {
+    "files": {
+      "exclude": ["node"]
+    },
+    "rules": {
+      "exclude": ["no-control-regex"]
+    }
+  },
+  "tasks": {
+    "test": "deno test --fail-fast=1 --ignore=node --allow-read=./src/extensions/literal.ts",
+    "test-watch": "deno test --watch --fail-fast=1 --ignore=node",
+    "bench": "deno bench --unstable --ignore=node --allow-env",
+    "bench-watch": "deno bench --unstable --watch --ignore=node --allow-env",
+    "prepare-node": "deno run --allow-env=HOME,DENO_AUTH_TOKENS,XDG_CACHE_HOME,DENO_DIR --allow-read --allow-write=./node,$HOME/.cache/deno --allow-run=npm scripts/dnt.ts"
+  }
+}
