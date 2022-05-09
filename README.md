@@ -1,37 +1,35 @@
-[![Tests](https://raw.githubusercontent.com/crayon-js/crayon/badges/tests-badge.svg)](
-  https://github.com/crayon-js/crayon/actions
-)
-[![Coverage](https://raw.githubusercontent.com/crayon-js/crayon/badges/coverage-badge.svg)](
-  https://github.com/crayon-js/crayon/blob/main/test/ava.test.ts
-)
+<!--  TODO: Badges -->
 
-<font size="6"><p align="center"><b>🖍️ Crayon.js</b></p></font>
-<hr />
+<h1 align="center">🖍️ Crayon.js</h1>
 
-## :books: About
-##### Crayon.js is **one of the best**<sup><sup>[1](https://github.com/crayon-js/crayon/wiki/Comparison)</sup></sup> performing terminal styling package. Additionaly written in TypeScript.
+## 📚 About
 
-Instead of straight up saying "use it, it's better" check yourself what meets your requirements.
+Crayon is terminal styling module written in Typescript.
 
-#### 🖍️ Crayon.js has:
-  * ⚡ High performance
-  * 📦 No dependencies
-  * ⏱️ Low import times
-  * 🦄 Automatic color support detection & fallbacking
-  * 🔗 Supported nesting & chaining
-  * 🌈 8bit (256) and 24bit (16.7m) color support
-  * 🌟 Emojis, really just bcs of that you should star this repo
+From the ground up its goals is to be fast, relatively lightweight and modular.
 
-### Installation
-```bash
-npm install crayon.js #yarn add crayon.js
-```
+#### 🖍️ Crayon.js offers:
 
-### Wiki
-To learn more about Crayon and its API look [here](https://github.com/crayon-js/crayon/wiki)
+- ⚡ **High performance**
+- 📦 No dependencies
+- 🧑‍💻 Good code quality
+- 🗑️ Modularity (no unnecessary code)
+- 🧐 Familiar API (chalk-like)
+- 🦄 Automatic color fallbacking
+  - 🎨 Automatic color detection via `color_support` extension
+- 🔗 Supported nesting & chaining
+- 🪢 Not extending `String.prototype`
+- 🌈 24bit (16.7m - truecolor) and 8bit (256 - highcolor) color support
 
-## :handshake: Contributing
-#### Feel free to add any commits, issues and pull requests
+## 🤝 Contributing
 
-## :memo: Licensing
-#### This project is available under MIT License conditions.
+**Crayon** is open for any contributions. <br />
+If you feel like you can enhance this project - please open an issue and/or pull request. <br />
+Code should be well document and easy to follow what's going on.
+
+Since the start of developement on **Crayon 3.0** this project follows [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) spec. <br />
+If your pull request's code could introduce understandability trouble, please add comments to it.
+
+## 📝 Licensing
+
+This project is available under **MIT** License conditions.
