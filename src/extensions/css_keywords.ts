@@ -1,4 +1,4 @@
-import { generateCrayon, mapPrototypeStyles } from "../crayon.ts";
+import { buildCrayon, Crayon, mapPrototypeStyles } from "../crayon.ts";
 import { GetMapKeys } from "../util.ts";
 
 export type CssKeywords = GetMapKeys<typeof cssKeywords>;
@@ -280,4 +280,4 @@ export const cssKeywords = new Map(
 );
 
 mapPrototypeStyles(cssKeywords);
-export const crayon = generateCrayon<CssKeywords>();
+export const crayon = buildCrayon<Crayon<CssKeywords>>();
