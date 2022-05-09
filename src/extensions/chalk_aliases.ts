@@ -1,10 +1,12 @@
 import { ansi8, attributes, BaseColors, colors, StyleCode } from "../styles.ts";
-import { mapPrototypeFuncs, mapPrototypeStyles } from "../crayon.ts";
+import {
+  buildCrayon,
+  Crayon,
+  mapPrototypeFuncs,
+  mapPrototypeStyles,
+} from "../crayon.ts";
 
-const lightRegex = /[Ll]ight/;
-
-export type BaseChalkColors = BaseColors | "gray" | "grey";
-
+type BaseChalkColors = BaseColors | "gray" | "grey";
 export type ChalkKeywords =
   | BaseChalkColors
   | `bg${Capitalize<BaseChalkColors>}`
@@ -13,7 +15,7 @@ export type ChalkKeywords =
   | "inverse"
   | "inverseOff";
 
-export const chalkKeywords = new Map<ChalkKeywords, StyleCode>([
+export const chalkAliases = new Map<ChalkKeywords, StyleCode>([
   ["gray", colors.get("lightBlack")!],
   ["bgGray", colors.get("bgLightBlack")!],
   ["grey", colors.get("lightBlack")!],
@@ -23,12 +25,11 @@ export const chalkKeywords = new Map<ChalkKeywords, StyleCode>([
 ]);
 
 for (const [name, code] of colors.entries()) {
-  const match = name.match(lightRegex);
-  if (!match) continue;
-
-  const brightCasing = name.includes("light") ? "bright" : "Bright";
-  const aliasName = name.replace(match[0], brightCasing);
-  chalkKeywords.set(aliasName as ChalkKeywords, code);
+  if (name.slice(0, 5).toLowerCase() !== "light") continue;
+  chalkAliases.set(
+    (name[0] === "L" ? "Bright" : "bright") + name.slice(5) as ChalkKeywords,
+    code,
+  );
 }
 
 type Ansi8Func = typeof ansi8;
@@ -36,5 +37,10 @@ export function ansi256(...args: Parameters<Ansi8Func>): ReturnType<Ansi8Func> {
   return ansi8(...args);
 }
 
-mapPrototypeStyles(chalkKeywords);
+mapPrototypeStyles(chalkAliases);
 mapPrototypeFuncs(ansi256);
+type ChalkAliasedCrayon = Crayon<ChalkKeywords, {
+  ansi256: ChalkAliasedCrayon["ansi8"];
+  bgAnsi256: ChalkAliasedCrayon["bgAnsi8"];
+}>;
+export const crayon = buildCrayon<ChalkAliasedCrayon>();
