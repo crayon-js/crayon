@@ -7,7 +7,7 @@ on:
 
 jobs:
   deno-workflow:
-    uses: ./github/workflows/deno.yml
+    uses: ./.github/workflows/deno.yml
 
   node-publish:
     runs-on: ubuntu-latest
