@@ -64,7 +64,11 @@ export const prototype: CrayonPrototype = {
     let $text = text;
     let lenDiff = 0;
     do {
-      text = $text.replaceAll(/\x1b\[([0-9]|;)+m\x1b\[0m/gi, "\x1b[0m")
+      text = $text
+        .replaceAll(
+          /\x1b\[([0-9]|;)+m\x1b\[0m/gi,
+          "\x1b[0m",
+        )
         .replaceAll(
           /(\x1b\[4([0-9]|;)+m)((\x1b\[([0-9]|;)+m)*(\x1b\[4([0-9]|;)+m))/gi,
           "$3",
@@ -193,12 +197,8 @@ export type Crayon<
   C extends string = never,
   O extends Record<string, unknown> = Record<never, never>,
 > =
-  & ((...text: unknown[]) => string)
+  & ((single: unknown, ...many: unknown[]) => string)
   & typeof prototype
-  & (<
-    A extends string = "",
-    B extends Record<string, unknown> = Record<never, never>,
-  >() => Crayon<C | A, O & B>)
   & {
     styleBuffer: string;
     keyword(style: Style): Crayon<C, O>;
