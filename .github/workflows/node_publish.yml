@@ -1,9 +1,10 @@
 name: Publish Node
 
 on:
-  push:
-    tags:
-      - "*"
+  release:
+    types:
+      - "published"
+
 jobs:
   deno-workflow:
     uses: ./github/workflows/deno.yml
