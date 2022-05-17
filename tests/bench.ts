@@ -109,14 +109,14 @@ function cacheTest(
   return () => cache("Hello, it's me");
 }
 
-bench("Chaining", chainTest);
-bench("Advanced Chaining", advancedChainTest);
-bench("One long chain", oneLongChainTest);
-bench("Long Chaining", longChainTest);
-bench("Cached chaining", cacheTest);
+await bench("Chaining", chainTest);
+await bench("Advanced Chaining", advancedChainTest);
+await bench("One long chain", oneLongChainTest);
+await bench("Long Chaining", longChainTest);
+await bench("Cached chaining", cacheTest);
 
-bench("Literal Templating", literalTemplateTest);
-bench("Advanced Literal Templating", advancedLiteralTemplateTest);
-bench("Long Literal Templating", longLiteralTemplateTest);
+await bench("Literal Templating", literalTemplateTest);
+await bench("Advanced Literal Templating", advancedLiteralTemplateTest);
+await bench("Long Literal Templating", longLiteralTemplateTest);
 
 // TODO: kleur and ansi-colors comparison
