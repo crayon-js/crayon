@@ -12,7 +12,7 @@ await build({
   package: {
     name: "crayon.js",
     version: Deno.args[0],
-    description: "Terminal coloring done light and fast.",
+    description: "Terminal styling done light and fast.",
     license: "MIT",
     private: false,
     repository: {
