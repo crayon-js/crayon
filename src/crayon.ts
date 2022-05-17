@@ -15,7 +15,7 @@ import {
 import { getNoColor, replaceAll } from "./util.ts";
 
 const noColor = getNoColor();
-const hasColor = noColor || noColor == "0" ? true : false;
+const hasColor = !noColor || noColor == "0" ? true : false;
 
 export interface ColorSupport {
   trueColor: boolean;
