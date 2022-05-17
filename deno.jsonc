@@ -17,6 +17,6 @@
     "test-watch": "deno test --watch --fail-fast=1 --ignore=node",
     "bench": "deno bench --unstable --ignore=node --allow-env",
     "bench-watch": "deno bench --unstable --watch --ignore=node --allow-env",
-    "prepare-node": "deno run --allow-env=HOME,DENO_AUTH_TOKENS,XDG_CACHE_HOME,DENO_DIR --allow-read --allow-write=./node,$HOME/.cache/deno --allow-run=npm scripts/dnt_crayon.ts"
+    "prepare-node": "deno run --allow-env=HOME,DENO_AUTH_TOKENS,XDG_CACHE_HOME,DENO_DIR --allow-read --allow-write=./node,$HOME/.cache/deno --allow-run=npm --allow-net scripts/dnt_crayon.ts"
   }
 }
