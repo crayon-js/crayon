@@ -18,8 +18,13 @@ import {
   assertThrows,
 } from "https://deno.land/std@0.137.0/testing/asserts.ts";
 
-// Keep in mind that NO_COLOR won't actually effect of this test.
-let log = `NO_COLOR: ${getNoColor()}\n`;
+// Keep in mind that NO_COLOR will break this test.
+
+if (getNoColor()) {
+  Deno.exit(1);
+}
+
+let log = ``;
 
 if (isDeno()) {
   addEventListener("unload", () => {
@@ -52,6 +57,7 @@ Deno.test("Config", async (t) => {
     assertEquals(
       crayon.colorSupport,
       {
+        noColor: !hasColor,
         trueColor: hasColor,
         highColor: hasColor,
         fourBitColor: hasColor,
@@ -62,6 +68,7 @@ Deno.test("Config", async (t) => {
 
   await t.step("Property and object assignment", () => {
     const old = crayon.colorSupport;
+
     crayon.colorSupport = {
       fourBitColor: false,
       highColor: false,
@@ -73,6 +80,7 @@ Deno.test("Config", async (t) => {
     assertEquals(old, crayon.colorSupport);
     assertEquals(colorSupport, crayon.colorSupport);
     assertEquals(crayon.colorSupport, {
+      noColor: old.noColor,
       trueColor: false,
       highColor: false,
       fourBitColor: false,
@@ -82,6 +90,7 @@ Deno.test("Config", async (t) => {
     crayon.colorSupport.fourBitColor = true;
     assertEquals(crayon.colorSupport.fourBitColor, true);
     assertEquals(crayon.colorSupport, {
+      noColor: old.noColor,
       trueColor: false,
       highColor: false,
       fourBitColor: true,
