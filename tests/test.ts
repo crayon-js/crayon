@@ -26,9 +26,9 @@ if (isDeno()) {
   });
 } else {
   // @ts-ignore Node compatibility
-  process.on('exit', () => {
-    console.log(log)
-  })
+  process.on("exit", () => {
+    console.log(log);
+  });
 }
 
 function visualAssertEquals(
