@@ -17,12 +17,18 @@ import {
   assertThrows,
 } from "https://deno.land/std@0.137.0/testing/asserts.ts";
 
-let log = `NO_COLOR: ${globalThis.Deno.noColor}\n`;
+// Keep in mind that NO_COLOR won't actually effect of this test.
+let log = `NO_COLOR: ${getNoColor()}\n`;
 
 if (isDeno()) {
   addEventListener("unload", () => {
     console.log(log);
   });
+} else {
+  // @ts-ignore Node compatibility
+  process.on('exit', () => {
+    console.log(log)
+  })
 }
 
 function visualAssertEquals(
