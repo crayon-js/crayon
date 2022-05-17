@@ -1,0 +1,57 @@
+name: Deno
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  # Make workflow reusable
+  workflow_call:
+  
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        # Test for latest stable and canary deno versions
+        deno-version: [vx.x.x, canary]
+      
+    steps:
+      - name: Setup repo
+        uses: actions/checkout@v2
+
+      - name: Setup Deno ${{ matrix.deno-version }}
+        uses: denoland/setup-deno@v1.1.0
+        with:
+          deno-version: ${{ matrix.deno-version }}
+
+      - name: Check formatting
+        run: deno fmt --check
+
+      - name: Check linting
+        run: deno lint
+
+      - name: Run tests
+        run: deno task test
+
+      - name: Run benchmarks
+        run: deno task bench
+
+      - name: Check license headers
+        run: |
+          deno run -A --no-check https://deno.land/x/anzu@1.0.1/src/cli.ts \
+           -i ./ "/.+\.ts/" \
+           -e "deps.ts" \
+           -l "// Copyright 2022 Im-Beast. All rights reserved. MIT license." \
+           -p
+          
+      # When missing license headers are found, prepend them and push them to repo
+      - name: Push changes
+        continue-on-error: true
+        run: |
+          git config user.name Github Actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "chore: Prepend missing license headers"
+          git push 
