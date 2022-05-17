@@ -1,5 +1,5 @@
 // Copyright 2022 Im-Beast. All rights reserved. MIT license.
-import { functions, prototype, styles } from "../crayon.ts";
+import { colorSupport, functions, prototype, styles } from "../crayon.ts";
 import { replace, replaceAll } from "../util.ts";
 
 const literalStyleRegex = /{([^\s]+)\s([^{}]+)}/;
@@ -15,6 +15,8 @@ export function compileLiteral(
     text += callSite[i];
     text += substitutions[i] ?? "";
   }
+
+  if (colorSupport.noColor) return text;
 
   let matches = text.match(literalStyleRegex);
   while (matches?.length) {

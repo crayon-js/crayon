@@ -18,6 +18,7 @@ const noColor = getNoColor();
 const hasColor = !noColor || noColor == "0" ? true : false;
 
 export interface ColorSupport {
+  readonly noColor?: boolean;
   trueColor: boolean;
   highColor: boolean;
   fourBitColor: boolean;
@@ -25,7 +26,8 @@ export interface ColorSupport {
 }
 
 /** An object that expresses how well terminal supports displaying colors */
-export const colorSupport = {
+export const colorSupport: ColorSupport = {
+  noColor: !hasColor,
   trueColor: hasColor,
   highColor: hasColor,
   fourBitColor: hasColor,
@@ -90,106 +92,6 @@ export const prototype: CrayonPrototype = {
   },
 };
 
-/**
- * Map given style function to `name` and `bgName` keys in `prototype`
- * When `only` is set to true only `name` key is set and no additional parameters are added when calling function
- *
- * @param name – name of the function
- * @param func – function which gets mapped
- * @param only – whether to not map bgName func
- */
-function mapFunc(name: string, func: CrayonStyleFunction, only = false): void {
-  functions.set(name, func);
-
-  if (only) {
-    Object.defineProperty(prototype, name, {
-      value(this: Crayon, ...args: unknown[]) {
-        return buildCrayon(this.styleBuffer + (func(...args) ?? ""));
-      },
-    });
-    return;
-  }
-
-  Object.defineProperty(prototype, name, {
-    value(this: Crayon, ...args: unknown[]) {
-      return buildCrayon(this.styleBuffer + (func(...args, false) ?? ""));
-    },
-  });
-
-  const bgName = `bg${name[0].toUpperCase() + name.slice(1)}`;
-  Object.defineProperty(prototype, bgName, {
-    value(this: Crayon, ...args: unknown[]) {
-      return buildCrayon(this.styleBuffer + (func(...args, true) ?? ""));
-    },
-  });
-}
-
-/**
- * Uses `mapFunc` on every given function
- *  - `func.name` will be considered as `name` parameter
- *
- * @param funcs – functions which will get mapped
- */
-export function mapPrototypeFuncs(...funcs: CrayonStyleFunction[]): void;
-/**
- * Uses `mapFunc` on every given function
- *  - map key will be used as `name` parameter
- *
- * @param maps – map which functions will get mapped
- */
-export function mapPrototypeFuncs(
-  ...maps: Map<string, CrayonStyleFunction>[]
-): void;
-export function mapPrototypeFuncs(
-  ...iterable: CrayonStyleFunction[] | Map<string, CrayonStyleFunction>[]
-): void {
-  if (typeof iterable[0] === "function") {
-    for (const func of iterable as CrayonStyleFunction[]) {
-      mapFunc(func.name, func);
-    }
-    return;
-  }
-
-  for (const map of iterable as Map<string, CrayonStyleFunction>[]) {
-    for (const [name, func] of map.entries()) {
-      mapFunc(name, func);
-    }
-  }
-}
-
-/**
- * Map given style to `name` key in `prototype`
- *
- * @param name – name of the style
- * @param code – style code which will get mapped
- */
-function mapStyle(name: string, code: StyleCode): void {
-  Object.defineProperty(prototype, name, {
-    configurable: true,
-    get(this: Crayon) {
-      const builtCrayon = buildCrayon(this.styleBuffer + code);
-      // Instead of building crayon every time property gets accessed
-      // simply replace getter with built crayon instance
-      Object.defineProperty(this, name, { value: builtCrayon });
-      return builtCrayon;
-    },
-  });
-}
-
-/**
- * Uses `mapStyle` on every given style code
- *  - map key will be used as `name` parameter
- * @param maps – map which styles will get mapped
- */
-export function mapPrototypeStyles(...maps: Map<string, StyleCode>[]): void {
-  for (const map of maps) {
-    for (const [name, code] of map.entries()) {
-      styles.set(name, code);
-      mapStyle(name, code);
-    }
-  }
-}
-
 /** Crayon type which can be easily extended
  * `C` - literal string type for extending styles
  * `O` - object which expands
@@ -242,11 +144,6 @@ export function buildCrayon<T extends Crayon = Crayon>(styleBuffer = ""): T {
   return Object.setPrototypeOf(crayon, prototype);
 }
 
-// Map default stylings
-mapPrototypeStyles(colors, attributes);
-mapPrototypeFuncs(ansi3, ansi4, ansi8, rgb, hsl, hex);
-mapFunc(keyword.name, keyword, true);
-
 /**
  * 🖍️ Crayon object that's used for styling
  *  - Call the last property as a function with arguments to get styled string
@@ -277,3 +174,127 @@ mapFunc(keyword.name, keyword, true);
  * ```
  */
 export const crayon = buildCrayon();
+
+/**
+ * Map given style function to `name` and `bgName` keys in `prototype`
+ * When `only` is set to true only `name` key is set and no additional parameters are added when calling function
+ *
+ * @param name – name of the function
+ * @param func – function which gets mapped
+ * @param only – whether to not map bgName func
+ */
+function mapFunc(name: string, func: CrayonStyleFunction, only = false): void {
+  functions.set(name, func);
+
+  if (only) {
+    Object.defineProperty(prototype, name, {
+      value: colorSupport.noColor
+        ? function () {
+          return crayon;
+        }
+        : function (this: Crayon, ...args: unknown[]) {
+          return buildCrayon(this.styleBuffer + (func(...args) ?? ""));
+        },
+    });
+    return;
+  }
+
+  Object.defineProperty(prototype, name, {
+    value: colorSupport.noColor
+      ? function () {
+        return crayon;
+      }
+      : function (this: Crayon, ...args: unknown[]) {
+        return buildCrayon(this.styleBuffer + (func(...args, false) ?? ""));
+      },
+  });
+
+  const bgName = `bg${name[0].toUpperCase() + name.slice(1)}`;
+  Object.defineProperty(prototype, bgName, {
+    value: colorSupport.noColor
+      ? function () {
+        return crayon;
+      }
+      : function (this: Crayon, ...args: unknown[]) {
+        return buildCrayon(this.styleBuffer + (func(...args, true) ?? ""));
+      },
+  });
+}
+
+/**
+ * Uses `mapFunc` on every given function
+ *  - `func.name` will be considered as `name` parameter
+ *
+ * @param funcs – functions which will get mapped
+ */
+export function mapPrototypeFuncs(...funcs: CrayonStyleFunction[]): void;
+/**
+ * Uses `mapFunc` on every given function
+ *  - map key will be used as `name` parameter
+ *
+ * @param maps – map which functions will get mapped
+ */
+export function mapPrototypeFuncs(
+  ...maps: Map<string, CrayonStyleFunction>[]
+): void;
+export function mapPrototypeFuncs(
+  ...iterable: CrayonStyleFunction[] | Map<string, CrayonStyleFunction>[]
+): void {
+  if (typeof iterable[0] === "function") {
+    for (const func of iterable as CrayonStyleFunction[]) {
+      mapFunc(func.name, func);
+    }
+    return;
+  }
+
+  for (const map of iterable as Map<string, CrayonStyleFunction>[]) {
+    for (const [name, func] of map.entries()) {
+      mapFunc(name, func);
+    }
+  }
+}
+
+/**
+ * Map given style to `name` key in `prototype`
+ *
+ * @param name – name of the style
+ * @param code – style code which will get mapped
+ */
+function mapStyle(name: string, code: StyleCode): void {
+  const attributes: PropertyDescriptor = {
+    configurable: true,
+  };
+
+  if (colorSupport.noColor) {
+    attributes.value = crayon;
+  } else {
+    attributes.get = function (this: Crayon) {
+      const builtCrayon = buildCrayon(this.styleBuffer + code);
+      // Instead of building crayon every time property gets accessed
+      // simply replace getter with built crayon instance
+      Object.defineProperty(this, name, { value: builtCrayon });
+      return builtCrayon;
+    };
+  }
+
+  Object.defineProperty(prototype, name, attributes);
+}
+
+/**
+ * Uses `mapStyle` on every given style code
+ *  - map key will be used as `name` parameter
+ * @param maps – map which styles will get mapped
+ */
+export function mapPrototypeStyles(...maps: Map<string, StyleCode>[]): void {
+  for (const map of maps) {
+    for (const [name, code] of map.entries()) {
+      styles.set(name, code);
+      mapStyle(name, code);
+    }
+  }
+}
+
+// Map default stylings
+mapPrototypeStyles(colors, attributes);
+mapPrototypeFuncs(ansi3, ansi4, ansi8, rgb, hsl, hex);
+mapFunc(keyword.name, keyword, true);
