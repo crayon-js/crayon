@@ -1,3 +1,4 @@
+// Copyright 2022 Im-Beast. All rights reserved. MIT license.
 import { buildCrayon, Crayon, mapPrototypeStyles } from "../crayon.ts";
 import { GetMapKeys } from "../util.ts";
 

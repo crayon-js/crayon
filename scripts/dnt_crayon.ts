@@ -1,3 +1,4 @@
+// Copyright 2022 Im-Beast. All rights reserved. MIT license.
 import { build, emptyDir } from "https://deno.land/x/dnt@0.23.0/mod.ts";
 
 await emptyDir("./node");

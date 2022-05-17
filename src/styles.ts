@@ -1,3 +1,4 @@
+// Copyright 2022 Im-Beast. All rights reserved. MIT license.
 import {
   ansi4ToAnsi3,
   ansi8ToAnsi4,

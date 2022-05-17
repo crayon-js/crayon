@@ -1,3 +1,4 @@
+// Copyright 2022 Im-Beast. All rights reserved. MIT license.
 import { functions, prototype, styles } from "../crayon.ts";
 import { replace, replaceAll } from "../util.ts";
 

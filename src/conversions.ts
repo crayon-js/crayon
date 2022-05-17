@@ -1,3 +1,4 @@
+// Copyright 2022 Im-Beast. All rights reserved. MIT license.
 /**
  * Converts 4Bit (16) ANSI color representation to 3Bit (8) ANSI
  */

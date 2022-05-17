@@ -1,3 +1,4 @@
+// Copyright 2022 Im-Beast. All rights reserved. MIT license.
 import { crayon } from "../mod.ts";
 import "../src/extensions/literal.ts";
 import oldCrayon from "https://deno.land/x/crayon@2.3.1/mod.ts";

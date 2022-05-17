@@ -1,3 +1,4 @@
+// Copyright 2022 Im-Beast. All rights reserved. MIT license.
 export function getNoColor(): string | boolean {
   if (isDeno()) {
     // @ts-ignore Deno compatibility
