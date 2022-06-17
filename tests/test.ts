@@ -19,8 +19,8 @@ import {
 } from "https://deno.land/std@0.137.0/testing/asserts.ts";
 
 // Keep in mind that NO_COLOR will break this test.
-
 if (getNoColor()) {
+  console.error("\nThis test doesn't support NO_COLOR\n");
   Deno.exit(1);
 }
 
@@ -53,7 +53,8 @@ function visualAssertEquals(
 Deno.test("Config", async (t) => {
   await t.step("Default values (NO_COLOR support)", () => {
     const noColor = getNoColor();
-    const hasColor = noColor || noColor == "0" ? true : false;
+    const hasColor = !noColor || noColor == "0" ? true : false;
+
     assertEquals(
       crayon.colorSupport,
       {
