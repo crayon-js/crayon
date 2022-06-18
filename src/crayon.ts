@@ -37,7 +37,7 @@ export const colorSupport: ColorSupport = {
 export type CrayonStyleFunction = (
   // deno-lint-ignore no-explicit-any
   ...args: any[]
-) => (StyleCode | string | undefined);
+) => StyleCode | string | undefined;
 
 /** Map containing all style functions used by crayon */
 export const functions = new Map<string, CrayonStyleFunction>();
