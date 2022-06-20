@@ -8,7 +8,7 @@ import {
 } from "https://deno.land/std@0.137.0/testing/asserts.ts";
 export { assert, assertEquals, assertThrows };
 
-let log = ``;
+let log = "";
 
 export function flushLogOnUnload() {
   if (isDeno()) {
