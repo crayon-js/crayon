@@ -1,3 +1,4 @@
+// Copyright 2022 Im-Beast. All rights reserved. MIT license.
 import { crayon } from "../src/crayon.ts";
 import { getNoColor } from "../src/util.ts";
 import { assertThrows, flushLogOnUnload, visualAssertEquals } from "./deps.ts";

@@ -1,3 +1,4 @@
+// Copyright 2022 Im-Beast. All rights reserved. MIT license.
 import { assertEquals } from "https://deno.land/std@0.137.0/testing/asserts.ts";
 import { crayon, cssKeywords } from "../src/extensions/css_keywords.ts";
 

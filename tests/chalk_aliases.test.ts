@@ -1,3 +1,4 @@
+// Copyright 2022 Im-Beast. All rights reserved. MIT license.
 import { chalkAliases, crayon } from "../src/extensions/chalk_aliases.ts";
 import { Style } from "../src/styles.ts";
 import { assertEquals } from "./deps.ts";
