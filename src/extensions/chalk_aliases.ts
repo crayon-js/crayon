@@ -1,11 +1,11 @@
 // Copyright 2022 Im-Beast. All rights reserved. MIT license.
-import { ansi8, attributes, BaseColors, colors, StyleCode } from "../styles.ts";
 import {
   buildCrayon,
   Crayon,
   mapPrototypeFuncs,
   mapPrototypeStyles,
 } from "../crayon.ts";
+import { ansi8, attributes, BaseColors, colors, StyleCode } from "../styles.ts";
 
 type BaseChalkColors = BaseColors | "gray" | "grey";
 export type ChalkKeywords =
