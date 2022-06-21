@@ -1,6 +1,10 @@
 // Copyright 2022 Im-Beast. All rights reserved. MIT license.
-import { buildCrayon, Crayon, mapPrototypeStyles } from "../crayon.ts";
-import { GetMapKeys } from "../util.ts";
+import {
+  buildCrayon,
+  Crayon,
+  GetMapKeys,
+  mapPrototypeStyles,
+} from "../../mod.ts";
 
 export type CssKeywords = GetMapKeys<typeof cssKeywords>;
 export const cssKeywords = new Map(
@@ -281,4 +285,5 @@ export const cssKeywords = new Map(
 );
 
 mapPrototypeStyles(cssKeywords);
+
 export const crayon = buildCrayon<Crayon<CssKeywords>>();
