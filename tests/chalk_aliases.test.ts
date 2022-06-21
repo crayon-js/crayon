@@ -13,6 +13,10 @@ Deno.test("Extension: Chalk aliases", () => {
     );
   }
 
+  for (let i = 0; i < 256; ++i) {
+    assertEquals(crayon.ansi256(i).styleBuffer, crayon.ansi8(i).styleBuffer);
+  }
+
   assertEquals(crayon.gray.styleBuffer, crayon.grey.styleBuffer);
   assertEquals(crayon.gray.styleBuffer, crayon.lightBlack.styleBuffer);
 
