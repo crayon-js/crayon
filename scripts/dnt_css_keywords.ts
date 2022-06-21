@@ -1,8 +1,11 @@
 // Copyright 2022 Im-Beast. All rights reserved. MIT license.
+
+// FIXME: error: Uncaught (in promise) "Error stripping prefix of /home/mateusz/Documents/Projects/crayon/src/extensions/css_keywords.ts with base /home/mateusz/Documents/Projects/crayon/tests
+
 import { build, emptyDir } from "https://deno.land/x/dnt@0.23.0/mod.ts";
 
-const entryPoint = "./mod.ts";
-const outDir = "./node_crayon";
+const entryPoint = "./src/extensions/css_keywords.ts";
+const outDir = "./node_css_keywords";
 
 const local = await Deno.readTextFile(entryPoint);
 const remote = await (await fetch(
@@ -20,12 +23,12 @@ await build({
   entryPoints: [entryPoint],
   outDir,
   test: true,
-  testPattern: "tests/crayon.test.ts",
+  testPattern: "tests/css_keywords.test.ts",
   shims: {
     deno: "dev",
   },
   package: {
-    name: "crayon.js",
+    name: "@crayon.js/keywords",
     version,
     description: "Terminal styling done light and fast.",
     license: "MIT",
@@ -42,6 +45,8 @@ await build({
       url: "https://github.com/crayon-js/crayon/issues",
     },
     keywords: [
+      "css",
+      "keywords",
       "typescript",
       "ts",
       "color",
@@ -61,6 +66,12 @@ await build({
       "text",
       "log",
     ],
+  },
+  mappings: {
+    "./mod.ts": {
+      name: "crayon.js",
+      version: `^${version}`,
+    },
   },
 });
 
