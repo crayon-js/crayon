@@ -4,13 +4,6 @@ import { build, emptyDir } from "https://deno.land/x/dnt@0.23.0/mod.ts";
 const entryPoint = "./src/extensions/chalk_aliases.ts";
 const outDir = "./node_chalk_aliases";
 
-const local = await Deno.readTextFile(entryPoint);
-const remote = await (await fetch(
-  `https://deno.land/x/crayon/${entryPoint}`,
-)).text();
-
-if (local === remote) Deno.exit(0);
-
 await emptyDir(outDir);
 
 const version = Deno.args[0];
