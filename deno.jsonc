@@ -13,12 +13,16 @@
     }
   },
   "tasks": {
-    "test": "deno test --fail-fast=1 --ignore=node --allow-read=./src/extensions/literal.ts",
+    // TODO: replace --ignore with glob when deno task will support it
+    "test": "deno test --fail-fast=1 --ignore=node_crayon,node_chalk_aliases,node_css_keywords,node_literal --allow-read=./src/extensions/literal.ts",
 
     "bench": "deno bench --unstable --ignore=node --allow-env",
     "bench-nocolor": "NO_COLOR=1 deno task bench",
     "bench-colorless": "COLORTERM='' TERM='' deno task bench",
 
-    "prepare-node": "deno run --allow-env=HOME,DENO_AUTH_TOKENS,XDG_CACHE_HOME,DENO_DIR --allow-read --allow-write=./node,$HOME/.cache/deno --allow-run=npm --allow-net scripts/dnt_crayon.ts"
+    "prepare-crayon": "deno run --allow-env=HOME,DENO_AUTH_TOKENS,XDG_CACHE_HOME,DENO_DIR --allow-read --allow-write=./node_crayon,$HOME/.cache/deno --allow-run=npm --allow-net scripts/dnt_crayon.ts",
+    "prepare-chalk-aliases": "deno run --allow-env=HOME,DENO_AUTH_TOKENS,XDG_CACHE_HOME,DENO_DIR --allow-read --allow-write=./node_chalk_aliases,$HOME/.cache/deno --allow-run=npm --allow-net scripts/dnt_chalk_aliases.ts",
+    "prepare-css-keywords": "deno run --allow-env=HOME,DENO_AUTH_TOKENS,XDG_CACHE_HOME,DENO_DIR --allow-read --allow-write=./node_css_keywords,$HOME/.cache/deno --allow-run=npm --allow-net scripts/dnt_css_keywords.ts",
+    "prepare-literal": "deno run --allow-env=HOME,DENO_AUTH_TOKENS,XDG_CACHE_HOME,DENO_DIR --allow-read --allow-write=./node_literal,$HOME/.cache/deno --allow-run=npm --allow-net scripts/dnt_literal.ts"
   }
 }
