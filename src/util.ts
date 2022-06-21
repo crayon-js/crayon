@@ -63,7 +63,8 @@ export function isNode() {
 
 export function isDeno() {
   // @ts-ignore Node compatibility
-  return globalThis?.Deno?.version?.deno != null;
+  // deno-fmt-ignore
+  return globalThis?.Deno?.version?.deno !== null && !globalThis?.process?.versions?.node;
 }
 
 export type GetMapKeys<M extends Map<unknown, unknown>> = Parameters<
