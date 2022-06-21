@@ -38,7 +38,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           TAG_VERSION: ${{steps.get_tag_version.outputs.TAG_VERSION}}
         run: >
-          deno task prepare-crayon        $TAG_VERSION && cd node_crayon           && npm publish &&
-          deno task prepare-chalk-aliases $TAG_VERSION && cd ../node_chalk_aliases && npm publish &&
-          deno task prepare-css-keywords  $TAG_VERSION && cd ../node_css_keywords  && npm publish &&
-          deno task prepare-literal       $TAG_VERSION && cd ../node_literal       && npm publish
+          ((deno task prepare-crayon        $TAG_VERSION && cd node_crayon           && npm publish) || true) &&
+          ((deno task prepare-chalk-aliases $TAG_VERSION && cd ../node_chalk_aliases && npm publish) || true) &&
+          ((deno task prepare-css-keywords  $TAG_VERSION && cd ../node_css_keywords  && npm publish) || true) &&
+          ((deno task prepare-literal       $TAG_VERSION && cd ../node_literal       && npm publish) || true)
