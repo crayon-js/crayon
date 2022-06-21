@@ -18,7 +18,7 @@ await build({
     deno: "dev",
   },
   package: {
-    name: "@crayon.js/chalk-aliases",
+    name: "@crayon.js/literal",
     version,
     description: "Terminal styling done light and fast.",
     license: "MIT",
