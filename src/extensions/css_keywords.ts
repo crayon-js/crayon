@@ -6,7 +6,7 @@ import {
   mapPrototypeStyles,
 } from "../../mod.ts";
 
-export type CssKeywords = GetMapKeys<typeof cssKeywords>;
+/** Map containing CSS Color Keywords mapped to ANSI Escape Code which correspond to its color */
 export const cssKeywords = new Map(
   [
     ["aliceBlue", "\x1b[38;2;240;248;255m"],
@@ -286,4 +286,10 @@ export const cssKeywords = new Map(
 
 mapPrototypeStyles(cssKeywords);
 
-export const crayon = buildCrayon<Crayon<CssKeywords>>();
+/** All implemented css keywords */
+export type CssKeywords = GetMapKeys<typeof cssKeywords>;
+
+/** Crayon type instance implementing all css keywords */
+export type CssKeywordedCrayon = Crayon<CssKeywords>;
+
+export const crayon = buildCrayon<CssKeywordedCrayon>();

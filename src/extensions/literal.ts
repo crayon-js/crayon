@@ -11,6 +11,14 @@ import {
 const literalStyleRegex = /{([^\s]+)\s([^{}]+)}/;
 const literalFuncRegex = /(\w+)\((.*)\)/;
 
+/** Compile string to its proper type */
+function compileType(string: string): string | number | boolean {
+  if (string === "false" || string === "true") return Boolean(string);
+  else if (!isNaN(string as unknown as number)) return Number(string);
+  else return string.replace(/('|"|`)(.+)(\1)/, "$2");
+}
+
+/** Implementation for Crayon's `prototype.literal` call when using ES6 Literal Templates */
 export function compileLiteral(
   callSite: readonly string[],
   ...substitutions: unknown[]
@@ -57,12 +65,6 @@ export function compileLiteral(
   }
 
   return text;
-}
-
-export function compileType(string: string): string | number | boolean {
-  if (string === "false" || string === "true") return Boolean(string);
-  else if (!isNaN(string as unknown as number)) return Number(string);
-  else return string.replace(/('|"|`)(.+)(\1)/, "$2");
 }
 
 prototype.literal = compileLiteral;
