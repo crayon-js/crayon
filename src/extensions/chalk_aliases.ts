@@ -12,6 +12,8 @@ import {
 } from "../../mod.ts";
 
 type BaseChalkColors = BaseColors | "gray" | "grey";
+
+/** All implemented chalk keywords */
 export type ChalkKeywords =
   | BaseChalkColors
   | `bg${Capitalize<BaseChalkColors>}`
@@ -20,6 +22,7 @@ export type ChalkKeywords =
   | "inverse"
   | "inverseOff";
 
+/** All implemented chalk aliases */
 export const chalkAliases = new Map<ChalkKeywords, StyleCode>([
   ["gray", colors.get("lightBlack")!],
   ["bgGray", colors.get("bgLightBlack")!],
@@ -38,14 +41,17 @@ for (const [name, code] of colors.entries()) {
 }
 
 type Ansi8Func = typeof ansi8;
-export function ansi256(...args: Parameters<Ansi8Func>): ReturnType<Ansi8Func> {
+function ansi256(...args: Parameters<Ansi8Func>): ReturnType<Ansi8Func> {
   return ansi8(...args);
 }
 
 mapPrototypeStyles(chalkAliases);
 mapPrototypeFuncs(ansi256);
-type ChalkAliasedCrayon = Crayon<ChalkKeywords, {
+
+/** Crayon type instance implementing all chalk aliases */
+export type ChalkAliasedCrayon = Crayon<ChalkKeywords, {
   ansi256: ChalkAliasedCrayon["ansi8"];
   bgAnsi256: ChalkAliasedCrayon["bgAnsi8"];
 }>;
+
 export const crayon = buildCrayon<ChalkAliasedCrayon>();
