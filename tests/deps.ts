@@ -10,7 +10,12 @@ export { assert, assertEquals, assertThrows };
 
 let log = "";
 
-export function flushLogOnUnload() {
+/**
+ * Flush `log` to a `console` on:
+ * - deno - `unload` window event
+ * - node - `exit` process event
+ */
+export function flushLogOnUnload(): void {
   if (isDeno()) {
     addEventListener("unload", () => {
       console.log(log);
@@ -23,11 +28,16 @@ export function flushLogOnUnload() {
   }
 }
 
+/**
+ *  Add `actual` and `expected` side-by-side to the `log` string.
+ *
+ * Then compare them using `assertEquals`.
+ */
 export function visualAssertEquals(
   actual: unknown,
   expected: unknown,
   msg?: string,
-) {
+): void {
   log += `a: ${actual}`;
   const strA = String(actual);
   if (strA.includes("\n")) log += "\n";

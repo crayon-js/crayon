@@ -1,4 +1,6 @@
 // Copyright 2022 Im-Beast. All rights reserved. MIT license.
+
+/** Return whether NO_COLOR is set (deno) or its value (node) */
 export function getNoColor(): string | boolean {
   if (isDeno()) {
     // @ts-ignore Deno compatibility
@@ -56,21 +58,25 @@ export function replaceAll(
   return string;
 }
 
+/** Return whether program is running in node runtime */
 export function isNode() {
   // @ts-ignore Deno compatibility
   return globalThis?.process?.versions?.node != null;
 }
 
+/** Return whether program is running in deno runtime */
 export function isDeno() {
   // @ts-ignore Node compatibility
   // deno-fmt-ignore
   return globalThis?.Deno?.version?.deno !== null && !globalThis?.process?.versions?.node;
 }
 
+/** Get keys of a map */
 export type GetMapKeys<M extends Map<unknown, unknown>> = Parameters<
   M["set"]
 >[0];
 
+/** Get values of a map */
 export type GetMapValues<M extends Map<unknown, unknown>> = Parameters<
   M["set"]
 >[1];
