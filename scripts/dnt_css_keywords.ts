@@ -1,7 +1,5 @@
 // Copyright 2022 Im-Beast. All rights reserved. MIT license.
 
-// FIXME: error: Uncaught (in promise) "Error stripping prefix of /home/mateusz/Documents/Projects/crayon/src/extensions/css_keywords.ts with base /home/mateusz/Documents/Projects/crayon/tests
-
 import { build, emptyDir } from "https://deno.land/x/dnt@0.23.0/mod.ts";
 
 const entryPoint = "./src/extensions/css_keywords.ts";
