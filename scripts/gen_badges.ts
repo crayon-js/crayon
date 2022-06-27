@@ -1,3 +1,4 @@
+// Copyright 2022 Im-Beast. All rights reserved. MIT license.
 import { hslToRgb } from "../src/conversions.ts";
 import { emptyDir } from "./deps.ts";
 
