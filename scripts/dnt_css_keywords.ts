@@ -1,6 +1,6 @@
 // Copyright 2022 Im-Beast. All rights reserved. MIT license.
 
-import { build, emptyDir } from "https://deno.land/x/dnt@0.23.0/mod.ts";
+import { build, emptyDir } from "./deps.ts";
 
 const entryPoint = "./src/extensions/css_keywords.ts";
 const outDir = "./node_css_keywords";
