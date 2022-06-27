@@ -41,7 +41,7 @@ jobs:
       - name: Run benchmarks
         run: deno task bench
 
-      -name: Prepare git credentials
+      - name: Prepare git credentials
         run: |
           git config user.name Github Actions
           git config user.email github-actions@github.com
@@ -59,4 +59,3 @@ jobs:
         run: |
           deno task prepare-badges
           (git add . && git commit -m "chore: Update badges" && git push) || true
-        
