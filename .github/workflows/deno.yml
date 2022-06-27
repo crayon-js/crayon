@@ -41,17 +41,22 @@ jobs:
       - name: Run benchmarks
         run: deno task bench
 
-      - name: Check license headers
+      -name: Prepare git credentials
+        run: |
+          git config user.name Github Actions
+          git config user.email github-actions@github.com
+
+      - name: Check license headers & push commit when needed
         run: |
           deno run -A --no-check https://deno.land/x/anzu@1.0.1/src/cli.ts \
            -i ./ "/.+\.ts/" \
            -e "deps.ts" \
            -l "// Copyright 2022 Im-Beast. All rights reserved. MIT license." \
            -p
-
-      # When missing license headers are found, prepend them and push them to repo
-      - name: Push changes
-        run: |
-          git config user.name Github Actions
-          git config user.email github-actions@github.com
           (git add . && git commit -m "chore: Prepend missing license headers" && git push) || true
+
+      - name: Check badges & push commit when needed
+        run: |
+          deno task prepare-badges
+          (git add . && git commit -m "chore: Update badges" && git push) || true
+        
