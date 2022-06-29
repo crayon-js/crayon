@@ -4,7 +4,7 @@
 [![doc.deno.land badge for crayon](https://doc.deno.land/badge.svg)](https://doc.deno.land/https://deno.land/x/crayon)
 ![size of mod.ts](https://raw.githubusercontent.com/crayon-js/crayon/main/badges/size.svg)
 
-<h1 align="center">🖍️ Crayon.js</h1>
+<h1 align="center">🖍️ Crayon</h1>
 
 ## 📚 About
 
@@ -24,6 +24,32 @@ From the ground up its goals is to be fast, relatively lightweight and modular.
 - 🔗 Supported nesting & chaining
 - 🪢 Not extending `String.prototype`
 - 🌈 24bit (16.7m - truecolor) and 8bit (256 - highcolor) color support
+
+## ⚙️ Usage
+
+- On deno:
+
+```ts
+// Remember to replace "version" with semver version
+import { crayon } from "https://deno.land/x/crayon@version/mod.ts";
+
+console.log(crayon.red("its red!"));
+```
+
+- On node:
+
+```ts
+import { crayon } from "crayon.js";
+
+console.log(crayon.red("its red!"));
+```
+
+## 🧩 Extensions
+
+To add new functionality to Crayon you can use ready or create your own
+extensions.
+
+Crayon's extensions are stored in [src/extensions](./src/extensions/)
 
 ## 🤝 Contributing
 
