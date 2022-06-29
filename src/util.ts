@@ -1,6 +1,6 @@
 // Copyright 2022 Im-Beast. All rights reserved. MIT license.
 
-/** Return whether NO_COLOR is set (deno) or its value (node) */
+/** Return whether NO_COLOR is set */
 export function getNoColor(): boolean {
   if (isDeno()) {
     // @ts-ignore Deno compatibility
