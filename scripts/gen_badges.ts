@@ -52,23 +52,25 @@ async function coverageBadge() {
     );
   }
 
-  const coveragePercentages = [
-    ...await textDecoder.decode(
-      await coverage.stdout,
-    ).matchAll(/(\d|\.)+%/g),
-  ].flat().filter((_, i) => i % 2 === 0);
+  const textSdout = await textDecoder.decode(await coverage.stdout);
+  let coveredLines = 0;
+  let allLines = 0;
 
-  // @ts-expect-error typescript having it's not-very-well typed built-ins
-  const averagePercent = coveragePercentages.reduce((p, n, i) => {
-    if (i === 1) return p.replace("%", "");
-    return +p + +n.replace("%", "");
-  }) / coveragePercentages.length;
+  for (
+    const [output] of textSdout.matchAll(/\d+\/\d+/g)
+  ) {
+    const split = output.split("/").map(Number);
+    coveredLines += split[0];
+    allLines += split[1];
+  }
+
+  const coveragePercent = (coveredLines / allLines) * 100;
 
   return generateBadge(
     "coverage",
-    `${averagePercent.toFixed(2)}%`,
+    `${coveragePercent.toFixed(2)}%`,
     hslToRgb(
-      averagePercent * 1.2,
+      coveragePercent * 1.2,
       50,
       50,
     ).map((x) => x.toString(16)).join(""),
@@ -110,7 +112,7 @@ async function sizeBadge() {
     size: p.size + n.size,
   })).size;
 
-  return generateBadge("raw size", `${(size / 1024).toFixed(2)}KB`, "567bad");
+  return generateBadge("raw size", `${(size / 1024).toFixed(2)}KB`, "4c76ae");
 }
 
 await emptyDir("badges");
