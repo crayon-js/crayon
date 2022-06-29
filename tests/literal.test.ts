@@ -3,7 +3,9 @@ import { crayon, getNoColor } from "../mod.ts";
 import { assertThrows, flushLogOnUnload, visualAssertEquals } from "./deps.ts";
 
 if (getNoColor()) {
-  console.error("\nThis test doesn't support NO_COLOR\n");
+  console.error(
+    "\nThis test is supposed to be run without NO_COLOR env variable.\n",
+  );
   Deno.exit(1);
 }
 
@@ -38,6 +40,10 @@ Deno.test("Extension: Literal Templating ", async (t) => {
     visualAssertEquals(
       crayon`{rgb(40,120,80).bgHex(0xff3080) hello}`,
       "\x1b[38;2;40;120;80m\x1b[48;2;255;48;128mhello\x1b[0m",
+    );
+    visualAssertEquals(
+      crayon`{keyword("yellow") yellow}`,
+      "\x1b[33myellow\x1b[0m",
     );
   });
 

@@ -1,7 +1,14 @@
 // Copyright 2022 Im-Beast. All rights reserved. MIT license.
 import { chalkAliases, crayon } from "../src/extensions/chalk_aliases.ts";
-import { Style } from "../src/styles.ts";
 import { assertEquals } from "./deps.ts";
+import { getNoColor, Style } from "../mod.ts";
+
+if (getNoColor()) {
+  console.error(
+    "\nThis test is supposed to be run without NO_COLOR env variable.\n",
+  );
+  Deno.exit(1);
+}
 
 Deno.test("Extension: Chalk aliases", () => {
   for (const [alias] of chalkAliases.entries()) {

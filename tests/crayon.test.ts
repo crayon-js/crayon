@@ -1,5 +1,13 @@
 // Copyright 2022 Im-Beast. All rights reserved. MIT license.
 import {
+  assert,
+  assertEquals,
+  assertThrows,
+  flushLogOnUnload,
+  visualAssertEquals,
+} from "./deps.ts";
+
+import {
   buildCrayon,
   colorSupport,
   Crayon,
@@ -13,15 +21,10 @@ import {
   StyleCode,
 } from "../mod.ts";
 
-import {
-  assert,
-  assertEquals,
-  flushLogOnUnload,
-  visualAssertEquals,
-} from "./deps.ts";
-
 if (getNoColor()) {
-  console.error("\nThis test doesn't support NO_COLOR\n");
+  console.error(
+    "\nThis test is supposed to be run without NO_COLOR env variable.\n",
+  );
   Deno.exit(1);
 }
 
@@ -29,8 +32,7 @@ flushLogOnUnload();
 
 Deno.test("Config", async (t) => {
   await t.step("Default values (NO_COLOR support)", () => {
-    const noColor = getNoColor();
-    const hasColor = !noColor || noColor == "0" ? true : false;
+    const hasColor = !getNoColor();
 
     assertEquals(
       crayon.colorSupport,
@@ -74,7 +76,7 @@ Deno.test("Config", async (t) => {
       fourBitColor: true,
       threeBitColor: false,
     });
-    visualAssertEquals(colorSupport, crayon.colorSupport);
+    assertEquals(colorSupport, crayon.colorSupport);
 
     crayon.colorSupport = {
       trueColor: true,
@@ -82,7 +84,7 @@ Deno.test("Config", async (t) => {
       fourBitColor: true,
       threeBitColor: true,
     };
-    visualAssertEquals(colorSupport, crayon.colorSupport);
+    assertEquals(colorSupport, crayon.colorSupport);
   });
 });
 
@@ -120,6 +122,69 @@ Deno.test("Chaining", async (t) => {
       );
     });
 
+    await t2.step("Error handling", () => {
+      assertThrows(() => crayon.hex(""));
+      assertThrows(() => crayon.hex("c"));
+      assertThrows(() => crayon.hex(0xABCDEFF));
+      assertThrows(() => crayon.hex(-1));
+      assertThrows(() => crayon.bgHex(""));
+      assertThrows(() => crayon.bgHex("c"));
+      assertThrows(() => crayon.bgHex(0xABCDEFF));
+      assertThrows(() => crayon.bgHex(-1));
+
+      assertThrows(() => crayon.rgb(256, 0, 0));
+      assertThrows(() => crayon.rgb(-1, 0, 0));
+      assertThrows(() => crayon.rgb(0, 256, 0));
+      assertThrows(() => crayon.rgb(0, -1, 0));
+      assertThrows(() => crayon.rgb(0, 0, 256));
+      assertThrows(() => crayon.rgb(0, 0, -1));
+      assertThrows(() => crayon.rgb(256, 256, 256));
+      assertThrows(() => crayon.rgb(-1, -1, -1));
+
+      assertThrows(() => crayon.bgRgb(256, 0, 0));
+      assertThrows(() => crayon.bgRgb(-1, 0, 0));
+      assertThrows(() => crayon.bgRgb(0, 256, 0));
+      assertThrows(() => crayon.bgRgb(0, -1, 0));
+      assertThrows(() => crayon.bgRgb(0, 0, 256));
+      assertThrows(() => crayon.bgRgb(0, 0, -1));
+      assertThrows(() => crayon.bgRgb(256, 256, 256));
+      assertThrows(() => crayon.bgRgb(-1, -1, -1));
+
+      assertThrows(() => crayon.hsl(361, 0, 0));
+      assertThrows(() => crayon.hsl(-1, 0, 0));
+      assertThrows(() => crayon.hsl(0, 101, 0));
+      assertThrows(() => crayon.hsl(0, -1, 0));
+      assertThrows(() => crayon.hsl(0, 0, 101));
+      assertThrows(() => crayon.hsl(0, 0, -1));
+      assertThrows(() => crayon.hsl(361, 101, 101));
+      assertThrows(() => crayon.hsl(-1, -1, -1));
+      assertThrows(() => crayon.bgHsl(361, 0, 0));
+      assertThrows(() => crayon.bgHsl(-1, 0, 0));
+      assertThrows(() => crayon.bgHsl(0, 101, 0));
+      assertThrows(() => crayon.bgHsl(0, -1, 0));
+      assertThrows(() => crayon.bgHsl(0, 0, 101));
+      assertThrows(() => crayon.bgHsl(0, 0, -1));
+      assertThrows(() => crayon.bgHsl(361, 101, 101));
+      assertThrows(() => crayon.bgHsl(-1, -1, -1));
+
+      assertThrows(() => crayon.ansi8(256));
+      assertThrows(() => crayon.ansi8(-1));
+      assertThrows(() => crayon.bgAnsi8(256));
+      assertThrows(() => crayon.bgAnsi8(-1));
+
+      assertThrows(() => crayon.ansi4(16));
+      assertThrows(() => crayon.ansi4(-1));
+      assertThrows(() => crayon.bgAnsi4(16));
+      assertThrows(() => crayon.bgAnsi4(-1));
+
+      assertThrows(() => crayon.ansi3(8));
+      assertThrows(() => crayon.ansi3(-1));
+      assertThrows(() => crayon.bgAnsi3(8));
+      assertThrows(() => crayon.bgAnsi3(-1));
+
+      assertThrows(() => crayon.keyword("inexistent"));
+    });
+
     await t2.step("Style order", () => {
       visualAssertEquals(
         crayon.red.green("Hello"),
@@ -135,13 +200,22 @@ Deno.test("Chaining", async (t) => {
       visualAssertEquals(crayon.red("Red"), "\x1b[31mRed\x1b[0m\x1b[0m");
       visualAssertEquals(crayon.bold("Bold"), "\x1b[1mBold\x1b[0m\x1b[0m");
       visualAssertEquals(
+        crayon.keyword("green").keyword("bold")("Green"),
+        "\x1b[32m\x1b[1mGreen\x1b[0m\x1b[0m",
+      );
+      visualAssertEquals(
         crayon.red.bold("Red Bold"),
         "\x1b[31m\x1b[1mRed Bold\x1b[0m\x1b[0m",
       );
-      visualAssertEquals(
-        crayon.rgb(230, 100, 15).bgRgb(15, 70, 25)("Rainbow"),
-        "\x1b[38;2;230;100;15m\x1b[48;2;15;70;25mRainbow\x1b[0m\x1b[0m",
-      );
+      assertEquals(crayon.hex("#ABCDEF")("Hex"), crayon.hex(0xabcdef)("Hex"));
+      assertEquals(
+        crayon.hex(0xabcdef)("Hex"),
+        "\x1b[38;2;171;205;239mHex\x1b[0m\x1b[0m",
+      ),
+        visualAssertEquals(
+          crayon.rgb(230, 100, 15).bgRgb(15, 70, 25)("Rainbow"),
+          "\x1b[38;2;230;100;15m\x1b[48;2;15;70;25mRainbow\x1b[0m\x1b[0m",
+        );
     });
 
     await t2.step("Nesting styles", () => {
@@ -189,6 +263,7 @@ Deno.test("Color conversions", async (t) => {
       crayon.rgb(8, 15, 15)("test"),
       "\x1b[38;5;232mtest\x1b[0m\x1b[0m",
     );
+
     visualAssertEquals(
       crayon.rgb(7, 15, 15)("test"),
       "\x1b[38;5;16mtest\x1b[0m\x1b[0m",
@@ -210,8 +285,16 @@ Deno.test("Color conversions", async (t) => {
       "\x1b[95mtest\x1b[0m\x1b[0m",
     );
     visualAssertEquals(
+      crayon.bgRgb(255, 0, 255)("test"),
+      "\x1b[105mtest\x1b[0m\x1b[0m",
+    );
+    visualAssertEquals(
       crayon.rgb(128, 0, 0)("test"),
       "\x1b[31mtest\x1b[0m\x1b[0m",
+    );
+    visualAssertEquals(
+      crayon.bgRgb(255, 0, 255)("test"),
+      "\x1b[105mtest\x1b[0m\x1b[0m",
     );
 
     crayon.colorSupport.highColor = true;
@@ -222,8 +305,21 @@ Deno.test("Color conversions", async (t) => {
     crayon.colorSupport.highColor = false;
 
     visualAssertEquals(
+      crayon.ansi8(232)("test"),
+      "\x1b[30mtest\x1b[0m\x1b[0m",
+    );
+    visualAssertEquals(
+      crayon.bgAnsi8(232)("test"),
+      "\x1b[40mtest\x1b[0m\x1b[0m",
+    );
+
+    visualAssertEquals(
       crayon.ansi8(123)("test"),
       "\x1b[96mtest\x1b[0m\x1b[0m",
+    );
+    visualAssertEquals(
+      crayon.bgAnsi8(123)("test"),
+      "\x1b[106mtest\x1b[0m\x1b[0m",
     );
 
     crayon.colorSupport.highColor = true;
@@ -238,8 +334,17 @@ Deno.test("Color conversions", async (t) => {
       "\x1b[30mtest\x1b[0m\x1b[0m",
     );
     visualAssertEquals(
+      crayon.bgAnsi8(232)("test"),
+      "\x1b[40mtest\x1b[0m\x1b[0m",
+    );
+
+    visualAssertEquals(
       crayon.ansi8(123)("test"),
       "\x1b[36mtest\x1b[0m\x1b[0m",
+    );
+    visualAssertEquals(
+      crayon.bgAnsi8(123)("test"),
+      "\x1b[46mtest\x1b[0m\x1b[0m",
     );
 
     crayon.colorSupport.fourBitColor = true;
@@ -250,9 +355,12 @@ Deno.test("Color conversions", async (t) => {
     crayon.colorSupport.fourBitColor = false;
 
     visualAssertEquals(crayon.ansi4(6)("test"), "\x1b[36mtest\x1b[0m\x1b[0m");
+    visualAssertEquals(crayon.bgAnsi4(6)("test"), "\x1b[46mtest\x1b[0m\x1b[0m");
+
+    visualAssertEquals(crayon.ansi4(13)("test"), "\x1b[35mtest\x1b[0m\x1b[0m");
     visualAssertEquals(
-      crayon.ansi4(13)("test"),
-      "\x1b[35mtest\x1b[0m\x1b[0m",
+      crayon.bgAnsi4(13)("test"),
+      "\x1b[45mtest\x1b[0m\x1b[0m",
     );
 
     crayon.colorSupport.fourBitColor = true;
@@ -272,14 +380,12 @@ Deno.test("Utility functions", async (t) => {
   });
 
   await t.step("Optimize", () => {
-    const styledText = crayon.rgb(123, 253, 123).hex(0x33ff80).bgRgb(
-      12,
-      33,
-      65,
-    )
-      .bgHex(
-        0xff12dd,
-      ).red.bgBlue.bold.underline.italic(
+    const styledText = crayon
+      .rgb(123, 253, 123)
+      .hex(0x33ff80)
+      .bgRgb(12, 33, 65)
+      .bgHex(0xff12dd)
+      .red.bgBlue.bold.underline.italic(
         "Bueno",
       );
 
@@ -297,6 +403,11 @@ Deno.test("Utility functions", async (t) => {
     assertEquals(
       replace("this is example test", "example", "working"),
       "this is working test",
+    );
+
+    assertEquals(
+      replace("i am not repeating repeating myself", "repeating ", ""),
+      "i am not repeating myself",
     );
 
     assertEquals(
