@@ -104,6 +104,7 @@ export type Crayon<
   & {
     styleBuffer: string;
     keyword(style: Style): Crayon<C, O>;
+    keyword(style: string): Crayon<C, O>;
     ansi3(code: number): Crayon<C, O>;
     bgAnsi3(code: number): Crayon<C, O>;
     ansi4(code: number): Crayon<C, O>;
