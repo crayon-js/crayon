@@ -168,7 +168,7 @@ async function cachedLongChain() {
 
   const crayonCache = crayon.bgYellow.cyan.italic.underline.bold;
   await Deno.bench({
-    name: "Crayon (Upstream) - Cached short chain",
+    name: "Crayon (Upstream) - Cached long chain",
     group,
     baseline: true,
   }, () => {
