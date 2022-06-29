@@ -86,9 +86,13 @@ export type Style = Attribute | Color;
  * @param style - map key
  */
 export function keyword(style: Style): StyleCode;
-export function keyword(style: string): StyleCode | undefined;
-export function keyword(style: string | Style): StyleCode | undefined {
-  return colors.get(style as Color) ?? attributes.get(style as Attribute);
+export function keyword(style: string): StyleCode;
+export function keyword(style: string): StyleCode {
+  const code = colors.get(style as Color) ?? attributes.get(style as Attribute);
+  if (!code) {
+    throw new Error(`Style "${style}" doesn't exist`);
+  }
+  return code;
 }
 
 /** Generate StyleCode from 3bit (8) color pallete */
@@ -97,7 +101,7 @@ export function ansi3(code: number, bg?: boolean): StyleCode {
     throw new Error("ansi3 function code has to be within 0 and 7");
   }
   if (!colorSupport.threeBitColor) return "";
-  return `\x1b[${bg ? 40 : 30 + ~~code}m`;
+  return `\x1b[${(bg ? 40 : 30) + ~~code}m`;
 }
 
 /** Generate StyleCode from 4bit (16) color pallete */
@@ -150,13 +154,21 @@ export function hsl(h: number, s: number, l: number, bg?: boolean): StyleCode {
 export function hex(value: string | number, bg?: boolean): StyleCode {
   let hexNum: number = value as number;
 
-  if (typeof value !== "number" && isNaN(hexNum)) {
+  if (typeof value !== "number" && (isNaN(hexNum) || value === "")) {
     hexNum = parseInt(value.slice(1), 16);
-    if (isNaN(hexNum)) {
+    if (isNaN(hexNum) || value.slice(1) === "") {
       throw new Error(
-        `Invalid HEX value: "${value}", e.g. expected string - "#ABCDEF" / "#abcdef" or number - 0xABCDEF`,
+        `Invalid HEX value: "${value}": expected string - "#ABCDEF" / "#abcdef" or number - 0xABCDEF`,
       );
     }
+  }
+
+  if (hexNum > 0xFFFFFF || hexNum < 0) {
+    throw new Error(
+      `Invalid HEX value: 0x${
+        value.toString(16)
+      }: expected hexadecimal number that doesn't exceed 0xFFFFFF and is higher or equal to zero`,
+    );
   }
 
   return rgb(0xff & (hexNum >> 16), 0xff & (hexNum >> 8), 0xff & hexNum, bg);
