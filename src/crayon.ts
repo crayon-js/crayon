@@ -41,7 +41,7 @@ export type CrayonStyleFunction = (
 /** Map containing all style functions used by crayon */
 export const functions = new Map<string, CrayonStyleFunction>();
 /** Map containing all styles used by crayon */
-export const styles = new Map<string, StyleCode | string>();
+export const styles = new Map<string, StyleCode | (() => StyleCode)>();
 
 interface CrayonPrototype {
   colorSupport: ColorSupport;
@@ -260,7 +260,12 @@ export function mapPrototypeFuncs(
  * @param name – name of the style
  * @param code – style code which will get mapped
  */
-function mapStyle(name: string, code: StyleCode): void {
+function mapStyle(
+  name: string,
+  code: StyleCode | (() => StyleCode),
+): void {
+  styles.set(name, code);
+
   const attributes: PropertyDescriptor = {
     configurable: true,
   };
@@ -269,6 +274,10 @@ function mapStyle(name: string, code: StyleCode): void {
     attributes.value = crayon;
   } else {
     attributes.get = function (this: Crayon) {
+      if (typeof code === "function") {
+        code = code();
+      }
+
       const builtCrayon = buildCrayon(this.styleBuffer + code);
       // Instead of building crayon every time property gets accessed
       // simply replace getter with built crayon instance
@@ -285,12 +294,19 @@ function mapStyle(name: string, code: StyleCode): void {
  *  - map key will be used as `name` parameter
  * @param maps – map which styles will get mapped
  */
-export function mapPrototypeStyles(...maps: Map<string, StyleCode>[]): void {
+export function mapPrototypeStyles(
+  ...maps: (Map<string, (() => StyleCode) | StyleCode>)[]
+): void {
   for (const map of maps) {
     for (const [name, code] of map.entries()) {
-      styles.set(name, code);
       mapStyle(name, code);
     }
+  }
+}
+
+export function reloadPrototypeStyles(): void {
+  for (const [name, code] of styles) {
+    mapStyle(name, code);
   }
 }
 

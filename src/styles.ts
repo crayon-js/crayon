@@ -5,7 +5,7 @@ import {
   hslToRgb,
   rgbToAnsi8,
 } from "./conversions.ts";
-import { colorSupport } from "./crayon.ts";
+import { colorSupport, styles } from "./crayon.ts";
 import { GetMapKeys } from "./util.ts";
 
 /** ANSI escape code */
@@ -36,7 +36,7 @@ export type Color =
   | `bgLight${Capitalize<BaseColors>}`;
 
 /** Map containing all 4bit colors */
-export const colors = new Map<Color, StyleCode>();
+export const colors = new Map<Color, () => StyleCode>();
 
 // Generate colors from baseColors
 for (const [i, color] of baseColors.entries()) {
@@ -44,10 +44,10 @@ for (const [i, color] of baseColors.entries()) {
     typeof color
   >;
 
-  colors.set(color, `\x1b[${30 + i}m`);
-  colors.set(`bg${capitalized}`, `\x1b[${40 + i}m`);
-  colors.set(`light${capitalized}`, `\x1b[${90 + i}m`);
-  colors.set(`bgLight${capitalized}`, `\x1b[${100 + i}m`);
+  colors.set(color, () => ansi3(i, false));
+  colors.set(`bg${capitalized}`, () => ansi3(i, true));
+  colors.set(`light${capitalized}`, () => ansi4(i + 8, false));
+  colors.set(`bgLight${capitalized}`, () => ansi4(i + 8, true));
 }
 
 /** Map containing all supported attributes */
@@ -88,11 +88,11 @@ export type Style = Attribute | Color;
 export function keyword(style: Style): StyleCode;
 export function keyword(style: string): StyleCode;
 export function keyword(style: string): StyleCode {
-  const code = colors.get(style as Color) ?? attributes.get(style as Attribute);
+  const code = styles.get(style);
   if (!code) {
     throw new Error(`Style "${style}" doesn't exist`);
   }
-  return code;
+  return typeof code === "function" ? code() : code;
 }
 
 /** Generate StyleCode from 3bit (8) color pallete */
