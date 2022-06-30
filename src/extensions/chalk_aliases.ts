@@ -23,7 +23,10 @@ export type ChalkKeywords =
   | "inverseOff";
 
 /** All implemented chalk aliases */
-export const chalkAliases = new Map<ChalkKeywords, StyleCode>([
+export const chalkAliases = new Map<
+  ChalkKeywords,
+  StyleCode | (() => StyleCode)
+>([
   ["gray", colors.get("lightBlack")!],
   ["bgGray", colors.get("bgLightBlack")!],
   ["grey", colors.get("lightBlack")!],

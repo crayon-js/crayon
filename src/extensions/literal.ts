@@ -38,15 +38,20 @@ export function compileLiteral(
 
     let styleBuffer = "";
     for (const style of matchedStyles) {
-      const code = styles.get(style);
+      let code = styles.get(style);
       if (code) {
+        if (typeof code === "function") {
+          code = code();
+        }
         styleBuffer += code;
       } else {
         const match = style.match(literalFuncRegex);
         if (!match?.length) continue;
+
         let name = match[1];
         const isBg = name.startsWith("bg");
         if (isBg) name = name.slice(2).toLowerCase();
+
         const args = match[2].split(",").map(compileType);
 
         const func = functions.get(name);
