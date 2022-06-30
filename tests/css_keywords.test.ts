@@ -12,6 +12,9 @@ if (getNoColor()) {
 
 Deno.test("Extension: Css Keywords", () => {
   for (const [style, code] of cssKeywords.entries()) {
-    assertEquals(crayon[style].styleBuffer, code);
+    assertEquals(
+      crayon[style].styleBuffer,
+      typeof code === "function" ? code() : code,
+    );
   }
 });
