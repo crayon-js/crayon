@@ -1,4 +1,4 @@
-<h1 align="center">🖍️ Crayon Chalk Aliases</h1>
+<h1 align="center">🖍️ Crayon Chalk Aliases 🩹</h1>
 
 ## 📚 About
 

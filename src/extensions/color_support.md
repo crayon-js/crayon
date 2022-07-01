@@ -1,4 +1,4 @@
-<h1 align="center">🖍️ Crayon Color Support</h1>
+<h1 align="center">🖍️ Crayon Color Support 🎨</h1>
 
 > ⚠️ This module requires `--unstable` because it uses `Deno.osRelease()` and
 > `Deno.spawnChild()`
