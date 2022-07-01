@@ -21,7 +21,7 @@ let highColor = false;
 let fourBitColor = false;
 let threeBitColor = false;
 
-export function colorSupport(): ColorSupport {
+function colorSupport(): ColorSupport {
   return {
     trueColor,
     highColor,
@@ -41,6 +41,12 @@ export async function getColorSupport({
   requestPermissions,
   revokePermissions,
 }: GetColorSupportOptions = {}): Promise<ColorSupport> {
+  threeBitColor =
+    fourBitColor =
+    highColor =
+    trueColor =
+      false;
+
   if (Deno.noColor) return colorSupport();
 
   const request = (name: Deno.PermissionName) => {
@@ -63,7 +69,7 @@ export async function getColorSupport({
   if (forcePermissions || await permissionState("env") === "granted") {
     const colorTerm = Deno.env.get("COLORTERM");
 
-    if (colorTerm) {
+    if (colorTerm !== undefined) {
       switch (colorTerm) {
         case "truecolor":
           threeBitColor =
@@ -88,7 +94,7 @@ export async function getColorSupport({
     }
 
     const ci = Deno.env.get("CI");
-    if (ci && CIs.some((ci) => !!Deno.env.get(ci))) {
+    if (ci !== undefined && CIs.some((ci) => Deno.env.get(ci) !== undefined)) {
       threeBitColor = fourBitColor = true;
       revoke("env");
       return colorSupport();
@@ -96,7 +102,7 @@ export async function getColorSupport({
 
     if (Deno.build.os === "windows") {
       const [version, releaseNum] = Deno.osRelease().split(".").map(Number);
-      if (releaseNum > 14931 || version > 10) {
+      if (releaseNum >= 14931 || version > 10) {
         revoke("env");
         threeBitColor =
           fourBitColor =
@@ -111,22 +117,20 @@ export async function getColorSupport({
   await request("run");
 
   if (forcePermissions || await permissionState("run") === "granted") {
-    const child = await Deno?.spawnChild?.("tput", {
+    const child = await Deno.spawnChild("tput", {
       args: ["colors"],
     });
 
-    if (child) {
-      const { stdout } = await child.output();
-      if (stdout) {
-        const tputColors = +(new TextDecoder().decode(stdout) || 0);
+    const { stdout } = await child.output();
+    if (stdout) {
+      const tputColors = +(new TextDecoder().decode(stdout) || 0);
 
-        threeBitColor = tputColors >= 4 || threeBitColor;
-        fourBitColor = tputColors >= 8 || fourBitColor;
-        highColor = tputColors >= 256 || highColor;
-        trueColor = tputColors >= 16777216 || trueColor;
-        revoke("run");
-        return colorSupport();
-      }
+      threeBitColor = tputColors >= 4 || threeBitColor;
+      fourBitColor = tputColors >= 8 || fourBitColor;
+      highColor = tputColors >= 256 || highColor;
+      trueColor = tputColors >= 16777216 || trueColor;
+      revoke("run");
+      return colorSupport();
     }
   }
 
