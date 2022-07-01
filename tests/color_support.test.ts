@@ -1,3 +1,4 @@
+// Copyright 2022 Im-Beast. All rights reserved. MIT license.
 import { crayon, prototype } from "../mod.ts";
 import { getColorSupport } from "../src/extensions/color_support.ts";
 import { assertEquals } from "./deps.ts";
