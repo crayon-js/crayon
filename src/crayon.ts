@@ -14,6 +14,8 @@ import {
 } from "./styles.ts";
 import { getNoColor, replaceAll } from "./util.ts";
 
+const eventTarget = new EventTarget();
+
 const hasColor = !getNoColor();
 
 export interface ColorSupport {
@@ -58,6 +60,8 @@ export const prototype: CrayonPrototype = {
   set colorSupport(value: ColorSupport) {
     // Keep colorSupport object reference so it doesn't break things
     Object.assign(colorSupport, value);
+    // Tell crayon to refresh all initialized styles
+    eventTarget.dispatchEvent(new CustomEvent("update"));
   },
   strip(text: string): string {
     return text.replaceAll(/\x1b\[([0-9]|;)+m/gi, "");
@@ -125,6 +129,7 @@ export type Crayon<
 
 export function buildCrayon<T extends Crayon = Crayon>(styleBuffer = ""): T {
   function crayon(
+    this: T,
     single: unknown & { raw?: boolean },
     ...many: unknown[]
   ): T | string {
@@ -274,15 +279,25 @@ function mapStyle(
     attributes.value = crayon;
   } else {
     attributes.get = function (this: Crayon) {
-      if (typeof code === "function") {
-        code = code();
-      }
+      const prepareCrayon = () => {
+        const $code = typeof code === "function" ? code() : code;
 
-      const builtCrayon = buildCrayon(this.styleBuffer + code);
-      // Instead of building crayon every time property gets accessed
-      // simply replace getter with built crayon instance
-      Object.defineProperty(this, name, { value: builtCrayon });
-      return builtCrayon;
+        const builtCrayon = buildCrayon(this.styleBuffer + $code);
+        // Instead of building crayon every time property gets accessed
+        // simply replace getter with built crayon instance
+        Object.defineProperty(this, name, {
+          configurable: true,
+          value: builtCrayon,
+        });
+        return builtCrayon;
+      };
+
+      // Overwrite crayon instance when colorSupport value changes to adapt styles
+      eventTarget.addEventListener("update", () => {
+        prepareCrayon();
+      });
+
+      return prepareCrayon();
     };
   }
 
@@ -301,12 +316,6 @@ export function mapPrototypeStyles(
     for (const [name, code] of map.entries()) {
       mapStyle(name, code);
     }
-  }
-}
-
-export function reloadPrototypeStyles(): void {
-  for (const [name, code] of styles) {
-    mapStyle(name, code);
   }
 }
 
