@@ -129,8 +129,27 @@ Deno.test("Extension: Color support", async (t) => {
   });
 
   await t.step("Windows 10+/14931+", async () => {
+    const ci = Deno.env.get("CI")!;
+    Deno.env.delete("CI");
+
+    const term = Deno.env.get("TERM")!;
+    Deno.env.delete("TERM");
+
+    const colorTerm = Deno.env.get("COLORTERM")!;
+    Deno.env.delete("COLORTERM");
+
+    const { build } = Deno;
+    Object.defineProperty(globalThis.Deno, "build", {
+      value: {
+        os: "windows",
+      },
+    });
+
+    const { osRelease } = globalThis.Deno;
     Object.defineProperty(globalThis.Deno, "osRelease", {
-      value: "10.14931",
+      value() {
+        return "10.14931";
+      },
     });
 
     assertEquals(await getColorSupport({ forcePermissions: true }), {
@@ -139,5 +158,17 @@ Deno.test("Extension: Color support", async (t) => {
       fourBitColor: true,
       threeBitColor: true,
     });
+
+    Object.defineProperty(globalThis.Deno, "build", {
+      value: build,
+    });
+
+    Object.defineProperty(globalThis.Deno, "osRelease", {
+      value: osRelease,
+    });
+
+    resetEnv("CI", ci);
+    resetEnv("TERM", term);
+    resetEnv("COLORTERM", colorTerm);
   });
 });
