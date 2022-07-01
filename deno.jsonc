@@ -14,7 +14,7 @@
   },
   "tasks": {
     // TODO: replace --ignore with glob when deno task will support it
-    "test": "deno test --fail-fast=1 --ignore=node_crayon,node_chalk_aliases,node_css_keywords,node_literal --allow-read=./src/extensions/literal.ts",
+    "test": "deno test --unstable --fail-fast=1 --ignore=node_crayon,node_chalk_aliases,node_css_keywords,node_literal --allow-read=./src/extensions/literal.ts --allow-env",
 
     "bench": "deno bench --unstable --ignore=node --allow-env",
     "bench-nocolor": "NO_COLOR=1 deno task bench",
