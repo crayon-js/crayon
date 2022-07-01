@@ -1,4 +1,4 @@
-<h1 align="center">🖍️ Crayon.js Literal Templates</h1>
+<h1 align="center">🖍️ Crayon Literal Templates</h1>
 
 ## 📚 About
 
