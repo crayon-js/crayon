@@ -2,7 +2,14 @@ import { crayon, prototype } from "../mod.ts";
 import { getColorSupport } from "../src/extensions/color_support.ts";
 import { assertEquals } from "./deps.ts";
 
-// TODO(Im-Beast): tests
+function resetEnv(key: string, value: string): void {
+  if (typeof value !== "string") {
+    Deno.env.delete(key);
+    return;
+  }
+  Deno.env.set(key, value);
+}
+
 Deno.test("Extension: Color support", async (t) => {
   await t.step("Crayon behaviour", () => {
     assertEquals(crayon.ansi3(5)("Hi"), "\x1b[35mHi\x1b[0m\x1b[0m");
@@ -45,7 +52,7 @@ Deno.test("Extension: Color support", async (t) => {
       threeBitColor: true,
     });
 
-    Deno.env.set("COLORTERM", colorTerm);
+    resetEnv("COLORTERM", colorTerm);
   });
 
   await t.step("NO_COLOR", async () => {
@@ -61,7 +68,7 @@ Deno.test("Extension: Color support", async (t) => {
       threeBitColor: false,
     });
 
-    Deno.env.set("COLORTERM", colorTerm);
+    resetEnv("COLORTERM", colorTerm);
     Object.defineProperty(globalThis.Deno, "noColor", { value: false });
   });
 
@@ -79,8 +86,8 @@ Deno.test("Extension: Color support", async (t) => {
       threeBitColor: true,
     });
 
-    Deno.env.set("TERM", term);
-    Deno.env.set("COLORTERM", colorTerm);
+    resetEnv("TERM", term);
+    resetEnv("COLORTERM", colorTerm);
   });
 
   await t.step("CI", async () => {
@@ -116,12 +123,9 @@ Deno.test("Extension: Color support", async (t) => {
       Deno.env.delete(ciEnv);
     }
 
-    if (ci) {
-      Deno.env.set("CI", ci);
-    } else Deno.env.delete("CI");
-
-    Deno.env.set("TERM", term);
-    Deno.env.set("COLORTERM", colorTerm);
+    resetEnv("CI", ci);
+    resetEnv("TERM", term);
+    resetEnv("COLORTERM", colorTerm);
   });
 
   await t.step("Windows 10+/14931+", async () => {
