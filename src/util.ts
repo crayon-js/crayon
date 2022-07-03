@@ -48,11 +48,12 @@ export function replaceAll(
   if (searchIndex === -1) return string;
 
   const offset = search.length;
+  const lookBackOffset = replaceValue.length;
 
   do {
     string = string.slice(0, searchIndex) + replaceValue +
       string.slice(searchIndex + search.length);
-    searchIndex = string.indexOf(search, searchIndex + offset);
+    searchIndex = string.indexOf(search, searchIndex - offset + lookBackOffset);
   } while (searchIndex !== -1);
 
   return string;
