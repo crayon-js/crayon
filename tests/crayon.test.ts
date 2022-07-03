@@ -18,6 +18,7 @@ import {
   mapPrototypeFuncs,
   mapPrototypeStyles,
   replace,
+  replaceAll,
   StyleCode,
 } from "../mod.ts";
 
@@ -413,6 +414,22 @@ Deno.test("Utility functions", async (t) => {
     assertEquals(
       replace("a b c", " ", ""),
       "ab c",
+    );
+  });
+
+  await t.step("Replace all", () => {
+    assertEquals(
+      replaceAll(
+        "replace all of these those those occurences",
+        "those ",
+        "",
+      ),
+      "replace all of these occurences",
+    );
+
+    assertEquals(
+      replaceAll("\x1b[44m\x1b[0m\x1b[0m", "\x1b[0m", ""),
+      "\x1b[44m",
     );
   });
 
