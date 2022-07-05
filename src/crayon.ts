@@ -107,6 +107,7 @@ export type Crayon<
   & typeof prototype
   & {
     styleBuffer: string;
+    usesFunc: boolean;
     keyword(style: Style): Crayon<C, O>;
     keyword(style: string): Crayon<C, O>;
     ansi3(code: number): Crayon<C, O>;
@@ -127,7 +128,10 @@ export type Crayon<
   }
   & O;
 
-export function buildCrayon<T extends Crayon = Crayon>(styleBuffer = ""): T {
+export function buildCrayon<T extends Crayon = Crayon>(
+  styleBuffer = "",
+  usesFunc = false,
+): T {
   function crayon(
     this: T,
     single: unknown & { raw?: boolean },
@@ -145,6 +149,7 @@ export function buildCrayon<T extends Crayon = Crayon>(styleBuffer = ""): T {
   }
 
   crayon.styleBuffer = styleBuffer;
+  crayon.usesFunc = usesFunc;
 
   return Object.setPrototypeOf(crayon, prototype);
 }
@@ -198,7 +203,7 @@ function mapFunc(name: string, func: CrayonStyleFunction, only = false): void {
           return crayon;
         }
         : function (this: Crayon, ...args: unknown[]) {
-          return buildCrayon(this.styleBuffer + (func(...args) ?? ""));
+          return buildCrayon(this.styleBuffer + (func(...args) ?? ""), true);
         },
     });
     return;
@@ -210,7 +215,10 @@ function mapFunc(name: string, func: CrayonStyleFunction, only = false): void {
         return crayon;
       }
       : function (this: Crayon, ...args: unknown[]) {
-        return buildCrayon(this.styleBuffer + (func(...args, false) ?? ""));
+        return buildCrayon(
+          this.styleBuffer + (func(...args, false) ?? ""),
+          true,
+        );
       },
   });
 
@@ -221,7 +229,10 @@ function mapFunc(name: string, func: CrayonStyleFunction, only = false): void {
         return crayon;
       }
       : function (this: Crayon, ...args: unknown[]) {
-        return buildCrayon(this.styleBuffer + (func(...args, true) ?? ""));
+        return buildCrayon(
+          this.styleBuffer + (func(...args, true) ?? ""),
+          true,
+        );
       },
   });
 }
@@ -282,7 +293,10 @@ function mapStyle(
       const prepareCrayon = () => {
         const $code = typeof code === "function" ? code() : code;
 
-        const builtCrayon = buildCrayon(this.styleBuffer + $code);
+        const builtCrayon = buildCrayon(
+          this.styleBuffer + $code,
+          this.usesFunc,
+        );
         // Instead of building crayon every time property gets accessed
         // simply replace getter with built crayon instance
         Object.defineProperty(this, name, {
@@ -292,12 +306,19 @@ function mapStyle(
         return builtCrayon;
       };
 
-      // Overwrite crayon instance when colorSupport value changes to adapt styles
-      eventTarget.addEventListener("update", () => {
-        prepareCrayon();
-      });
+      const crayon = prepareCrayon();
 
-      return prepareCrayon();
+      // Don't cache crayon when it uses function:
+      // This is done to prevent memory leaks or cpu overhead
+      // caused when function has many different output possibilities
+      if (!crayon.usesFunc) {
+        // Overwrite crayon instance when colorSupport value changes to adapt styles
+        eventTarget.addEventListener("update", () => {
+          prepareCrayon();
+        });
+      }
+
+      return crayon;
     };
   }
 

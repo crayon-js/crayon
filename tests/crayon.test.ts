@@ -123,6 +123,15 @@ Deno.test("Chaining", async (t) => {
       );
     });
 
+    await t2.step("Proper usesFunc value", () => {
+      assertEquals(crayon.red.bgBlue.bold.usesFunc, false);
+      assertEquals(crayon.red.rgb(230, 127, 30).bold.usesFunc, true);
+      assertEquals(crayon.yellow.rgb(230, 127, 30).bold.usesFunc, true);
+      assertEquals(crayon.yellow.bold.usesFunc, false);
+      assertEquals(crayon.rgb(127, 255, 50).red.bold.usesFunc, true);
+      assertEquals(crayon.red.bgBlue.rgb(127, 255, 50).bold.usesFunc, true);
+    });
+
     await t2.step("Error handling", () => {
       assertThrows(() => crayon.hex(""));
       assertThrows(() => crayon.hex("c"));
