@@ -115,6 +115,6 @@ async function sizeBadge() {
   return generateBadge("raw size", `${(size / 1024).toFixed(2)}KB`, "4c76ae");
 }
 
-await emptyDir("badges");
-Deno.writeTextFile("badges/coverage.svg", await coverageBadge());
-Deno.writeTextFile("badges/size.svg", await sizeBadge());
+await emptyDir("docs/badges");
+Deno.writeTextFile("docs/badges/coverage.svg", await coverageBadge());
+Deno.writeTextFile("docs/badges/size.svg", await sizeBadge());
