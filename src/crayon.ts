@@ -12,7 +12,12 @@ import {
   Style,
   StyleCode,
 } from "./styles.ts";
-import { getNoColor, replaceAll } from "./util.ts";
+import { getNoColor, isNode, replaceAll } from "./util.ts";
+
+if (isNode()) {
+  // @ts-ignore Node compatibility
+  globalThis.CustomEvent = Event;
+}
 
 const eventTarget = new EventTarget();
 
