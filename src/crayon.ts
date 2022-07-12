@@ -191,12 +191,16 @@ export const crayon = buildCrayon();
  *
  * @param name – name of the function
  * @param func – function which gets mapped
- * @param only – whether to not map bgName func
+ * @param noBgSpecifier – whether to not map bgName func (also won't call additional false argument)
  */
-function mapFunc(name: string, func: CrayonStyleFunction, only = false): void {
+function mapFunc(
+  name: string,
+  func: CrayonStyleFunction,
+  noBgSpecifier = false,
+): void {
   functions.set(name, func);
 
-  if (only) {
+  if (noBgSpecifier) {
     Object.defineProperty(prototype, name, {
       value: colorSupport.noColor
         ? function () {
@@ -306,19 +310,19 @@ function mapStyle(
         return builtCrayon;
       };
 
-      const crayon = prepareCrayon();
+      const preparedCrayon = prepareCrayon();
 
       // Don't cache crayon when it uses function:
       // This is done to prevent memory leaks or cpu overhead
       // caused when function has many different output possibilities
-      if (!crayon.usesFunc) {
+      if (!preparedCrayon.usesFunc) {
         // Overwrite crayon instance when colorSupport value changes to adapt styles
         eventTarget.addEventListener("update", () => {
           prepareCrayon();
         });
       }
 
-      return crayon;
+      return preparedCrayon;
     };
   }
 
