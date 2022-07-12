@@ -1,10 +1,10 @@
 [![deno github workflow](https://github.com/crayon-js/crayon/actions/workflows/deno.yml/badge.svg)](https://github.com/crayon-js/crayon/actions/workflows/deno.yml)
 [![npm package publishing workflow](https://github.com/crayon-js/crayon/actions/workflows/node_publish.yml/badge.svg)](https://github.com/crayon-js/crayon/actions/workflows/node_publish.yml)
-![coverage percentage of crayon](./docs/badges/coverage.svg)
+![coverage percentage of crayon](https://github.com/crayon-js/crayon/docs/badges/coverage.svg)
 [![doc.deno.land badge for crayon](https://doc.deno.land/badge.svg)](https://doc.deno.land/https://deno.land/x/crayon)
-![size of mod.ts](./docs/badges/size.svg)
+![size of mod.ts](https://github.com/crayon-js/crayon/docs/badges/size.svg)
 
-<img align="center" src="./docs/logo.svg" alt="Crayon logo: Totally not creppy humanized crayon staring and waving hand at you" height="256px" width="100%">
+<img align="center" src="https://github.com/crayon-js/crayon/docs/logo.svg" alt="Crayon logo: Totally not creppy humanized crayon staring and waving hand at you" height="256px" width="100%">
 
 <h1 align="center">🖍️ Crayon</h1>
 
