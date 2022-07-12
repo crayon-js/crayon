@@ -1,12 +1,17 @@
 // Copyright 2022 Im-Beast. All rights reserved. MIT license.
-import { crayon } from "../mod.ts";
+import { buildCrayon, crayon } from "../mod.ts";
 import "../src/extensions/literal.ts";
 
 import crayon231 from "https://deno.land/x/crayon@2.3.1/mod.ts";
-// TODO: Test for Chalk 5.x.x, right now skypack.dev and esm.sh fails to import it because it vendored dependencies
-import chalk from "https://cdn.skypack.dev/chalk@4.1.2?dts";
-import ansiColors from "https://cdn.skypack.dev/ansi-colors@4.1.3?dts";
-import kleur from "https://cdn.skypack.dev/kleur@4.1.4?dts";
+import chalk412 from "https://cdn.skypack.dev/chalk@4.1.2?dts";
+// FIXME: Use proper typings for chalk 5.0.1
+import _chalk501, {
+  Chalk,
+} from "https://cdn.jsdelivr.net/npm/chalk@5.0.1/+esm";
+const chalk501 = _chalk501 as typeof chalk412;
+import chalktemplate040 from "https://cdn.skypack.dev/chalk-template@0.4.0?dts";
+import ansiColors413 from "https://cdn.skypack.dev/ansi-colors@4.1.3?dts";
+import kleur414 from "https://cdn.skypack.dev/kleur@4.1.4?dts";
 // ---------------------------------------------------------------
 
 const LOREM_IPSUM =
@@ -29,15 +34,19 @@ async function shortChain() {
   });
 
   await Deno.bench({ name: "Chalk 4.1.2", group }, () => {
-    chalk.red.bgBlue.bold("Hello");
+    chalk412.red.bgBlue.bold("Hello");
+  });
+
+  await Deno.bench({ name: "Chalk 5.0.1", group }, () => {
+    chalk501.red.bgBlue.bold("Hello");
   });
 
   await Deno.bench({ name: "Ansi-colors 4.1.3", group }, () => {
-    ansiColors.red.bgBlue.bold("Hello");
+    ansiColors413.red.bgBlue.bold("Hello");
   });
 
   await Deno.bench({ name: "Kleur 4.1.4", group }, () => {
-    kleur.red().bgBlue().bold("Hello");
+    kleur414.red().bgBlue().bold("Hello");
   });
 }
 
@@ -58,15 +67,19 @@ async function longChain() {
   });
 
   await Deno.bench({ name: "Chalk 4.1.2", group }, () => {
-    chalk.yellow.bgGreen.underline.italic.bold("Hello");
+    chalk412.yellow.bgGreen.underline.italic.bold("Hello");
+  });
+
+  await Deno.bench({ name: "Chalk 5.0.1", group }, () => {
+    chalk501.yellow.bgGreen.underline.italic.bold("Hello");
   });
 
   await Deno.bench({ name: "Ansi-colors 4.1.3", group }, () => {
-    ansiColors.yellow.bgGreen.underline.italic.bold("Hello");
+    ansiColors413.yellow.bgGreen.underline.italic.bold("Hello");
   });
 
   await Deno.bench({ name: "Kleur 4.1.4", group }, () => {
-    kleur.yellow().bgGreen().underline().italic().bold("Hello");
+    kleur414.yellow().bgGreen().underline().italic().bold("Hello");
   });
 }
 
@@ -87,15 +100,19 @@ async function longTextShortChain() {
   });
 
   await Deno.bench({ name: "Chalk 4.1.2", group }, () => {
-    chalk.magenta.bgCyan(LOREM_IPSUM);
+    chalk412.magenta.bgCyan(LOREM_IPSUM);
+  });
+
+  await Deno.bench({ name: "Chalk 5.0.1", group }, () => {
+    chalk501.magenta.bgCyan(LOREM_IPSUM);
   });
 
   await Deno.bench({ name: "Ansi-colors 4.1.3", group }, () => {
-    ansiColors.magenta.bgCyan(LOREM_IPSUM);
+    ansiColors413.magenta.bgCyan(LOREM_IPSUM);
   });
 
   await Deno.bench({ name: "Kleur 4.1.4", group }, () => {
-    kleur.magenta().bgCyan(LOREM_IPSUM);
+    kleur414.magenta().bgCyan(LOREM_IPSUM);
   });
 }
 
@@ -116,15 +133,19 @@ async function longTextLongChain() {
   });
 
   await Deno.bench({ name: "Chalk 4.1.2", group }, () => {
-    chalk.blue.bgRed.underline.italic.bold(LOREM_IPSUM);
+    chalk412.blue.bgRed.underline.italic.bold(LOREM_IPSUM);
+  });
+
+  await Deno.bench({ name: "Chalk 5.0.1", group }, () => {
+    chalk501.blue.bgRed.underline.italic.bold(LOREM_IPSUM);
   });
 
   await Deno.bench({ name: "Ansi-colors 4.1.3", group }, () => {
-    ansiColors.blue.bgRed.underline.italic.bold(LOREM_IPSUM);
+    ansiColors413.blue.bgRed.underline.italic.bold(LOREM_IPSUM);
   });
 
   await Deno.bench({ name: "Kleur 4.1.4", group }, () => {
-    kleur.blue().bgRed().underline().italic().bold(LOREM_IPSUM);
+    kleur414.blue().bgRed().underline().italic().bold(LOREM_IPSUM);
   });
 }
 
@@ -146,19 +167,24 @@ async function cachedShortChain() {
     crayon231Cache("Hello");
   });
 
-  const chalkCache = chalk.bgWhite.black;
+  const chalkCache412 = chalk412.bgWhite.black;
   await Deno.bench({ name: "Chalk 4.1.2", group }, () => {
-    chalkCache("Hello");
+    chalkCache412("Hello");
   });
 
-  const ansiColorsCache = ansiColors.bgWhite.black;
+  const chalkCache501 = chalk501.bgWhite.black;
+  await Deno.bench({ name: "Chalk 5.0.1", group }, () => {
+    chalkCache501("Hello");
+  });
+
+  const ansiColorsCache413 = ansiColors413.bgWhite.black;
   await Deno.bench({ name: "Ansi-colors 4.1.3", group }, () => {
-    ansiColorsCache("Hello");
+    ansiColorsCache413("Hello");
   });
 
-  const kleurCache = kleur.bgWhite().black;
+  const kleurCache414 = kleur414.bgWhite().black;
   await Deno.bench({ name: "Kleur 4.1.4", group }, () => {
-    kleurCache("Hello");
+    kleurCache414("Hello");
   });
 }
 
@@ -180,17 +206,22 @@ async function cachedLongChain() {
     crayon231Cache("Hello");
   });
 
-  const chalkCache = chalk.bgYellow.cyan.italic.underline.bold;
+  const chalkCache412 = chalk412.bgYellow.cyan.italic.underline.bold;
   await Deno.bench({ name: "Chalk 4.1.2", group }, () => {
-    chalkCache("Hello");
+    chalkCache412("Hello");
   });
 
-  const ansiColorsCache = ansiColors.bgYellow.cyan.italic.underline.bold;
+  const chalkCache501 = chalk501.bgYellow.cyan.italic.underline.bold;
+  await Deno.bench({ name: "Chalk 5.0.1", group }, () => {
+    chalkCache501("Hello");
+  });
+
+  const ansiColorsCache = ansiColors413.bgYellow.cyan.italic.underline.bold;
   await Deno.bench({ name: "Ansi-colors 4.1.3", group }, () => {
     ansiColorsCache("Hello");
   });
 
-  const kleurCache = kleur.bgYellow().cyan().italic().underline().bold;
+  const kleurCache = kleur414.bgYellow().cyan().italic().underline().bold;
   await Deno.bench({ name: "Kleur 4.1.4", group }, () => {
     kleurCache("Hello");
   });
@@ -213,7 +244,11 @@ async function chainFunctions() {
   });
 
   await Deno.bench({ name: "Chalk 4.1.2", group }, () => {
-    chalk.rgb(200, 130, 80).bgHex("#70FF90")("Hello");
+    chalk412.rgb(200, 130, 80).bgHex("#70FF90")("Hello");
+  });
+
+  await Deno.bench({ name: "Chalk 5.0.1", group }, () => {
+    chalk501.rgb(200, 130, 80).bgHex("#70FF90")("Hello");
   });
 
   // Kleur and Ansi-colors don't have color functions
@@ -235,7 +270,11 @@ async function shortLiteral() {
   });
 
   await Deno.bench({ name: "Chalk 4.1.2", group }, () => {
-    chalk`{bold Hello}, how {blue are} you{white ?}`;
+    chalk412`{bold Hello}, how {blue are} you{white ?}`;
+  });
+
+  await Deno.bench({ name: "Chalk Template 0.4.0", group }, () => {
+    chalktemplate040`{bold Hello}, how {blue are} you{white ?}`;
   });
 
   // Kleur and Ansi-colors don't support literal templating
@@ -259,7 +298,12 @@ async function longLiteral() {
   });
 
   await Deno.bench({ name: "Chalk 4.1.2", group }, () => {
-    chalk
+    chalk412
+      `{bgYellow Hello {bgHex("#FF0302").rgb(222,10,123) {bold C}{italic o l o r s}} {bold.italic I really enjoy you}}`;
+  });
+
+  await Deno.bench({ name: "Chalk Template 0.4.0", group }, () => {
+    chalktemplate040
       `{bgYellow Hello {bgHex("#FF0302").rgb(222,10,123) {bold C}{italic o l o r s}} {bold.italic I really enjoy you}}`;
   });
 
@@ -284,11 +328,36 @@ async function longTextLiteral() {
   });
 
   await Deno.bench({ name: "Chalk 4.1.2", group }, () => {
-    chalk
+    chalk412
+      `{red Lorem {bold ipsum dolor sit amet}, consectetur adipiscing elit, {green sed do eiusmod} tempor incididunt ut labore et dolore magna aliqua. A erat nam at lectus urna duis convallis convallis. Nunc eget lorem dolor sed viverra. Amet justo donec enim diam. Consectetur adipiscing elit pellentesque habitant morbi. Tellus at urna condimentum mattis pellentesque id nibh. Sem nulla pharetra diam sit amet. Quis blandit turpis cursus in hac habitasse platea dictumst. Nunc eget lorem dolor sed viverra ipsum nunc. Donec ac odio tempor orci. Adipiscing vitae proin sagittis nisl rhoncus mattis rhoncus urna. Posuere lorem ipsum dolor sit amet consectetur adipiscing. Facilisi cras fermentum odio eu feugiat pretium nibh ipsum consequat. Eget duis at tellus at urna condimentum mattis pellentesque. Sem integer vitae justo eget magna fermentum iaculis eu non. Lacinia at quis risus sed vulputate. {italic Mi tempus imperdiet nulla malesuada pellentesque elit eget gravida cum.}\nFaucibus ornare suspendisse sed nisi lacus sed viverra. Euismod nisi porta lorem mollis. Consequat mauris nunc congue nisi vitae suscipit tellus mauris. Platea dictumst vestibulum rhoncus est pellentesque elit. Nunc scelerisque viverra mauris in aliquam sem fringilla. Volutpat lacus laoreet non curabitur gravida arcu ac tortor. Pretium vulputate sapien nec sagittis aliquam malesuada bibendum. Nulla facilisi cras fermentum odio eu feugiat pretium nibh. Nullam ac tortor vitae purus faucibus. Natoque penatibus et magnis dis. Dignissim convallis aenean et tortor at risus viverra adipiscing at. Odio aenean sed adipiscing diam donec adipiscing. Cursus metus aliquam eleifend mi in nulla. Faucibus ornare suspendisse sed nisi lacus sed viverra {bold tellus}.}`;
+  });
+
+  await Deno.bench({ name: "Chalk Template 0.4.0", group }, () => {
+    chalktemplate040
       `{red Lorem {bold ipsum dolor sit amet}, consectetur adipiscing elit, {green sed do eiusmod} tempor incididunt ut labore et dolore magna aliqua. A erat nam at lectus urna duis convallis convallis. Nunc eget lorem dolor sed viverra. Amet justo donec enim diam. Consectetur adipiscing elit pellentesque habitant morbi. Tellus at urna condimentum mattis pellentesque id nibh. Sem nulla pharetra diam sit amet. Quis blandit turpis cursus in hac habitasse platea dictumst. Nunc eget lorem dolor sed viverra ipsum nunc. Donec ac odio tempor orci. Adipiscing vitae proin sagittis nisl rhoncus mattis rhoncus urna. Posuere lorem ipsum dolor sit amet consectetur adipiscing. Facilisi cras fermentum odio eu feugiat pretium nibh ipsum consequat. Eget duis at tellus at urna condimentum mattis pellentesque. Sem integer vitae justo eget magna fermentum iaculis eu non. Lacinia at quis risus sed vulputate. {italic Mi tempus imperdiet nulla malesuada pellentesque elit eget gravida cum.}\nFaucibus ornare suspendisse sed nisi lacus sed viverra. Euismod nisi porta lorem mollis. Consequat mauris nunc congue nisi vitae suscipit tellus mauris. Platea dictumst vestibulum rhoncus est pellentesque elit. Nunc scelerisque viverra mauris in aliquam sem fringilla. Volutpat lacus laoreet non curabitur gravida arcu ac tortor. Pretium vulputate sapien nec sagittis aliquam malesuada bibendum. Nulla facilisi cras fermentum odio eu feugiat pretium nibh. Nullam ac tortor vitae purus faucibus. Natoque penatibus et magnis dis. Dignissim convallis aenean et tortor at risus viverra adipiscing at. Odio aenean sed adipiscing diam donec adipiscing. Cursus metus aliquam eleifend mi in nulla. Faucibus ornare suspendisse sed nisi lacus sed viverra {bold tellus}.}`;
   });
 
   // Kleur and Ansi-colors don't support literal templating
+}
+
+async function generateInstance() {
+  const group = "generating-instance";
+
+  await Deno.bench({
+    name: "Crayon (Upstream) - Generating instance",
+    group,
+    baseline: true,
+  }, () => {
+    buildCrayon();
+  });
+
+  await Deno.bench({ name: "Chalk 4.1.2", group }, () => {
+    new chalk412.Instance();
+  });
+
+  await Deno.bench({ name: "Chalk 5.0.1", group }, () => {
+    new Chalk({ level: 3 });
+  });
 }
 
 shortChain();
@@ -302,3 +371,5 @@ chainFunctions();
 shortLiteral();
 longLiteral();
 longTextLiteral();
+
+generateInstance();
