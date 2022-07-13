@@ -1,5 +1,7 @@
 <h1 align="center">🖍️ Crayon Css Keywords 🔑👄 </h1>
 
+![size of css_keywords.ts](https://github.com/crayon-js/crayon/raw/main/docs/badges/size/css_keywords.svg)
+
 ## 📚 About
 
 Css keywords is an extension for Crayon that adds ability to style using css

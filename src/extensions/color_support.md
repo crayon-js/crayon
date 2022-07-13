@@ -1,5 +1,7 @@
 <h1 align="center">🖍️ Crayon Color Support 🎨</h1>
 
+![size of color_support.ts](https://github.com/crayon-js/crayon/raw/main/docs/badges/size/color_support.svg)
+
 > ⚠️ This module requires `--unstable` because it uses `Deno.osRelease()` and
 > `Deno.spawnChild()`
 

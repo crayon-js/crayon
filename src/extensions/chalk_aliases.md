@@ -1,5 +1,7 @@
 <h1 align="center">🖍️ Crayon Chalk Aliases 🩹</h1>
 
+![size of chalk_aliases.ts](https://github.com/crayon-js/crayon/raw/main/docs/badges/size/chalk_aliases.svg)
+
 ## 📚 About
 
 Chalk aliases is an extension for Crayon that tries to make switching from Chalk

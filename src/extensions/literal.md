@@ -1,5 +1,7 @@
 <h1 align="center">🖍️ Crayon Literal Templates 📄</h1>
 
+![size of literal.ts](https://github.com/crayon-js/crayon/raw/main/docs/badges/size/literal.svg)
+
 ## 📚 About
 
 Literal templates is an extension for Crayon that adds support for styling using

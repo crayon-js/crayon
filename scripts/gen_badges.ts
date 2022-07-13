@@ -77,11 +77,11 @@ async function coverageBadge() {
   );
 }
 
-async function sizeBadge() {
+async function sizeBadge(filePath: string) {
   const info = await Deno.spawn(Deno.execPath(), {
     args: [
       "info",
-      "mod.ts",
+      filePath,
       "--json",
     ],
     stdin: "null",
@@ -117,4 +117,15 @@ async function sizeBadge() {
 
 await emptyDir("docs/badges");
 Deno.writeTextFile("docs/badges/coverage.svg", await coverageBadge());
-Deno.writeTextFile("docs/badges/size.svg", await sizeBadge());
+
+await emptyDir("docs/badges/size");
+Deno.writeTextFile("docs/badges/size/mod.svg", await sizeBadge("mod.ts"));
+
+for await (const file of Deno.readDir("src/extensions")) {
+  if (!file.name.endsWith(".ts")) continue;
+
+  Deno.writeTextFile(
+    `docs/badges/size/${file.name.replace(".ts", "")}.svg`,
+    await sizeBadge(`src/extensions/${file.name}`),
+  );
+}
