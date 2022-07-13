@@ -26,6 +26,6 @@
     "prepare-literal": "deno run --allow-env=HOME,DENO_AUTH_TOKENS,XDG_CACHE_HOME,DENO_DIR --allow-read --allow-write=./node_literal,$HOME/.cache/deno --allow-run=npm --allow-net scripts/dnt_literal.ts",
     "prepare-color-support": "deno run --unstable --allow-env=HOME,DENO_AUTH_TOKENS,XDG_CACHE_HOME,DENO_DIR --allow-read --allow-write=./node_color_support,$HOME/.cache/deno --allow-run=npm --allow-net scripts/dnt_color_support.ts",
 
-    "prepare-badges": "deno run --unstable --allow-env=HOME,DENO_AUTH_TOKENS,XDG_CACHE_HOME,DENO_DIR --allow-read --allow-write=./docs/badges/,$HOME/.cache/deno --allow-run --allow-net=img.shields.io scripts/gen_badges.ts"
+    "prepare-badges": "deno run --unstable --allow-env=HOME,DENO_AUTH_TOKENS,XDG_CACHE_HOME,DENO_DIR --allow-read --allow-write=./docs/badges/,$HOME/.cache/deno,./coverage --allow-run --allow-net=img.shields.io scripts/gen_badges.ts"
   }
 }
