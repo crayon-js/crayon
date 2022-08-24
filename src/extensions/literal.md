@@ -17,8 +17,7 @@ import { crayon } from "https://deno.land/x/crayon@version/mod.ts";
 import "https://deno.land/x/crayon@version/src/extensions/literal.ts";
 
 console.log(
-  crayon
-    `{red I'm red! {blue I'm blue!} {bgBlue.bold I'm kind of both! But also bold!}}`,
+  crayon`{red I'm red! {blue I'm blue!} {bgBlue.bold I'm kind of both! But also bold!}}`,
 );
 ```
 
@@ -30,8 +29,7 @@ import { compileLiteral } from "@crayon.js/literal";
 prototype.literal = compileLiteral;
 
 console.log(
-  crayon
-    `{red I'm red! {blue I'm blue!} {bgBlue.bold I'm kind of both! But also bold!}}`,
+  crayon`{red I'm red! {blue I'm blue!} {bgBlue.bold I'm kind of both! But also bold!}}`,
 );
 ```
 
