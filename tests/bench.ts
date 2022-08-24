@@ -12,6 +12,7 @@ const chalk501 = _chalk501 as typeof chalk412;
 import chalktemplate040 from "https://cdn.skypack.dev/chalk-template@0.4.0?dts";
 import ansiColors413 from "https://cdn.skypack.dev/ansi-colors@4.1.3?dts";
 import kleur414 from "https://cdn.skypack.dev/kleur@4.1.4?dts";
+import { colors as cliffy0243 } from "https://deno.land/x/cliffy@v0.24.3/ansi/colors.ts";
 // ---------------------------------------------------------------
 
 const LOREM_IPSUM =
@@ -39,6 +40,10 @@ async function shortChain() {
 
   await Deno.bench({ name: "Chalk 5.0.1", group }, () => {
     chalk501.red.bgBlue.bold("Hello");
+  });
+
+  await Deno.bench({ name: "Cliffy 0.24.3", group }, () => {
+    cliffy0243.red.bgBlue.bold("Hello");
   });
 
   await Deno.bench({ name: "Ansi-colors 4.1.3", group }, () => {
@@ -74,6 +79,10 @@ async function longChain() {
     chalk501.yellow.bgGreen.underline.italic.bold("Hello");
   });
 
+  await Deno.bench({ name: "Cliffy 0.24.3", group }, () => {
+    cliffy0243.yellow.bgGreen.underline.italic.bold("Hello");
+  });
+
   await Deno.bench({ name: "Ansi-colors 4.1.3", group }, () => {
     ansiColors413.yellow.bgGreen.underline.italic.bold("Hello");
   });
@@ -107,6 +116,10 @@ async function longTextShortChain() {
     chalk501.magenta.bgCyan(LOREM_IPSUM);
   });
 
+  await Deno.bench({ name: "Cliffy 0.24.3", group }, () => {
+    cliffy0243.magenta.bgCyan(LOREM_IPSUM);
+  });
+
   await Deno.bench({ name: "Ansi-colors 4.1.3", group }, () => {
     ansiColors413.magenta.bgCyan(LOREM_IPSUM);
   });
@@ -138,6 +151,10 @@ async function longTextLongChain() {
 
   await Deno.bench({ name: "Chalk 5.0.1", group }, () => {
     chalk501.blue.bgRed.underline.italic.bold(LOREM_IPSUM);
+  });
+
+  await Deno.bench({ name: "Cliffy 0.24.3", group }, () => {
+    cliffy0243.blue.bgRed.underline.italic.bold(LOREM_IPSUM);
   });
 
   await Deno.bench({ name: "Ansi-colors 4.1.3", group }, () => {
@@ -175,6 +192,11 @@ async function cachedShortChain() {
   const chalkCache501 = chalk501.bgWhite.black;
   await Deno.bench({ name: "Chalk 5.0.1", group }, () => {
     chalkCache501("Hello");
+  });
+
+  const cliffyCache0243 = cliffy0243.bgWhite.black;
+  await Deno.bench({ name: "Cliffy 0.24.3", group }, () => {
+    cliffyCache0243("Hello");
   });
 
   const ansiColorsCache413 = ansiColors413.bgWhite.black;
@@ -216,6 +238,11 @@ async function cachedLongChain() {
     chalkCache501("Hello");
   });
 
+  const cliffyCache0243 = cliffy0243.bgYellow.cyan.italic.underline.bold;
+  await Deno.bench({ name: "Cliffy 0.24.3", group }, () => {
+    cliffyCache0243("Hello");
+  });
+
   const ansiColorsCache = ansiColors413.bgYellow.cyan.italic.underline.bold;
   await Deno.bench({ name: "Ansi-colors 4.1.3", group }, () => {
     ansiColorsCache("Hello");
@@ -251,6 +278,14 @@ async function chainFunctions() {
     chalk501.rgb(200, 130, 80).bgHex("#70FF90")("Hello");
   });
 
+  await Deno.bench({ name: "Cliffy 0.24.3", group }, () => {
+    cliffy0243.rgb24(cliffy0243.bgRgb24("Hello", 0x70FF90), {
+      r: 200,
+      g: 130,
+      b: 80,
+    });
+  });
+
   // Kleur and Ansi-colors don't have color functions
 }
 
@@ -277,7 +312,7 @@ async function shortLiteral() {
     chalktemplate040`{bold Hello}, how {blue are} you{white ?}`;
   });
 
-  // Kleur and Ansi-colors don't support literal templating
+  // Cliffy, Kleur and Ansi-colors don't support literal templating
 }
 
 async function longLiteral() {
@@ -288,26 +323,22 @@ async function longLiteral() {
     group,
     baseline: true,
   }, () => {
-    crayon
-      `{bgYellow Hello {bgHex(0xff0302).rgb(222,10,123) {bold C}{italic o l o r s}} {bold.italic I really enjoy you}}`;
+    crayon`{bgYellow Hello {bgHex(0xff0302).rgb(222,10,123) {bold C}{italic o l o r s}} {bold.italic I really enjoy you}}`;
   });
 
   await Deno.bench({ name: "Crayon 2.3.1", group }, () => {
-    crayon231
-      `{bgYellow Hello {bgHex("#FF0302").rgb(222,10,123) {bold C}{italic o l o r s}} {bold.italic I really enjoy you}}`;
+    crayon231`{bgYellow Hello {bgHex("#FF0302").rgb(222,10,123) {bold C}{italic o l o r s}} {bold.italic I really enjoy you}}`;
   });
 
   await Deno.bench({ name: "Chalk 4.1.2", group }, () => {
-    chalk412
-      `{bgYellow Hello {bgHex("#FF0302").rgb(222,10,123) {bold C}{italic o l o r s}} {bold.italic I really enjoy you}}`;
+    chalk412`{bgYellow Hello {bgHex("#FF0302").rgb(222,10,123) {bold C}{italic o l o r s}} {bold.italic I really enjoy you}}`;
   });
 
   await Deno.bench({ name: "Chalk Template 0.4.0", group }, () => {
-    chalktemplate040
-      `{bgYellow Hello {bgHex("#FF0302").rgb(222,10,123) {bold C}{italic o l o r s}} {bold.italic I really enjoy you}}`;
+    chalktemplate040`{bgYellow Hello {bgHex("#FF0302").rgb(222,10,123) {bold C}{italic o l o r s}} {bold.italic I really enjoy you}}`;
   });
 
-  // Kleur and Ansi-colors don't support literal templating
+  // Cliffy, Kleur and Ansi-colors don't support literal templating
 }
 
 async function longTextLiteral() {
@@ -318,26 +349,22 @@ async function longTextLiteral() {
     group,
     baseline: true,
   }, () => {
-    crayon
-      `{red Lorem {bold ipsum dolor sit amet}, consectetur adipiscing elit, {green sed do eiusmod} tempor incididunt ut labore et dolore magna aliqua. A erat nam at lectus urna duis convallis convallis. Nunc eget lorem dolor sed viverra. Amet justo donec enim diam. Consectetur adipiscing elit pellentesque habitant morbi. Tellus at urna condimentum mattis pellentesque id nibh. Sem nulla pharetra diam sit amet. Quis blandit turpis cursus in hac habitasse platea dictumst. Nunc eget lorem dolor sed viverra ipsum nunc. Donec ac odio tempor orci. Adipiscing vitae proin sagittis nisl rhoncus mattis rhoncus urna. Posuere lorem ipsum dolor sit amet consectetur adipiscing. Facilisi cras fermentum odio eu feugiat pretium nibh ipsum consequat. Eget duis at tellus at urna condimentum mattis pellentesque. Sem integer vitae justo eget magna fermentum iaculis eu non. Lacinia at quis risus sed vulputate. {italic Mi tempus imperdiet nulla malesuada pellentesque elit eget gravida cum.}\nFaucibus ornare suspendisse sed nisi lacus sed viverra. Euismod nisi porta lorem mollis. Consequat mauris nunc congue nisi vitae suscipit tellus mauris. Platea dictumst vestibulum rhoncus est pellentesque elit. Nunc scelerisque viverra mauris in aliquam sem fringilla. Volutpat lacus laoreet non curabitur gravida arcu ac tortor. Pretium vulputate sapien nec sagittis aliquam malesuada bibendum. Nulla facilisi cras fermentum odio eu feugiat pretium nibh. Nullam ac tortor vitae purus faucibus. Natoque penatibus et magnis dis. Dignissim convallis aenean et tortor at risus viverra adipiscing at. Odio aenean sed adipiscing diam donec adipiscing. Cursus metus aliquam eleifend mi in nulla. Faucibus ornare suspendisse sed nisi lacus sed viverra {bold tellus}.}`;
+    crayon`{red Lorem {bold ipsum dolor sit amet}, consectetur adipiscing elit, {green sed do eiusmod} tempor incididunt ut labore et dolore magna aliqua. A erat nam at lectus urna duis convallis convallis. Nunc eget lorem dolor sed viverra. Amet justo donec enim diam. Consectetur adipiscing elit pellentesque habitant morbi. Tellus at urna condimentum mattis pellentesque id nibh. Sem nulla pharetra diam sit amet. Quis blandit turpis cursus in hac habitasse platea dictumst. Nunc eget lorem dolor sed viverra ipsum nunc. Donec ac odio tempor orci. Adipiscing vitae proin sagittis nisl rhoncus mattis rhoncus urna. Posuere lorem ipsum dolor sit amet consectetur adipiscing. Facilisi cras fermentum odio eu feugiat pretium nibh ipsum consequat. Eget duis at tellus at urna condimentum mattis pellentesque. Sem integer vitae justo eget magna fermentum iaculis eu non. Lacinia at quis risus sed vulputate. {italic Mi tempus imperdiet nulla malesuada pellentesque elit eget gravida cum.}\nFaucibus ornare suspendisse sed nisi lacus sed viverra. Euismod nisi porta lorem mollis. Consequat mauris nunc congue nisi vitae suscipit tellus mauris. Platea dictumst vestibulum rhoncus est pellentesque elit. Nunc scelerisque viverra mauris in aliquam sem fringilla. Volutpat lacus laoreet non curabitur gravida arcu ac tortor. Pretium vulputate sapien nec sagittis aliquam malesuada bibendum. Nulla facilisi cras fermentum odio eu feugiat pretium nibh. Nullam ac tortor vitae purus faucibus. Natoque penatibus et magnis dis. Dignissim convallis aenean et tortor at risus viverra adipiscing at. Odio aenean sed adipiscing diam donec adipiscing. Cursus metus aliquam eleifend mi in nulla. Faucibus ornare suspendisse sed nisi lacus sed viverra {bold tellus}.}`;
   });
 
   await Deno.bench({ name: "Crayon 2.3.1", group }, () => {
-    crayon231
-      `{red Lorem {bold ipsum dolor sit amet}, consectetur adipiscing elit, {green sed do eiusmod} tempor incididunt ut labore et dolore magna aliqua. A erat nam at lectus urna duis convallis convallis. Nunc eget lorem dolor sed viverra. Amet justo donec enim diam. Consectetur adipiscing elit pellentesque habitant morbi. Tellus at urna condimentum mattis pellentesque id nibh. Sem nulla pharetra diam sit amet. Quis blandit turpis cursus in hac habitasse platea dictumst. Nunc eget lorem dolor sed viverra ipsum nunc. Donec ac odio tempor orci. Adipiscing vitae proin sagittis nisl rhoncus mattis rhoncus urna. Posuere lorem ipsum dolor sit amet consectetur adipiscing. Facilisi cras fermentum odio eu feugiat pretium nibh ipsum consequat. Eget duis at tellus at urna condimentum mattis pellentesque. Sem integer vitae justo eget magna fermentum iaculis eu non. Lacinia at quis risus sed vulputate. {italic Mi tempus imperdiet nulla malesuada pellentesque elit eget gravida cum.}\nFaucibus ornare suspendisse sed nisi lacus sed viverra. Euismod nisi porta lorem mollis. Consequat mauris nunc congue nisi vitae suscipit tellus mauris. Platea dictumst vestibulum rhoncus est pellentesque elit. Nunc scelerisque viverra mauris in aliquam sem fringilla. Volutpat lacus laoreet non curabitur gravida arcu ac tortor. Pretium vulputate sapien nec sagittis aliquam malesuada bibendum. Nulla facilisi cras fermentum odio eu feugiat pretium nibh. Nullam ac tortor vitae purus faucibus. Natoque penatibus et magnis dis. Dignissim convallis aenean et tortor at risus viverra adipiscing at. Odio aenean sed adipiscing diam donec adipiscing. Cursus metus aliquam eleifend mi in nulla. Faucibus ornare suspendisse sed nisi lacus sed viverra {bold tellus}.}`;
+    crayon231`{red Lorem {bold ipsum dolor sit amet}, consectetur adipiscing elit, {green sed do eiusmod} tempor incididunt ut labore et dolore magna aliqua. A erat nam at lectus urna duis convallis convallis. Nunc eget lorem dolor sed viverra. Amet justo donec enim diam. Consectetur adipiscing elit pellentesque habitant morbi. Tellus at urna condimentum mattis pellentesque id nibh. Sem nulla pharetra diam sit amet. Quis blandit turpis cursus in hac habitasse platea dictumst. Nunc eget lorem dolor sed viverra ipsum nunc. Donec ac odio tempor orci. Adipiscing vitae proin sagittis nisl rhoncus mattis rhoncus urna. Posuere lorem ipsum dolor sit amet consectetur adipiscing. Facilisi cras fermentum odio eu feugiat pretium nibh ipsum consequat. Eget duis at tellus at urna condimentum mattis pellentesque. Sem integer vitae justo eget magna fermentum iaculis eu non. Lacinia at quis risus sed vulputate. {italic Mi tempus imperdiet nulla malesuada pellentesque elit eget gravida cum.}\nFaucibus ornare suspendisse sed nisi lacus sed viverra. Euismod nisi porta lorem mollis. Consequat mauris nunc congue nisi vitae suscipit tellus mauris. Platea dictumst vestibulum rhoncus est pellentesque elit. Nunc scelerisque viverra mauris in aliquam sem fringilla. Volutpat lacus laoreet non curabitur gravida arcu ac tortor. Pretium vulputate sapien nec sagittis aliquam malesuada bibendum. Nulla facilisi cras fermentum odio eu feugiat pretium nibh. Nullam ac tortor vitae purus faucibus. Natoque penatibus et magnis dis. Dignissim convallis aenean et tortor at risus viverra adipiscing at. Odio aenean sed adipiscing diam donec adipiscing. Cursus metus aliquam eleifend mi in nulla. Faucibus ornare suspendisse sed nisi lacus sed viverra {bold tellus}.}`;
   });
 
   await Deno.bench({ name: "Chalk 4.1.2", group }, () => {
-    chalk412
-      `{red Lorem {bold ipsum dolor sit amet}, consectetur adipiscing elit, {green sed do eiusmod} tempor incididunt ut labore et dolore magna aliqua. A erat nam at lectus urna duis convallis convallis. Nunc eget lorem dolor sed viverra. Amet justo donec enim diam. Consectetur adipiscing elit pellentesque habitant morbi. Tellus at urna condimentum mattis pellentesque id nibh. Sem nulla pharetra diam sit amet. Quis blandit turpis cursus in hac habitasse platea dictumst. Nunc eget lorem dolor sed viverra ipsum nunc. Donec ac odio tempor orci. Adipiscing vitae proin sagittis nisl rhoncus mattis rhoncus urna. Posuere lorem ipsum dolor sit amet consectetur adipiscing. Facilisi cras fermentum odio eu feugiat pretium nibh ipsum consequat. Eget duis at tellus at urna condimentum mattis pellentesque. Sem integer vitae justo eget magna fermentum iaculis eu non. Lacinia at quis risus sed vulputate. {italic Mi tempus imperdiet nulla malesuada pellentesque elit eget gravida cum.}\nFaucibus ornare suspendisse sed nisi lacus sed viverra. Euismod nisi porta lorem mollis. Consequat mauris nunc congue nisi vitae suscipit tellus mauris. Platea dictumst vestibulum rhoncus est pellentesque elit. Nunc scelerisque viverra mauris in aliquam sem fringilla. Volutpat lacus laoreet non curabitur gravida arcu ac tortor. Pretium vulputate sapien nec sagittis aliquam malesuada bibendum. Nulla facilisi cras fermentum odio eu feugiat pretium nibh. Nullam ac tortor vitae purus faucibus. Natoque penatibus et magnis dis. Dignissim convallis aenean et tortor at risus viverra adipiscing at. Odio aenean sed adipiscing diam donec adipiscing. Cursus metus aliquam eleifend mi in nulla. Faucibus ornare suspendisse sed nisi lacus sed viverra {bold tellus}.}`;
+    chalk412`{red Lorem {bold ipsum dolor sit amet}, consectetur adipiscing elit, {green sed do eiusmod} tempor incididunt ut labore et dolore magna aliqua. A erat nam at lectus urna duis convallis convallis. Nunc eget lorem dolor sed viverra. Amet justo donec enim diam. Consectetur adipiscing elit pellentesque habitant morbi. Tellus at urna condimentum mattis pellentesque id nibh. Sem nulla pharetra diam sit amet. Quis blandit turpis cursus in hac habitasse platea dictumst. Nunc eget lorem dolor sed viverra ipsum nunc. Donec ac odio tempor orci. Adipiscing vitae proin sagittis nisl rhoncus mattis rhoncus urna. Posuere lorem ipsum dolor sit amet consectetur adipiscing. Facilisi cras fermentum odio eu feugiat pretium nibh ipsum consequat. Eget duis at tellus at urna condimentum mattis pellentesque. Sem integer vitae justo eget magna fermentum iaculis eu non. Lacinia at quis risus sed vulputate. {italic Mi tempus imperdiet nulla malesuada pellentesque elit eget gravida cum.}\nFaucibus ornare suspendisse sed nisi lacus sed viverra. Euismod nisi porta lorem mollis. Consequat mauris nunc congue nisi vitae suscipit tellus mauris. Platea dictumst vestibulum rhoncus est pellentesque elit. Nunc scelerisque viverra mauris in aliquam sem fringilla. Volutpat lacus laoreet non curabitur gravida arcu ac tortor. Pretium vulputate sapien nec sagittis aliquam malesuada bibendum. Nulla facilisi cras fermentum odio eu feugiat pretium nibh. Nullam ac tortor vitae purus faucibus. Natoque penatibus et magnis dis. Dignissim convallis aenean et tortor at risus viverra adipiscing at. Odio aenean sed adipiscing diam donec adipiscing. Cursus metus aliquam eleifend mi in nulla. Faucibus ornare suspendisse sed nisi lacus sed viverra {bold tellus}.}`;
   });
 
   await Deno.bench({ name: "Chalk Template 0.4.0", group }, () => {
-    chalktemplate040
-      `{red Lorem {bold ipsum dolor sit amet}, consectetur adipiscing elit, {green sed do eiusmod} tempor incididunt ut labore et dolore magna aliqua. A erat nam at lectus urna duis convallis convallis. Nunc eget lorem dolor sed viverra. Amet justo donec enim diam. Consectetur adipiscing elit pellentesque habitant morbi. Tellus at urna condimentum mattis pellentesque id nibh. Sem nulla pharetra diam sit amet. Quis blandit turpis cursus in hac habitasse platea dictumst. Nunc eget lorem dolor sed viverra ipsum nunc. Donec ac odio tempor orci. Adipiscing vitae proin sagittis nisl rhoncus mattis rhoncus urna. Posuere lorem ipsum dolor sit amet consectetur adipiscing. Facilisi cras fermentum odio eu feugiat pretium nibh ipsum consequat. Eget duis at tellus at urna condimentum mattis pellentesque. Sem integer vitae justo eget magna fermentum iaculis eu non. Lacinia at quis risus sed vulputate. {italic Mi tempus imperdiet nulla malesuada pellentesque elit eget gravida cum.}\nFaucibus ornare suspendisse sed nisi lacus sed viverra. Euismod nisi porta lorem mollis. Consequat mauris nunc congue nisi vitae suscipit tellus mauris. Platea dictumst vestibulum rhoncus est pellentesque elit. Nunc scelerisque viverra mauris in aliquam sem fringilla. Volutpat lacus laoreet non curabitur gravida arcu ac tortor. Pretium vulputate sapien nec sagittis aliquam malesuada bibendum. Nulla facilisi cras fermentum odio eu feugiat pretium nibh. Nullam ac tortor vitae purus faucibus. Natoque penatibus et magnis dis. Dignissim convallis aenean et tortor at risus viverra adipiscing at. Odio aenean sed adipiscing diam donec adipiscing. Cursus metus aliquam eleifend mi in nulla. Faucibus ornare suspendisse sed nisi lacus sed viverra {bold tellus}.}`;
+    chalktemplate040`{red Lorem {bold ipsum dolor sit amet}, consectetur adipiscing elit, {green sed do eiusmod} tempor incididunt ut labore et dolore magna aliqua. A erat nam at lectus urna duis convallis convallis. Nunc eget lorem dolor sed viverra. Amet justo donec enim diam. Consectetur adipiscing elit pellentesque habitant morbi. Tellus at urna condimentum mattis pellentesque id nibh. Sem nulla pharetra diam sit amet. Quis blandit turpis cursus in hac habitasse platea dictumst. Nunc eget lorem dolor sed viverra ipsum nunc. Donec ac odio tempor orci. Adipiscing vitae proin sagittis nisl rhoncus mattis rhoncus urna. Posuere lorem ipsum dolor sit amet consectetur adipiscing. Facilisi cras fermentum odio eu feugiat pretium nibh ipsum consequat. Eget duis at tellus at urna condimentum mattis pellentesque. Sem integer vitae justo eget magna fermentum iaculis eu non. Lacinia at quis risus sed vulputate. {italic Mi tempus imperdiet nulla malesuada pellentesque elit eget gravida cum.}\nFaucibus ornare suspendisse sed nisi lacus sed viverra. Euismod nisi porta lorem mollis. Consequat mauris nunc congue nisi vitae suscipit tellus mauris. Platea dictumst vestibulum rhoncus est pellentesque elit. Nunc scelerisque viverra mauris in aliquam sem fringilla. Volutpat lacus laoreet non curabitur gravida arcu ac tortor. Pretium vulputate sapien nec sagittis aliquam malesuada bibendum. Nulla facilisi cras fermentum odio eu feugiat pretium nibh. Nullam ac tortor vitae purus faucibus. Natoque penatibus et magnis dis. Dignissim convallis aenean et tortor at risus viverra adipiscing at. Odio aenean sed adipiscing diam donec adipiscing. Cursus metus aliquam eleifend mi in nulla. Faucibus ornare suspendisse sed nisi lacus sed viverra {bold tellus}.}`;
   });
 
-  // Kleur and Ansi-colors don't support literal templating
+  // Cliffy, Kleur and Ansi-colors don't support literal templating
 }
 
 async function generateInstance() {
