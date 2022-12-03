@@ -12,14 +12,7 @@ import {
   Style,
   StyleCode,
 } from "./styles.ts";
-import { getNoColor, isNode, replaceAll } from "./util.ts";
-
-if (isNode()) {
-  // @ts-ignore Node compatibility
-  globalThis.CustomEvent = Event;
-}
-
-const eventTarget = new EventTarget();
+import { getNoColor, replaceAll } from "./util.ts";
 
 const hasColor = !getNoColor();
 
@@ -49,6 +42,8 @@ export type CrayonStyleFunction = (
 export const functions = new Map<string, CrayonStyleFunction>();
 /** Map containing all styles used by crayon */
 export const styles = new Map<string, StyleCode | (() => StyleCode)>();
+/** Array containing all crayons that have been cached */
+const cachedCrayons: Crayon[] = [];
 
 interface CrayonPrototype {
   colorSupport: ColorSupport;
@@ -65,8 +60,12 @@ export const prototype: CrayonPrototype = {
   set colorSupport(value: ColorSupport) {
     // Keep colorSupport object reference so it doesn't break things
     Object.assign(colorSupport, value);
-    // Tell crayon to refresh all initialized styles
-    eventTarget.dispatchEvent(new CustomEvent("update"));
+
+    // Re-cache every crayon instance that has been cached
+    // It's done to make sure that they obey colorSupport
+    for (const crayon of cachedCrayons) {
+      crayon.reprepareCache!();
+    }
   },
   strip(text: string): string {
     return text.replaceAll(/\x1b\[([0-9]|;)+m/gi, "");
@@ -76,10 +75,7 @@ export const prototype: CrayonPrototype = {
     let lenDiff = 0;
     do {
       text = $text
-        .replaceAll(
-          /\x1b\[([0-9]|;)+m\x1b\[0m/gi,
-          "\x1b[0m",
-        )
+        .replaceAll(/\x1b\[([0-9]|;)+m\x1b\[0m/gi, "\x1b[0m")
         .replaceAll(
           /(\x1b\[4([0-9]|;)+m)((\x1b\[([0-9]|;)+m)*(\x1b\[4([0-9]|;)+m))/gi,
           "$3",
@@ -113,6 +109,7 @@ export type Crayon<
   & {
     styleBuffer: string;
     usesFunc: boolean;
+    reprepareCache?(): void;
     keyword(style: Style): Crayon<C, O>;
     keyword(style: string): Crayon<C, O>;
     ansi3(code: number): Crayon<C, O>;
@@ -306,6 +303,7 @@ function mapStyle(
           this.styleBuffer + $code,
           this.usesFunc,
         );
+
         // Instead of building crayon every time property gets accessed
         // simply replace getter with built crayon instance
         Object.defineProperty(this, name, {
@@ -321,10 +319,8 @@ function mapStyle(
       // This is done to prevent memory leaks or cpu overhead
       // caused when function has many different output possibilities
       if (!preparedCrayon.usesFunc) {
-        // Overwrite crayon instance when colorSupport value changes to adapt styles
-        eventTarget.addEventListener("update", () => {
-          prepareCrayon();
-        });
+        preparedCrayon.reprepareCache = prepareCrayon;
+        cachedCrayons.push(preparedCrayon);
       }
 
       return preparedCrayon;
