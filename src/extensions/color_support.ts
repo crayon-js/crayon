@@ -117,9 +117,11 @@ export async function getColorSupport({
   await request("run");
 
   if (forcePermissions || await permissionState("run") === "granted") {
-    const child = await Deno.spawnChild("tput", {
+    const command = new Deno.Command("tput", {
       args: ["colors"],
     });
+
+    const child = command.spawn();
 
     const { stdout } = await child.output();
     if (stdout) {
