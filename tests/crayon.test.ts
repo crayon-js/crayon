@@ -87,6 +87,35 @@ Deno.test("Config", async (t) => {
     };
     assertEquals(colorSupport, crayon.colorSupport);
   });
+
+  await t.step("Style cache reinitialization on colorSupport change", () => {
+    const one = crayon.bgBlue.bold.yellow.rgb(255, 130, 0)("Hi");
+
+    crayon.colorSupport = {
+      trueColor: false,
+      fourBitColor: false,
+      highColor: false,
+      threeBitColor: false,
+    };
+
+    const two = crayon.bgBlue.bold.yellow.rgb(255, 130, 0)("Hi");
+
+    crayon.colorSupport = {
+      trueColor: true,
+      fourBitColor: true,
+      highColor: true,
+      threeBitColor: true,
+    };
+
+    const three = crayon.bgBlue.bold.yellow.rgb(255, 130, 0)("Hi");
+
+    assertEquals(
+      one,
+      "\x1b[44m\x1b[1m\x1b[33m\x1b[38;2;255;130;0mHi\x1b[0m\x1b[0m",
+    );
+    assertEquals(three, one);
+    assertEquals(two, "\x1b[1mHi\x1b[0m\x1b[0m");
+  });
 });
 
 Deno.test("Chaining", async (t) => {
