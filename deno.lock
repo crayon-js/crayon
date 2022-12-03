@@ -1,0 +1,44 @@
+{
+  "version": "2",
+  "remote": {
+    "https://cdn.jsdelivr.net/npm/chalk@5.1.2/+esm": "31c995ae8c2d3380fda8f9530547a8a79cd8625b0d8cf5215198856e15b37156",
+    "https://cdn.skypack.dev/-/ansi-colors@v4.1.3-SNIN68yVfCraA1YWateU/dist=es2019,mode=imports/optimized/ansi-colors.js": "2421a2e7cb0da79c67cf8d9edda81f8a0bcf7a8ab5811a737bf69df6e0bd73ee",
+    "https://cdn.skypack.dev/-/ansi-colors@v4.1.3-SNIN68yVfCraA1YWateU/dist=es2019,mode=types/types/index.d.ts": "a3a48fbe8782048f74752a1ef300ade63777f62bca44aadd9bd99a4ebdf9b9eb",
+    "https://cdn.skypack.dev/-/ansi-styles@v4.3.0-PMPQ6S2hj9z9fV8ZTPsF/dist=es2019,mode=imports/optimized/ansi-styles.js": "7f0b2f814df693cef0ed63d60fe2f04b06e0d1cb269f385933455914ab86ed6a",
+    "https://cdn.skypack.dev/-/chalk-template@v0.4.0-9hwV7Iv5IKDAVJ2YpEpG/dist=es2019,mode=imports/optimized/chalk-template.js": "d91ada5f41b46193b0833d01543c02a13be606a68c8b4573954be91828add4a1",
+    "https://cdn.skypack.dev/-/chalk-template@v0.4.0-9hwV7Iv5IKDAVJ2YpEpG/dist=es2019,mode=types/index.d.ts": "920864f148f7c2e90ce5ae92f0eb36122f3ddc5d4986d944cb7e1745b13694c5",
+    "https://cdn.skypack.dev/-/chalk@v4.1.2-ph75OinuhcFcBbDGU374/dist=es2019,mode=imports/optimized/chalk.js": "d155eab0b4113f00f8868952b42fa5c564fddd15e7d87d450e43c55019cc8861",
+    "https://cdn.skypack.dev/-/chalk@v4.1.2-ph75OinuhcFcBbDGU374/dist=es2019,mode=types/index.d.ts": "8936e87c7494c28c2b36c57339118854d7f7ea6e90df24c546f0c33a18614263",
+    "https://cdn.skypack.dev/-/color-convert@v2.0.1-3jXW0f4KP6APRAKmUyrP/dist=es2019,mode=imports/optimized/color-convert.js": "5dead0837e9fd900645c36eec5f5a6340575de215e59b486b19f866660b93080",
+    "https://cdn.skypack.dev/-/color-name@v1.1.4-EDWqNToII1nbwEyU8mYi/dist=es2019,mode=imports/optimized/color-name.js": "fb78b777eda74ae53e3be9d82ae54b0600d7c8b772776c7d441de35e005b7c93",
+    "https://cdn.skypack.dev/-/kleur@v4.1.4-4cg8O14P1QJcJCWSS2d0/dist=es2019,mode=imports/optimized/common/process-2545f00a.js": "585ed72385871b7f3e647602b642794cd837ad34db418f038cb1bfd8d618e382",
+    "https://cdn.skypack.dev/-/kleur@v4.1.4-4cg8O14P1QJcJCWSS2d0/dist=es2019,mode=imports/optimized/kleur.js": "486fc76f95f9ecfb555262fb97006a48995e0997e0e5b8bd86f0f646c7152919",
+    "https://cdn.skypack.dev/-/kleur@v4.1.4-4cg8O14P1QJcJCWSS2d0/dist=es2019,mode=types/index.d.ts": "6ab263df6465e2ed8f1d02922bae18bb5b407020767de021449a4c509859b22e",
+    "https://cdn.skypack.dev/-/supports-color@v7.2.0-yi8TfBy0eWDxSDlMruC0/dist=es2019,mode=imports/optimized/supports-color.js": "2c9c796bd70e0e41cf9dcfc4b5c52b0840d347ecff118b996b1eeaa3f41b4840",
+    "https://cdn.skypack.dev/ansi-colors@4.1.3?dts": "147df509c4b87c10cb17e25dbc57d36b9d2894f6ef474e17d03910c608c1bccf",
+    "https://cdn.skypack.dev/chalk-template@0.4.0?dts": "62551be1c5a666c2da14d125c7e2745c88745c572be2a267897940d4d85b7157",
+    "https://cdn.skypack.dev/chalk@4.1.2?dts": "50593a2417590caf6bba51ff5fc107f810054d7e3ed9637b37a2f6a4e8096178",
+    "https://cdn.skypack.dev/kleur@4.1.4?dts": "89c18cad2106356ff14140a10f9af5e5f2a48474321744a26f6dc575c8c2e1ab",
+    "https://deno.land/std@0.137.0/fmt/colors.ts": "30455035d6d728394781c10755351742dd731e3db6771b1843f9b9e490104d37",
+    "https://deno.land/std@0.137.0/testing/_diff.ts": "029a00560b0d534bc0046f1bce4bd36b3b41ada3f2a3178c85686eb2ff5f1413",
+    "https://deno.land/std@0.137.0/testing/_format.ts": "0d8dc79eab15b67cdc532826213bbe05bccfd276ca473a50a3fc7bbfb7260642",
+    "https://deno.land/std@0.137.0/testing/asserts.ts": "61d85fc80f548a6e1e66d93fb7874a2c9e097aeecc00643c5f4f340370cde56f",
+    "https://deno.land/std@0.161.0/fmt/colors.ts": "9e36a716611dcd2e4865adea9c4bec916b5c60caad4cdcdc630d4974e6bb8bd4",
+    "https://deno.land/x/cliffy@v0.25.4/ansi/colors.ts": "df8c48c5a6b6fa50ceea9e6dfd031bef7257a02fd564e4c18ed9890a206c42ee",
+    "https://deno.land/x/crayon@2.3.1/conversions.ts": "d39558e5fc4b01707d648d720c772470248f5a4acb5e431c5c9785e2cfb88664",
+    "https://deno.land/x/crayon@2.3.1/index.ts": "560be40ae87cd28fe9b2bced50af0c637be2c8f4069c9a1e2ec8024aaea119fa",
+    "https://deno.land/x/crayon@2.3.1/mod.ts": "da27a03efaf6f84b2633b25992b6e1293e44951d4209608eae256135c0364617",
+    "https://deno.land/x/crayon@2.3.1/styles.ts": "2891e484ea3ed9a6861edaa28ceca73091809ace72bc2f11ca78173d73f038b6",
+    "https://deno.land/x/crayon@2.3.1/types.ts": "a6d4693def67cdafcad036ec0a2c8094037ffbd1470fda2d878b525b11dbf132",
+    "https://deno.land/x/crayon@2.3.1/util.ts": "af7e511133b0be9c587be7d309680acfea173f19aaabf143ee026d7735784072"
+  },
+  "npm": {
+    "specifiers": { "chalk@5.1.2": "chalk@5.1.2" },
+    "packages": {
+      "chalk@5.1.2": {
+        "integrity": "sha512-E5CkT4jWURs1Vy5qGJye+XwCkNj7Od3Af7CP6SujMetSMkLs8Do2RWJK5yx1wamHV/op8Rz+9rltjaTQWDnEFQ==",
+        "dependencies": {}
+      }
+    }
+  }
+}
