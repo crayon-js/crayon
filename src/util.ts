@@ -47,16 +47,16 @@ export function replaceAll(
   let searchIndex = string.indexOf(search);
   if (searchIndex === -1) return string;
 
-  const offset = search.length;
-  const lookBackOffset = replaceValue.length;
+  let start = "";
+  const searchLength = search.length;
 
   do {
-    string = string.slice(0, searchIndex) + replaceValue +
-      string.slice(searchIndex + search.length);
-    searchIndex = string.indexOf(search, searchIndex - offset + lookBackOffset);
+    start += string.slice(0, searchIndex) + replaceValue;
+    string = string.slice(searchIndex + searchLength);
+    searchIndex = string.indexOf(search);
   } while (searchIndex !== -1);
 
-  return string;
+  return start + string;
 }
 
 /** Return whether program is running in node runtime */
