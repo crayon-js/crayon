@@ -18,14 +18,15 @@ From the ground up its goals is to be fast, relatively lightweight and modular.
 
 - ⚡ **High performance**
 - 📦 No dependencies
-- 🧑‍💻 Good code quality
 - 🗑️ Modularity (no unnecessary code)
 - 🧐 Familiar API (chalk-like)
 - 🦄 Automatic color fallbacking
   - 🎨 Automatic color detection via `color_support` extension
-- 🔗 Supported nesting & chaining
+- 🔗 Support for nesting & chaining
 - 🪢 Not extending `String.prototype`
 - 🌈 24bit (16.7m - truecolor) and 8bit (256 - highcolor) color support
+
+<!-- TODO: Update the usag with JSR instructions -->
 
 ## ⚙️ Usage
 
@@ -59,7 +60,7 @@ Crayon's extensions are stored in [src/extensions](./src/extensions/)
 enhance this project - please open an issue and/or pull request. <br /> Code
 should be well document and easy to follow what's going on.
 
-Since the start of development on **Crayon 3.0** this project follows
+Since the start of development on **Crayon 4.0** this project follows
 [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) spec.
 <br /> If your pull request's code could introduce understandability trouble,
 please add comments to it.
