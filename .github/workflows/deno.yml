@@ -5,8 +5,6 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
-  # Make workflow reusable
-  workflow_call:
 
 jobs:
   test:
@@ -51,11 +49,11 @@ jobs:
           deno run -A --no-check https://deno.land/x/anzu@1.0.1/src/cli.ts \
            -i ./ "/.+\.ts/" \
            -e "deps.ts" \
-           -l "// Copyright 2022 Im-Beast. All rights reserved. MIT license." \
+           -l "// Copyright 2024 Im-Beast. All rights reserved. MIT license." \
            -p
-          (git add . && git commit -m "chore: Prepend missing license headers" && git push) || true
+          (git add . && git commit -m "chore: prepend missing license headers" && git push) || true
 
       - name: Check badges & push commit when needed
         run: |
           deno task prepare-badges
-          (git add . && git commit -m "chore: Update badges" && git push) || true
+          (git add . && git commit -m "chore: update badges" && git push) || true
