@@ -1,4 +1,11 @@
 {
+  "name": "@tui/crayon",
+  "version": "3.4.0",
+
+  "exclude": [
+    "build" // Dont include build scripts in the package
+  ],
+
   "lint": {
     "rules": {
       "exclude": ["no-control-regex"]
