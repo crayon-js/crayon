@@ -1,4 +1,4 @@
-// Copyright 2022 Im-Beast. All rights reserved. MIT license.
+// Copyright 2024 Im-Beast. All rights reserved. MIT license.
 import { buildCrayon, crayon } from "../mod.ts";
 import "../src/extensions/literal.ts";
 

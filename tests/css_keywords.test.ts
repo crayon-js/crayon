@@ -1,4 +1,4 @@
-// Copyright 2022 Im-Beast. All rights reserved. MIT license.
+// Copyright 2024 Im-Beast. All rights reserved. MIT license.
 import { crayon, cssKeywords } from "../src/extensions/css_keywords.ts";
 import { assertEquals } from "./deps.ts";
 import { getNoColor } from "../mod.ts";

@@ -1,3 +1,4 @@
+// Copyright 2024 Im-Beast. All rights reserved. MIT license.
 import { hslToRgb } from "../src/conversions.ts";
 import { generateBadge } from "./gen_badge.ts";
 import { prototype } from "../src/crayon.ts";

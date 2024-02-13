@@ -1,3 +1,4 @@
+// Copyright 2024 Im-Beast. All rights reserved. MIT license.
 import { createGraph } from "https://deno.land/x/deno_graph@0.65.3/mod.ts";
 import { generateBadge } from "./gen_badge.ts";
 

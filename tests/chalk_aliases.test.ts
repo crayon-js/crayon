@@ -1,4 +1,4 @@
-// Copyright 2022 Im-Beast. All rights reserved. MIT license.
+// Copyright 2024 Im-Beast. All rights reserved. MIT license.
 import { chalkAliases, crayon } from "../src/extensions/chalk_aliases.ts";
 import { assertEquals } from "./deps.ts";
 import { getNoColor, Style } from "../mod.ts";

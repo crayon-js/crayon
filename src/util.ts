@@ -1,4 +1,4 @@
-// Copyright 2022 Im-Beast. All rights reserved. MIT license.
+// Copyright 2024 Im-Beast. All rights reserved. MIT license.
 
 /** Return whether NO_COLOR is set */
 export function getNoColor(): boolean {
