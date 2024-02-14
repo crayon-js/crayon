@@ -1,6 +1,5 @@
 import { stripStyles } from "@tui/strings/strip_styles";
-
-import { replaceAll, type Style } from "../mod.ts";
+import { replaceAll } from "./util.ts";
 
 export enum ColorSupport {
   NoColor = 0,
@@ -52,9 +51,8 @@ interface CrayonBase {
   usesFunc?: boolean;
 }
 
-type DefaultStyles = { [style in Style]: Crayon };
 declare global {
-  interface Crayon extends CrayonPrototype, CrayonBase, DefaultStyles {
+  interface Crayon extends CrayonPrototype, CrayonBase {
     styleBuffer: string;
     usesFunc: boolean;
     reprepareCache?(): void;
