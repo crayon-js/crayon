@@ -71,13 +71,3 @@ export function isDeno() {
   // deno-fmt-ignore
   return globalThis?.Deno?.version?.deno !== null && !isNode();
 }
-
-/** Get keys of a map */
-export type GetMapKeys<M extends Map<unknown, unknown>> = Parameters<
-  M["set"]
->[0];
-
-/** Get values of a map */
-export type GetMapValues<M extends Map<unknown, unknown>> = Parameters<
-  M["set"]
->[1];

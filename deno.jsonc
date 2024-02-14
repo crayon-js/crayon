@@ -2,6 +2,10 @@
   "name": "@tui/crayon",
   "version": "3.4.0",
 
+  "imports": {
+    "@tui/strings/strip_styles": "jsr:@tui/strings@^0.0/strip_styles"
+  },
+
   "exclude": [
     "build" // Dont include build scripts in the package
   ],
