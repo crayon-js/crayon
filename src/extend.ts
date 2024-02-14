@@ -42,8 +42,8 @@ export function extendStyle(name: string, code: string) {
 }
 
 interface CrayonStyleMethod {
-  (...args: unknown[]): string;
-  (bg: boolean, ...args: unknown[]): string;
+  // deno-lint-ignore no-explicit-any
+  (...args: any[]): unknown;
 }
 
 function NO_STYLE_CRAYON() {
