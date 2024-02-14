@@ -18,29 +18,28 @@ const baseColors = [
   "cyan",
   "white",
 ] as const;
-export type BaseColors = typeof baseColors[number];
+export type BaseColor = typeof baseColors[number];
 
 /** Names for all 4bit colors */
 export type Color =
-  | BaseColors
-  | `bg${Capitalize<BaseColors>}`
-  | `light${Capitalize<BaseColors>}`
-  | `bgLight${Capitalize<BaseColors>}`;
+  | BaseColor
+  | `bg${Capitalize<BaseColor>}`
+  | `light${Capitalize<BaseColor>}`
+  | `bgLight${Capitalize<BaseColor>}`;
 
-// TODO: just inline this
 /** Map containing all 4bit colors */
-export const colors = new Map<Color, () => string>();
+export const fourBitColors: Record<string, () => string> = {};
 
 // Generate colors from baseColors
 for (const [i, color] of baseColors.entries()) {
   const capitalized = color[0].toUpperCase() + color.slice(1) as Capitalize<
-    typeof color
+    BaseColor
   >;
 
-  colors.set(color, () => ansi3(false, i));
-  colors.set(`bg${capitalized}`, () => ansi3(true, i));
-  colors.set(`light${capitalized}`, () => ansi4(false, i + 8));
-  colors.set(`bgLight${capitalized}`, () => ansi4(true, i + 8));
+  fourBitColors[color] = () => ansi3(false, i);
+  fourBitColors[`bg${capitalized}`] = () => ansi3(true, i);
+  fourBitColors[`light${capitalized}`] = () => ansi4(false, i + 8);
+  fourBitColors[`bgLight${capitalized}`] = () => ansi4(true, i + 8);
 }
 
 /** Map containing all supported attributes */
