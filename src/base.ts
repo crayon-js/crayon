@@ -1,4 +1,4 @@
-import { extendObject } from "./extend.ts";
+import { extendMethods, extendStyles } from "./extend.ts";
 import {
   ansi3,
   ansi4,
@@ -12,16 +12,16 @@ import {
   type Style,
 } from "./styles.ts";
 
-extendObject(attributes);
-extendObject(fourBitColors);
-extendObject({
+extendStyles(attributes);
+extendStyles(fourBitColors);
+extendMethods({
   ansi3,
   ansi4,
   ansi8,
   rgb,
   hsl,
   hex,
-  keyword,
+  keyword: [keyword, false],
 });
 
 type BaseStyles = { [K in Style]: Crayon };

@@ -30,7 +30,7 @@ export const prototype: CrayonPrototypePrivate = {
   },
   set colorSupport(value: ColorSupport) {
     for (const instance of prototype.$cachedCrayons) {
-      instance.reprepareCache!();
+      instance.recache!();
     }
     prototype.$colorSupport = value;
   },
@@ -55,7 +55,7 @@ declare global {
   interface Crayon extends CrayonPrototype, CrayonBase {
     styleBuffer: string;
     usesFunc: boolean;
-    reprepareCache?(): void;
+    recache?: () => string;
 
     (single: unknown, ...many: unknown[]): string;
   }

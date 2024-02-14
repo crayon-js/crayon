@@ -1,40 +1,57 @@
 import { buildCrayon, ColorSupport, crayon, prototype } from "./crayon.ts";
 
-export function extendStyle(name: string, code: string) {
+type DynamicStyleCode = () => string;
+
+function prepareCrayon(crayon: Crayon, code: string) {
+  return buildCrayon(
+    crayon.styleBuffer + code,
+    crayon.usesFunc,
+  );
+}
+
+export function extendStyle(name: string, code: string | DynamicStyleCode) {
   const attributes: PropertyDescriptor = {
     configurable: true,
   };
 
   if (prototype.$colorSupport === ColorSupport.NoColor) {
     attributes.value = crayon;
+  } else if (typeof code === "string") {
+    const prepared = prepareCrayon(crayon, code);
+    // Don't cache crayon when it uses function:
+    // This is done to prevent memory leaks or cpu overhead
+    // caused when function has many different output possibilities
+    if (prepared.usesFunc) {
+      return prepared;
+    }
+
+    // Instead of building crayon every time property gets accessed
+    // simply replace getter with built crayon instance
+    Object.defineProperty(crayon, name, {
+      configurable: true,
+      value: prepareCrayon,
+    });
+
+    // We don't need to handle recaching, since strings output
+    // won't change over time
+
+    return prepared;
   } else {
     attributes.get = function (this: Crayon) {
-      const prepareCrayon = () => {
-        const builtCrayon = buildCrayon(
-          this.styleBuffer + code,
-          this.usesFunc,
-        );
-
-        // Instead of building crayon every time property gets accessed
-        // simply replace getter with built crayon instance
-        Object.defineProperty(this, name, {
-          configurable: true,
-          value: builtCrayon,
-        });
-        return builtCrayon;
-      };
-
-      const preparedCrayon = prepareCrayon();
-
-      // Don't cache crayon when it uses function:
-      // This is done to prevent memory leaks or cpu overhead
-      // caused when function has many different output possibilities
-      if (!preparedCrayon.usesFunc) {
-        preparedCrayon.reprepareCache = prepareCrayon;
-        prototype.$cachedCrayons.push(preparedCrayon);
+      const prepared = prepareCrayon(crayon, code());
+      if (prepared.usesFunc) {
+        return prepared;
       }
 
-      return preparedCrayon;
+      Object.defineProperty(crayon, name, {
+        configurable: true,
+        value: prepared,
+      });
+
+      prepared.recache = code;
+      prototype.$cachedCrayons.push(prepared);
+
+      return prepared;
     };
   }
 
@@ -53,7 +70,7 @@ function NO_STYLE_CRAYON() {
 export function extendMethod(
   name: string,
   func: CrayonStyleMethod,
-  noBgVariant = false,
+  noBgVariant = true,
 ) {
   if (noBgVariant) {
     Object.defineProperty(prototype, name, {
@@ -93,21 +110,25 @@ export function extendMethod(
   });
 }
 
-export function extendObject(
-  styles: Record<
+export function extendMethods(
+  methods: Record<
     string,
-    | string
-    | CrayonStyleMethod
-    | [CrayonStyleMethod, hasBgVariant: boolean]
+    CrayonStyleMethod | [CrayonStyleMethod, hasBgVariant: boolean]
   >,
-) {
-  for (const [name, code] of Object.entries(styles)) {
-    if (typeof code === "string") {
-      extendStyle(name, code);
-    } else if (typeof code === "function") {
-      extendMethod(name, code);
+): void {
+  for (const [name, method] of Object.entries(methods)) {
+    if (typeof method === "function") {
+      extendMethod(name, method);
     } else {
-      extendMethod(name, code[0], code[1]);
+      extendMethod(name, method[0], method[1]);
     }
+  }
+}
+
+export function extendStyles(
+  styles: Record<string, string | DynamicStyleCode>,
+): void {
+  for (const [name, style] of Object.entries(styles)) {
+    extendStyle(name, style);
   }
 }
