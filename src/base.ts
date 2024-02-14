@@ -39,6 +39,6 @@ declare global {
     bgHsl(h: number, s: number, l: number): Crayon;
     hex(hex: number): Crayon;
     bgHex(hex: number): Crayon;
-    keyword(name: string): string | undefined;
+    keyword(name: string): Crayon | undefined;
   }
 }

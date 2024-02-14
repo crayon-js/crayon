@@ -75,9 +75,9 @@ export type Style = Attribute | Color;
  * Retrieve style using string
  * @param style - map key
  */
-export function keyword(style: string): string | undefined {
+export function keyword(style: string): Crayon | undefined {
   if (style in crayon) {
-    return crayon[style as Style].styleBuffer;
+    return crayon[style as Style];
   }
 
   return undefined;
