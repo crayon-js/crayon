@@ -54,7 +54,7 @@ export function extendStyle(
         value: prepared,
       });
 
-      prepared.recache = code;
+      prepared.recache = [this, name, code];
       prototype.$cachedCrayons.push(prepared);
 
       return prepared;
