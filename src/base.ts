@@ -21,7 +21,7 @@ extendMethods({
   rgb,
   hsl,
   hex,
-  keyword: [keyword, false],
+  keyword: [keyword, true],
 });
 
 type BaseStyles = { [K in Style]: Crayon };

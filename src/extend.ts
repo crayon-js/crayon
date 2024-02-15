@@ -70,7 +70,7 @@ function NO_STYLE_CRAYON() {
 export function extendMethod(
   name: string,
   func: CrayonStyleMethod,
-  noBgVariant = true,
+  noBgVariant = false,
 ) {
   if (noBgVariant) {
     Object.defineProperty(prototype, name, {
@@ -97,7 +97,7 @@ export function extendMethod(
       },
   });
 
-  const bgName = `bg$${name[0].toUpperCase()}${name.slice(1)}`;
+  const bgName = `bg${name[0].toUpperCase()}${name.slice(1)}`;
   Object.defineProperty(prototype, bgName, {
     value: prototype.$colorSupport === ColorSupport.NoColor
       ? NO_STYLE_CRAYON
@@ -113,7 +113,7 @@ export function extendMethod(
 export function extendMethods(
   methods: Record<
     string,
-    CrayonStyleMethod | [CrayonStyleMethod, hasBgVariant: boolean]
+    CrayonStyleMethod | [CrayonStyleMethod, noBgVariant: true]
   >,
 ): void {
   for (const [name, method] of Object.entries(methods)) {
