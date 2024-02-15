@@ -9,7 +9,10 @@ function prepareCrayon(crayon: Crayon, code: string) {
   );
 }
 
-export function extendStyle(name: string, code: string | DynamicStyleCode) {
+export function extendStyle(
+  name: string,
+  code: string | DynamicStyleCode,
+): void {
   const attributes: PropertyDescriptor = {
     configurable: true,
   };
@@ -17,33 +20,36 @@ export function extendStyle(name: string, code: string | DynamicStyleCode) {
   if (prototype.$colorSupport === ColorSupport.NoColor) {
     attributes.value = crayon;
   } else if (typeof code === "string") {
-    const prepared = prepareCrayon(crayon, code);
-    // Don't cache crayon when it uses function:
-    // This is done to prevent memory leaks or cpu overhead
-    // caused when function has many different output possibilities
-    if (prepared.usesFunc) {
-      return prepared;
-    }
-
-    // Instead of building crayon every time property gets accessed
-    // simply replace getter with built crayon instance
-    Object.defineProperty(crayon, name, {
-      configurable: true,
-      value: prepareCrayon,
-    });
-
-    // We don't need to handle recaching, since strings output
-    // won't change over time
-
-    return prepared;
-  } else {
     attributes.get = function (this: Crayon) {
-      const prepared = prepareCrayon(crayon, code());
+      const prepared = prepareCrayon(this, code);
+
+      // Don't cache crayon when it uses function:
+      // This is done to prevent memory leaks or cpu overhead
+      // caused when function has many different output possibilities
       if (prepared.usesFunc) {
         return prepared;
       }
 
-      Object.defineProperty(crayon, name, {
+      // Instead of building crayon every time property gets accessed
+      // simply replace getter with built crayon instance
+      Object.defineProperty(this, name, {
+        configurable: true,
+        value: prepared,
+      });
+
+      // We don't need to handle recaching with static style codes
+      // since it can't change over time
+      return prepared;
+    };
+  } else {
+    attributes.get = function (this: Crayon) {
+      const prepared = prepareCrayon(this, code());
+
+      if (prepared.usesFunc) {
+        return prepared;
+      }
+
+      Object.defineProperty(this, name, {
         configurable: true,
         value: prepared,
       });
@@ -71,7 +77,7 @@ export function extendMethod(
   name: string,
   func: CrayonStyleMethod,
   noBgVariant = false,
-) {
+): void {
   if (noBgVariant) {
     Object.defineProperty(prototype, name, {
       value: prototype.$colorSupport === ColorSupport.NoColor
