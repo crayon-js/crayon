@@ -68,7 +68,7 @@ export function buildCrayonBase(styleBuffer: string): CrayonBase {
         return prototype.literal(single);
       }
 
-      return many.length ? `${single}` : `${single} ${many.join(" ")}`;
+      return many.length ? `${single} ${many.join(" ")}` : `${single}`;
     };
   }
 
@@ -77,7 +77,7 @@ export function buildCrayonBase(styleBuffer: string): CrayonBase {
       return prototype.literal(single);
     }
 
-    const text = many.length ? `${single}` : `${single} ${many.join(" ")}`;
+    const text = many.length ? `${single} ${many.join(" ")}` : `${single}`;
 
     return styleBuffer +
       replaceAll(text, "\x1b[0m\x1b[0m", "\x1b[0m" + styleBuffer) +

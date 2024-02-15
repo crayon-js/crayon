@@ -71,18 +71,6 @@ export type Attribute = keyof typeof attributes;
 /** Every possible style */
 export type Style = Attribute | Color;
 
-/**
- * Retrieve style using string
- * @param style - map key
- */
-export function keyword(style: string): Crayon | undefined {
-  if (style in crayon) {
-    return crayon[style as Style];
-  }
-
-  return undefined;
-}
-
 /** Generate StyleCode from 3bit (8) color pallete */
 export function ansi3(bg: boolean, code: number): string {
   if (code > 7 || code < 0) {

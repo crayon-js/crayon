@@ -7,7 +7,6 @@ import {
   fourBitColors,
   hex,
   hsl,
-  keyword,
   rgb,
   type Style,
 } from "./styles.ts";
@@ -21,7 +20,6 @@ extendMethods({
   rgb,
   hsl,
   hex,
-  keyword: [keyword, true],
 });
 
 type BaseStyles = { [K in Style]: Crayon };
@@ -39,6 +37,5 @@ declare global {
     bgHsl(h: number, s: number, l: number): Crayon;
     hex(hex: number): Crayon;
     bgHex(hex: number): Crayon;
-    keyword(name: string): Crayon | undefined;
   }
 }
