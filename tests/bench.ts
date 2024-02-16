@@ -281,7 +281,7 @@ async function shortLiteral() {
     chalk4`${TEMPLATE_TEST}`;
   });
 
-  await Deno.bench({ name: "Chalk Template 0.4.0", group }, () => {
+  await Deno.bench({ name: "Chalk Template", group }, () => {
     chalkTemplate`${TEMPLATE_TEST}`;
   });
 
@@ -303,7 +303,7 @@ async function longLiteral() {
     chalk4`${LONG_TEMPLATE_TEST_LOREM_IPSUM}`;
   });
 
-  await Deno.bench({ name: "Chalk Template 0.4.0", group }, () => {
+  await Deno.bench({ name: "Chalk Template", group }, () => {
     chalkTemplate`${LONG_TEMPLATE_TEST_LOREM_IPSUM}`;
   });
 
@@ -325,7 +325,7 @@ async function longTextLiteral() {
     chalk4`${LONG_TEXT_TEMPLATE_TEST_LOREM_IPSUM}`;
   });
 
-  await Deno.bench({ name: "Chalk Template 0.4.0", group }, () => {
+  await Deno.bench({ name: "Chalk Template", group }, () => {
     chalkTemplate`${LONG_TEXT_TEMPLATE_TEST_LOREM_IPSUM}`;
   });
 
@@ -340,7 +340,7 @@ async function generateInstance() {
     group,
     baseline: true,
   }, () => {
-    buildCrayon();
+    buildCrayon("", false);
   });
 
   await Deno.bench({ name: "Chalk 4", group }, () => {
