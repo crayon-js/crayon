@@ -1,36 +1,74 @@
 // Copyright 2024 Im-Beast. All rights reserved. MIT license.
-import {
-  colorSupport,
-  functions,
-  prototype,
-  replace,
-  replaceAll,
-  styles,
-} from "../../mod.ts";
+import { ColorSupport, crayon, prototype } from "../crayon.ts";
+import { replace, replaceAll } from "../util.ts";
+import type { Style } from "../styles.ts";
 
 const literalStyleRegex = /{([^\s]+)\s([^{}]+)}/;
-const literalFuncRegex = /(\w+)\((.*)\)/;
 
 /** Compile string to its proper type */
 function compileType(string: string): string | number | boolean {
-  if (string === "false" || string === "true") return Boolean(string);
-  else if (!isNaN(string as unknown as number)) return Number(string);
-  else return string.replace(/('|"|`)(.+)(\1)/, "$2");
+  if (string === "false") return false;
+  if (string === "true") return true;
+
+  switch (string[0]) {
+    case '"':
+    case "'":
+    case "`":
+      return string.slice(1, -1);
+    default:
+      return Number(string);
+  }
+}
+
+export function compileStyleCall(call: string): string {
+  let methodName = "";
+  let intermediate = "";
+  const args = [];
+
+  loop: for (let i = 0; i < call.length; i++) {
+    const char = call[i];
+    switch (char) {
+      case ")":
+        break loop;
+      case "(":
+        methodName = intermediate;
+        intermediate = "";
+        continue;
+      case ",":
+        args.push(compileType(intermediate));
+        intermediate = "";
+        continue;
+      default:
+        intermediate += char;
+    }
+  }
+
+  const method = crayon[methodName as Style] as unknown as (
+    ...args: unknown[]
+  ) => Crayon;
+  return method(...args).styleBuffer;
+}
+
+export function compileStyle(style: string): string {
+  if (style.endsWith(")")) {
+    return compileStyleCall(style);
+  }
+
+  return crayon[style as Style].styleBuffer;
 }
 
 /** Implementation for Crayon's `prototype.literal` call when using ES6 Literal Templates */
 export function compileLiteral(
-  callSite: readonly string[],
+  callSite: TemplateStringsArray,
   ...substitutions: unknown[]
 ): string {
-  // Faster alternative to `String.raw`
   let text = "";
   for (let i = 0; i < callSite.length; ++i) {
     text += callSite[i];
     text += substitutions[i] ?? "";
   }
 
-  if (colorSupport.noColor) return text;
+  if (prototype.$colorSupport === ColorSupport.NoColor) return text;
 
   let matches = text.match(literalStyleRegex);
   while (matches?.length) {
@@ -38,25 +76,7 @@ export function compileLiteral(
 
     let styleBuffer = "";
     for (const style of matchedStyles) {
-      let code = styles.get(style);
-      if (code) {
-        if (typeof code === "function") {
-          code = code();
-        }
-        styleBuffer += code;
-      } else {
-        const match = style.match(literalFuncRegex);
-        if (!match?.length) continue;
-
-        let name = match[1];
-        const isBg = name.startsWith("bg");
-        if (isBg) name = name.slice(2).toLowerCase();
-
-        const args = match[2].split(",").map(compileType);
-
-        const func = functions.get(name);
-        if (func) styleBuffer += func(...args, isBg);
-      }
+      styleBuffer += compileStyle(style);
     }
 
     const matchedText = replaceAll(
