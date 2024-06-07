@@ -266,7 +266,7 @@ async function chainFunctions() {
   // Kleur and Ansi-colors don't have color functions
 }
 
-async function shortLiteral() {
+async function _shortLiteral() {
   const group = "short-literal";
 
   await Deno.bench({
@@ -288,7 +288,7 @@ async function shortLiteral() {
   // Cliffy, Kleur and Ansi-colors don't support literal templating
 }
 
-async function longLiteral() {
+async function _longLiteral() {
   const group = "long-literal";
 
   await Deno.bench({
@@ -310,7 +310,7 @@ async function longLiteral() {
   // Cliffy, Kleur and Ansi-colors don't support literal templating
 }
 
-async function longTextLiteral() {
+async function _longTextLiteral() {
   const group = "long-text-literal";
 
   await Deno.bench({
