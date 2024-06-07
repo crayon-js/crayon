@@ -13,10 +13,6 @@
     "./extend": "./src/extend.ts"
   },
 
-  "exclude": [
-    "build" // Dont include build scripts in the package
-  ],
-
   "fmt": {
     "lineWidth": 100
   },
