@@ -1,4 +1,4 @@
-// Copyright 2022 Im-Beast. All rights reserved. MIT license.
+// Copyright 2024 Im-Beast. All rights reserved. MIT license.
 /**
  * Converts 4Bit (16) ANSI color representation to 3Bit (8) ANSI
  */
@@ -51,6 +51,9 @@ export const ansi8ToAnsi4 = (code: number): number => {
   }
 
   code -= 16;
+  if (code < 0) {
+    return 0;
+  }
 
   const rem = code % 36;
   const r = (Math.floor(code / 36) / 5) * 255;

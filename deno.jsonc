@@ -1,31 +1,29 @@
 {
-  "fmt": {
-    "files": {
-      "exclude": ["node"]
-    }
-  },
-  "lint": {
-    "files": {
-      "exclude": ["node"]
-    },
-    "rules": {
-      "exclude": ["no-control-regex"]
-    }
-  },
-  "tasks": {
-    // TODO: replace --ignore with glob when deno task will support it
-    "test": "deno test --unstable --fail-fast=1 --ignore=node_crayon,node_chalk_aliases,node_css_keywords,node_literal --allow-read=./src/extensions/literal.ts --allow-env",
+  "name": "@crayon/crayon",
+  "version": "4.0.0-alpha.1",
 
-    "bench": "deno bench --unstable --ignore=node --allow-env",
+  "imports": {
+    "@std/assert": "jsr:@std/assert@0.221.0"
+  },
+
+  "exports": {
+    ".": "./main.ts",
+    "./base": "./src/crayon.ts",
+    "./styles": "./src/styles/styles.ts",
+    "./extend": "./src/extend.ts"
+  },
+
+  "fmt": {
+    "lineWidth": 100
+  },
+
+  "tasks": {
+    "test": "deno test --coverage --fail-fast=1 --allow-env",
+
+    "bench": "deno bench --allow-read --ignore=node --allow-env",
     "bench-nocolor": "NO_COLOR=1 deno task bench",
     "bench-colorless": "COLORTERM='' TERM='' deno task bench",
 
-    "prepare-crayon": "deno run --allow-env=HOME,DENO_AUTH_TOKENS,XDG_CACHE_HOME,DENO_DIR --allow-read --allow-write=./node_crayon,$HOME/.cache/deno --allow-run=npm --allow-net scripts/dnt_crayon.ts",
-    "prepare-chalk-aliases": "deno run --allow-env=HOME,DENO_AUTH_TOKENS,XDG_CACHE_HOME,DENO_DIR --allow-read --allow-write=./node_chalk_aliases,$HOME/.cache/deno --allow-run=npm --allow-net scripts/dnt_chalk_aliases.ts",
-    "prepare-css-keywords": "deno run --allow-env=HOME,DENO_AUTH_TOKENS,XDG_CACHE_HOME,DENO_DIR --allow-read --allow-write=./node_css_keywords,$HOME/.cache/deno --allow-run=npm --allow-net scripts/dnt_css_keywords.ts",
-    "prepare-literal": "deno run --allow-env=HOME,DENO_AUTH_TOKENS,XDG_CACHE_HOME,DENO_DIR --allow-read --allow-write=./node_literal,$HOME/.cache/deno --allow-run=npm --allow-net scripts/dnt_literal.ts",
-    "prepare-color-support": "deno run --unstable --allow-env=HOME,DENO_AUTH_TOKENS,XDG_CACHE_HOME,DENO_DIR --allow-read --allow-write=./node_color_support,$HOME/.cache/deno --allow-run=npm --allow-net scripts/dnt_color_support.ts",
-
-    "prepare-badges": "deno run --unstable --allow-env=HOME,DENO_AUTH_TOKENS,XDG_CACHE_HOME,DENO_DIR --allow-read --allow-write=./docs/badges/,$HOME/.cache/deno,./coverage --allow-run --allow-net=img.shields.io scripts/gen_badges.ts"
+    "gen-badges": "deno run -A build/gen_coverage_badge.ts && deno run -A build/gen_bench_badge.ts"
   }
 }

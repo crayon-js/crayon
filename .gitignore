@@ -1,3 +1,2 @@
 coverage
-node_*
-!node_publish.yml
+.vscode

@@ -5,8 +5,6 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
-  # Make workflow reusable
-  workflow_call:
 
 jobs:
   test:
@@ -22,12 +20,12 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Setup Deno ${{ matrix.deno-version }}
-        uses: denoland/setup-deno@v1.1.0
+        uses: denoland/setup-deno@v1.1.4
         with:
           deno-version: ${{ matrix.deno-version }}
 
       - name: Check typings
-        run: deno check mod.ts
+        run: deno check main.ts
 
       - name: Check formatting
         run: deno fmt --check
@@ -37,6 +35,9 @@ jobs:
 
       - name: Run tests
         run: deno task test
+
+      - name: Run dry publish
+        run: deno publish --dry-run
 
       - name: Run benchmarks
         run: deno task bench
@@ -48,14 +49,7 @@ jobs:
 
       - name: Check license headers & push commit when needed
         run: |
-          deno run -A --no-check https://deno.land/x/anzu@1.0.1/src/cli.ts \
+          deno run -A --no-check https://deno.land/x/anzu@1.0.2/src/cli.ts \
            -i ./ "/.+\.ts/" \
            -e "deps.ts" \
-           -l "// Copyright 2022 Im-Beast. All rights reserved. MIT license." \
-           -p
-          (git add . && git commit -m "chore: Prepend missing license headers" && git push) || true
-
-      - name: Check badges & push commit when needed
-        run: |
-          deno task prepare-badges
-          (git add . && git commit -m "chore: Update badges" && git push) || true
+           -l "// Copyright 2024 Im-Beast. All rights reserved. MIT license."
