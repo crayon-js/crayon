@@ -25,7 +25,7 @@ jobs:
           deno-version: ${{ matrix.deno-version }}
 
       - name: Check typings
-        run: deno check mod.ts
+        run: deno check main.ts
 
       - name: Check formatting
         run: deno fmt --check
@@ -35,6 +35,9 @@ jobs:
 
       - name: Run tests
         run: deno task test
+
+      - name: Run dry publish
+        run: deno publish --dry-run
 
       - name: Run benchmarks
         run: deno task bench
@@ -49,11 +52,11 @@ jobs:
           deno run -A --no-check https://deno.land/x/anzu@1.0.1/src/cli.ts \
            -i ./ "/.+\.ts/" \
            -e "deps.ts" \
-           -l "// Copyright 2024 Im-Beast. All rights reserved. MIT license." \
+           -l "// Copyright 2022 Im-Beast. All rights reserved. MIT license." \
            -p
-          (git add . && git commit -m "chore: prepend missing license headers" && git push) || true
+          (git add . && git commit -m "chore: Prepend missing license headers" && git push) || true
 
       - name: Check badges & push commit when needed
         run: |
           deno task prepare-badges
-          (git add . && git commit -m "chore: update badges" && git push) || true
+          (git add . && git commit -m "chore: Update badges" && git push) || true
