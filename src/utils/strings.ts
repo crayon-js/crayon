@@ -1,17 +1,4 @@
 // Copyright 2024 Im-Beast. All rights reserved. MIT license.
-
-/** Return whether NO_COLOR is set */
-export function getNoColor(): boolean {
-  if (isDeno()) {
-    // @ts-ignore Deno compatibility
-    return Deno.noColor;
-  } else if (isNode()) {
-    // @ts-ignore Node compatibility
-    return !!process?.env?.["NO_COLOR"];
-  }
-  return false;
-}
-
 /**
  * Faster alternative to `String.prototype.replace`
  *
@@ -57,17 +44,4 @@ export function replaceAll(
   } while (searchIndex !== -1);
 
   return start + string;
-}
-
-/** Return whether program is running in node runtime */
-export function isNode() {
-  // @ts-ignore Deno compatibility
-  return globalThis?.process?.versions?.node != null;
-}
-
-/** Return whether program is running in deno runtime */
-export function isDeno() {
-  // @ts-ignore Node compatibility
-  // deno-fmt-ignore
-  return globalThis?.Deno?.version?.deno !== null && !isNode();
 }

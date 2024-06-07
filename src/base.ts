@@ -1,41 +1,27 @@
-import { extendMethods, extendStyles } from "./extend.ts";
+// Copyright 2024 Im-Beast. All rights reserved. MIT license.
+import crayon, { type Crayon } from "./crayon.ts";
+import type { NormalizedCrayonExtension } from "./extend.ts";
 import {
-  ansi3,
-  ansi4,
-  ansi8,
+  type Attribute,
   attributes,
+  type FourBitColor,
   fourBitColors,
-  hex,
-  hsl,
-  rgb,
-  type Style,
-} from "./styles.ts";
+  methods,
+} from "./styles/styles.ts";
 
-extendStyles(attributes);
-extendStyles(fourBitColors);
-extendMethods({
-  ansi3,
-  ansi4,
-  ansi8,
-  rgb,
-  hsl,
-  hex,
-});
+type BaseExtension =
+  & typeof methods
+  & { [K in Attribute | FourBitColor]: string };
 
-type BaseStyles = { [K in Style]: Crayon };
-declare global {
-  interface Crayon extends BaseStyles {
-    ansi3(code: number): Crayon;
-    bgAnsi3(code: number): Crayon;
-    ansi4(code: number): Crayon;
-    bgAnsi4(code: number): Crayon;
-    ansi8(code: number): Crayon;
-    bgAnsi8(code: number): Crayon;
-    rgb(r: number, g: number, b: number): Crayon;
-    bgRgb(r: number, g: number, b: number): Crayon;
-    hsl(h: number, s: number, l: number): Crayon;
-    bgHsl(h: number, s: number, l: number): Crayon;
-    hex(hex: number): Crayon;
-    bgHex(hex: number): Crayon;
-  }
-}
+/**
+ * 🖍️ Crayon instance extended by default styles and methods.
+ *
+ * @example
+ * ```ts
+ *
+ * ```
+ */
+export default crayon
+  .use(attributes)
+  .use(fourBitColors)
+  .use(methods) as Crayon<NormalizedCrayonExtension<BaseExtension>>;

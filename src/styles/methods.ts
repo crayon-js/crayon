@@ -1,75 +1,6 @@
 // Copyright 2024 Im-Beast. All rights reserved. MIT license.
-import {
-  ansi4ToAnsi3,
-  ansi8ToAnsi4,
-  hslToRgb,
-  rgbToAnsi8,
-} from "./conversions.ts";
-import { ColorSupport, crayon, prototype } from "./crayon.ts";
-
-/** Colors used to generate all 4bit colors */
-const baseColors = [
-  "black",
-  "red",
-  "green",
-  "yellow",
-  "blue",
-  "magenta",
-  "cyan",
-  "white",
-] as const;
-export type BaseColor = typeof baseColors[number];
-
-/** Names for all 4bit colors */
-export type Color =
-  | BaseColor
-  | `bg${Capitalize<BaseColor>}`
-  | `light${Capitalize<BaseColor>}`
-  | `bgLight${Capitalize<BaseColor>}`;
-
-/** Map containing all 4bit colors */
-export const fourBitColors: Record<string, () => string> = {};
-
-// Generate colors from baseColors
-for (const [i, color] of baseColors.entries()) {
-  const capitalized = color[0].toUpperCase() + color.slice(1) as Capitalize<
-    BaseColor
-  >;
-
-  fourBitColors[color] = () => ansi3(false, i);
-  fourBitColors[`bg${capitalized}`] = () => ansi3(true, i);
-  fourBitColors[`light${capitalized}`] = () => ansi4(false, i + 8);
-  fourBitColors[`bgLight${capitalized}`] = () => ansi4(true, i + 8);
-}
-
-/** Map containing all supported attributes */
-export const attributes = {
-  reset: "\x1b[0m",
-  bold: "\x1b[1m",
-  dim: "\x1b[2m",
-  italic: "\x1b[3m",
-  underline: "\x1b[4m",
-  blink: "\x1b[5m",
-  fastBlink: "\x1b[6m",
-  invert: "\x1b[7m",
-  hidden: "\x1b[8m",
-  strikethrough: "\x1b[9m",
-  boldOff: "\x1b[21m",
-  doubleUnderline: "\x1b[21m",
-  boldOrDimOff: "\x1b[22m",
-  italicOff: "\x1b[23m",
-  underlineOff: "\x1b[24m",
-  blinkOff: "\x1b[25m",
-  invertOff: "\x1b[26m",
-  hiddenOff: "\x1b[27m",
-  strikethroughOff: "\x1b[28m",
-} as const;
-
-/** All supported attributes */
-export type Attribute = keyof typeof attributes;
-
-/** Every possible style */
-export type Style = Attribute | Color;
+import { ColorSupport, prototype } from "../crayon.ts";
+import { ansi4ToAnsi3, ansi8ToAnsi4, hslToRgb, rgbToAnsi8 } from "./conversions.ts";
 
 /** Generate StyleCode from 3bit (8) color pallete */
 export function ansi3(bg: boolean, code: number): string {
@@ -89,6 +20,7 @@ export function ansi4(bg: boolean, code: number): string {
   if (code > 15 || code < 0) {
     throw new Error("ansi4 function code has to be within 0 and 15");
   }
+
   if (prototype.$colorSupport < ColorSupport.FourBit) {
     return ansi3(bg, ansi4ToAnsi3(code));
   }
@@ -101,6 +33,7 @@ export function ansi8(bg: boolean, code: number): string {
   if (code > 255 || code < 0) {
     throw new Error("ansi8 function code has to be within 0 and 255");
   }
+
   if (prototype.$colorSupport < ColorSupport.HighColor) {
     return ansi4(bg, ansi8ToAnsi4(code));
   }
@@ -150,3 +83,12 @@ export function hex(bg: boolean, value: number): string {
 
   return rgb(bg, 0xff & (value >> 16), 0xff & (value >> 8), 0xff & value);
 }
+
+export default {
+  ansi3,
+  ansi4,
+  ansi8,
+  rgb,
+  hsl,
+  hex,
+};

@@ -51,6 +51,9 @@ export const ansi8ToAnsi4 = (code: number): number => {
   }
 
   code -= 16;
+  if (code < 0) {
+    return 0;
+  }
 
   const rem = code % 36;
   const r = (Math.floor(code / 36) / 5) * 255;

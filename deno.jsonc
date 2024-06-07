@@ -1,20 +1,26 @@
 {
-  "name": "@tui/crayon",
-  "version": "3.4.0",
+  "name": "@crayon/crayon",
+  "version": "4.0.0-alpha.1",
 
   "imports": {
-    "@tui/strings/strip_styles": "jsr:@tui/strings@^0.0/strip_styles"
+    "@std/assert": "jsr:@std/assert@0.221.0"
+  },
+
+  "exports": {
+    ".": "./main.ts",
+    "./base": "./src/crayon.ts",
+    "./styles": "./src/styles/styles.ts",
+    "./extend": "./src/extend.ts"
   },
 
   "exclude": [
     "build" // Dont include build scripts in the package
   ],
 
-  "lint": {
-    "rules": {
-      "exclude": ["no-control-regex"]
-    }
+  "fmt": {
+    "lineWidth": 100
   },
+
   "tasks": {
     "test": "deno test --coverage --fail-fast=1 --allow-env",
 

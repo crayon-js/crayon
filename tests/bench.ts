@@ -1,6 +1,6 @@
 // Copyright 2024 Im-Beast. All rights reserved. MIT license.
-import { buildCrayon, crayon } from "../mod.ts";
-import "../src/extensions/literal.ts";
+import crayon, { buildCrayon } from "../main.ts";
+// TODO: Add literal benchmarks after literal extension has been published
 
 import chalk4 from "npm:chalk@^4";
 import chalk5, { Chalk } from "npm:chalk@^5";
@@ -360,8 +360,8 @@ cachedShortChain();
 cachedLongChain();
 chainFunctions();
 
-shortLiteral();
-longLiteral();
-longTextLiteral();
+// shortLiteral();
+// longLiteral();
+// longTextLiteral();
 
 generateInstance();
