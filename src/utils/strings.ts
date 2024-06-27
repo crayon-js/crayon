@@ -9,12 +9,15 @@
 export function replace(
   string: string,
   search: string,
-  replaceValue: string,
+  replaceValue: string
 ): string {
   const searchIndex = string.indexOf(search);
   if (searchIndex === -1) return string;
-  return string.slice(0, searchIndex) + replaceValue +
-    string.slice(searchIndex + search.length);
+  return (
+    string.slice(0, searchIndex) +
+    replaceValue +
+    string.slice(searchIndex + search.length)
+  );
 }
 
 /**
@@ -29,8 +32,8 @@ export function replace(
 export function replaceAll(
   string: string,
   search: string,
-  replaceValue: string,
-) {
+  replaceValue: string
+): string {
   let searchIndex = string.indexOf(search);
   if (searchIndex === -1) return string;
 
