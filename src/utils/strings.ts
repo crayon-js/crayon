@@ -9,7 +9,7 @@
 export function replace(
   string: string,
   search: string,
-  replaceValue: string
+  replaceValue: string,
 ): string {
   const searchIndex = string.indexOf(search);
   if (searchIndex === -1) return string;
@@ -32,7 +32,7 @@ export function replace(
 export function replaceAll(
   string: string,
   search: string,
-  replaceValue: string
+  replaceValue: string,
 ): string {
   let searchIndex = string.indexOf(search);
   if (searchIndex === -1) return string;
