@@ -1,6 +1,6 @@
 // Copyright 2024 Im-Beast. All rights reserved. MIT license.
 import crayon, { buildCrayon } from "../main.ts";
-// TODO: Add literal benchmarks after literal extension has been published
+import "@crayon/literal";
 
 import chalk4 from "npm:chalk@^4";
 import chalk5, { Chalk } from "npm:chalk@^5";
@@ -266,7 +266,7 @@ async function chainFunctions() {
   // Kleur and Ansi-colors don't have color functions
 }
 
-async function _shortLiteral() {
+async function shortLiteral() {
   const group = "short-literal";
 
   await Deno.bench({
@@ -288,7 +288,7 @@ async function _shortLiteral() {
   // Cliffy, Kleur and Ansi-colors don't support literal templating
 }
 
-async function _longLiteral() {
+async function longLiteral() {
   const group = "long-literal";
 
   await Deno.bench({
@@ -310,7 +310,7 @@ async function _longLiteral() {
   // Cliffy, Kleur and Ansi-colors don't support literal templating
 }
 
-async function _longTextLiteral() {
+async function longTextLiteral() {
   const group = "long-text-literal";
 
   await Deno.bench({
@@ -360,8 +360,8 @@ cachedShortChain();
 cachedLongChain();
 chainFunctions();
 
-// shortLiteral();
-// longLiteral();
-// longTextLiteral();
+shortLiteral();
+longLiteral();
+longTextLiteral();
 
 generateInstance();
