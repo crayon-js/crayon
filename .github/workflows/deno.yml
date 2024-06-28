@@ -42,12 +42,7 @@ jobs:
       - name: Run benchmarks
         run: deno task bench
 
-      - name: Prepare git credentials
-        run: |
-          git config user.name Github Actions
-          git config user.email github-actions@github.com
-
-      - name: Check license headers & push commit when needed
+      - name: Check license headers
         run: |
           deno run -A --no-check https://deno.land/x/anzu@1.0.2/src/cli.ts \
            -i ./ "/.+\.ts/" \
