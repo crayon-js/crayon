@@ -16,6 +16,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - run: npx jsr add @beast/compat @std/assert
       - run: 'echo ''{ "type": "module" }'' > package.json'
+      - run: npx jsr add @beast/compat @std/assert
       - run: npx --yes tsx --test **/*.test.ts
