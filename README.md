@@ -40,14 +40,12 @@ Crayon's extensions are stored in [src/extensions](./src/extensions/)
 
 ## 🤝 Contributing
 
-**Crayon** is open for any contributions. <br /> If you feel like you can enhance this project -
-please open an issue and/or pull request. <br /> Code should be well document and easy to follow
-what's going on.
+**Crayon** is open for any contributions.\
+If you feel like you can enhance this project - please open an issue and/or pull request.\
+Code should be well document and easy to follow what's going on.
 
-Since the start of development on **Crayon 4.0** this project follows
-[conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) spec.
-<br /> If your pull request's code could introduce understandability trouble, please add comments to
-it.
+**Crayon 4.x** follows [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/).\
+If your pull request's code could introduce understandability trouble, please add comments to it.
 
 ## 📝 Licensing
 
