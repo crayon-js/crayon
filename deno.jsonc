@@ -26,11 +26,9 @@
   "tasks": {
     "test": "deno test --coverage --fail-fast=1 --allow-env",
 
-    "bench": "deno bench --no-check --allow-read --ignore=node --allow-env",
+    "bench": "deno bench --no-check --allow-read --allow-env",
     "bench-nocolor": "NO_COLOR=1 deno task bench",
-    "bench-colorless": "COLORTERM='' TERM='' deno task bench",
-
-    "gen-badges": "deno run -A build/gen_coverage_badge.ts && deno run -A build/gen_bench_badge.ts"
+    "bench-colorless": "COLORTERM='' TERM='' deno task bench"
   },
 
   "compilerOptions": {
