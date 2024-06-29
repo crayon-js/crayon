@@ -24,8 +24,8 @@ jobs:
           node-version: ${{ matrix.node-version }}
         
       - name: Prepare environment
-        run: 'echo ''{ "type": "module" }'' > package.json'
-        run: npx jsr add @beast/compat @std/assert
+        run: 'echo ''{ "type": "module" }'' > package.json' \
+             npx jsr add @beast/compat @std/assert
 
       - name: Run tests
         run: npx --yes tsx --test **/*.test.ts && \
