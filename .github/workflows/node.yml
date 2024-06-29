@@ -32,4 +32,4 @@ jobs:
         run: |
           npx --yes tsx --test **/*.test.ts && \
           NO_COLOR=1 npx --yes tsx --test **/*.test.ts && \
-          COLORTERM='' TERM='' npx --yes tsx --test **/*.test.ts &&
+          COLORTERM='' TERM='' npx --yes tsx --test **/*.test.ts
