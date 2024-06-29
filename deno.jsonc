@@ -24,8 +24,12 @@
   },
 
   "tasks": {
+    "test-all": "deno task test && deno task test-nocolor && deno task test-colorless",
     "test": "deno test --coverage --fail-fast=1 --allow-env",
+    "test-nocolor": "NO_COLOR=1 deno task test",
+    "test-colorless": "COLORTERM='' TERM='' deno task test",
 
+    "bench-all": "deno task bench && deno task bench-nocolor && deno task bench-colorless",
     "bench": "deno bench --no-check --allow-read --allow-env",
     "bench-nocolor": "NO_COLOR=1 deno task bench",
     "bench-colorless": "COLORTERM='' TERM='' deno task bench"

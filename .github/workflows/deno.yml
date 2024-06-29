@@ -34,14 +34,14 @@ jobs:
         run: deno lint
 
       - name: Run tests
-        run: deno task test
+        run: deno task test-all
 
       - name: Run dry publish
         run: deno publish --dry-run
 
       - name: Run benchmarks
         # TODO: Cross-runtime benchmarks
-        run: deno task bench
+        run: deno task bench-all
 
       - name: Check license headers
         run: |

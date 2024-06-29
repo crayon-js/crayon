@@ -20,6 +20,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-      - run: 'echo ''{ "type": "module" }'' > package.json'
-      - run: npx jsr add @beast/compat @std/assert
-      - run: npx --yes tsx --test **/*.test.ts
+        
+      - name: Prepare environment
+        run: 'echo ''{ "type": "module" }'' > package.json'
+        run: npx jsr add @beast/compat @std/assert
+
+      - name: Run tests
+        run: npx --yes tsx --test **/*.test.ts
+        run: NO_COLOR=1 npx --yes tsx --test **/*.test.ts
+        run: COLORTERM='' TERM='' npx --yes tsx --test **/*.test.ts
