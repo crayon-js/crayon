@@ -25,7 +25,7 @@ jobs:
 
       - name: Prepare environment
         run: |
-          echo '{ "type": "module" }' > package.json \
+          echo '{ "type": "module" }' > package.json && \
           npx jsr add @beast/compat @std/assert
 
       - name: Run tests
