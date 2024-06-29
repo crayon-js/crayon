@@ -1,69 +1,64 @@
 // Copyright 2024 Im-Beast. All rights reserved. MIT license.
-import crayon, { buildCrayon, ColorSupport } from "../main.ts";
 import { assertEquals } from "@std/assert";
+import { env, test } from "@beast/compat";
 
-Deno.test("Color support", async (t) => {
+import crayon, { buildCrayon, ColorSupport } from "../main.ts";
+
+const NO_COLOR = !!(env("NO_COLOR") && env("NO_COLOR") !== "0");
+
+test("Color support", async (t) => {
   const otherCrayon = buildCrayon<typeof crayon>("", false);
-
   // Crayon should default to TrueColor
   await t.step("Default values", () => {
-    const DEFAULT_VALUE = Deno.noColor ? ColorSupport.NoColor : ColorSupport.TrueColor;
+    const DEFAULT_VALUE = NO_COLOR ? ColorSupport.NoColor : ColorSupport.TrueColor;
     assertEquals(crayon.colorSupport, DEFAULT_VALUE);
     assertEquals(otherCrayon.colorSupport, DEFAULT_VALUE);
   });
 
   // Changing color support should affect all built crayons
-  await t.step({
-    name: "Modifying color support",
-    ignore: Deno.noColor,
-    fn: () => {
-      crayon.colorSupport = ColorSupport.FourBit;
-      assertEquals(crayon.colorSupport, ColorSupport.FourBit);
-      assertEquals(otherCrayon.colorSupport, ColorSupport.FourBit);
+  await t.step.ignoreIf(NO_COLOR)("Modifying color support", () => {
+    crayon.colorSupport = ColorSupport.FourBit;
+    assertEquals(crayon.colorSupport, ColorSupport.FourBit);
+    assertEquals(otherCrayon.colorSupport, ColorSupport.FourBit);
 
-      crayon.colorSupport = ColorSupport.HighColor;
-      assertEquals(crayon.colorSupport, ColorSupport.HighColor);
-      assertEquals(otherCrayon.colorSupport, ColorSupport.HighColor);
+    crayon.colorSupport = ColorSupport.HighColor;
+    assertEquals(crayon.colorSupport, ColorSupport.HighColor);
+    assertEquals(otherCrayon.colorSupport, ColorSupport.HighColor);
 
-      crayon.colorSupport = ColorSupport.TrueColor;
-      assertEquals(crayon.colorSupport, ColorSupport.TrueColor);
-      assertEquals(otherCrayon.colorSupport, ColorSupport.TrueColor);
-    },
+    crayon.colorSupport = ColorSupport.TrueColor;
+    assertEquals(crayon.colorSupport, ColorSupport.TrueColor);
+    assertEquals(otherCrayon.colorSupport, ColorSupport.TrueColor);
   });
 
   // This test should only run when NO_COLOR is set
   //
   // If ColorSupport is set to NoColor all crayons should be the same
   // and should not style the text in any way.
-  await t.step({
-    name: "NO_COLOR",
-    ignore: !Deno.noColor,
-    fn: () => {
-      assertEquals(crayon.colorSupport, ColorSupport.NoColor);
-      assertEquals(otherCrayon.colorSupport, ColorSupport.NoColor);
+  await t.step.ignoreIf(!NO_COLOR)("NO_COLOR", () => {
+    assertEquals(crayon.colorSupport, ColorSupport.NoColor);
+    assertEquals(otherCrayon.colorSupport, ColorSupport.NoColor);
 
-      assertEquals(crayon("test"), "test");
-      assertEquals(otherCrayon("test"), "test");
+    assertEquals(crayon("test"), "test");
+    assertEquals(otherCrayon("test"), "test");
 
-      assertEquals(crayon.red("test"), "test");
-      assertEquals(otherCrayon.red("test"), "test");
+    assertEquals(crayon.red("test"), "test");
+    assertEquals(otherCrayon.red("test"), "test");
 
-      assertEquals(crayon.bgRed("test"), "test");
-      assertEquals(otherCrayon.bgRed("test"), "test");
+    assertEquals(crayon.bgRed("test"), "test");
+    assertEquals(otherCrayon.bgRed("test"), "test");
 
-      assertEquals(crayon.bold("test"), "test");
-      assertEquals(otherCrayon.bold("test"), "test");
+    assertEquals(crayon.bold("test"), "test");
+    assertEquals(otherCrayon.bold("test"), "test");
 
-      assertEquals(crayon.rgb(1, 1, 1), crayon);
-      assertEquals(otherCrayon.rgb(1, 1, 1), crayon);
+    assertEquals(crayon.rgb(1, 1, 1), crayon);
+    assertEquals(otherCrayon.rgb(1, 1, 1), crayon);
 
-      assertEquals(crayon.bold.red.bgBlue, crayon);
-    },
+    assertEquals(crayon.bold.red.bgBlue, crayon);
   });
 });
 
 // These tests only test functionality for terminals that support at least 4 colors
-Deno.test("Colored tests", { ignore: Deno.noColor }, async (t) => {
+test.ignoreIf(NO_COLOR)("Colored tests", async (t) => {
   await t.step("Styling", async (t) => {
     await t.step("Basic", () => {
       assertEquals(crayon.red("test"), "\x1b[31mtest\x1b[0m\x1b[0m");

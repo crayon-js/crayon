@@ -2,6 +2,8 @@
   "version": "3",
   "packages": {
     "specifiers": {
+      "jsr:@beast/compat@^0.2.5": "jsr:@beast/compat@0.2.5",
+      "jsr:@crayon/literal@1.0.0-alpha.1": "jsr:@crayon/literal@1.0.0-alpha.1",
       "jsr:@std/assert@0.221.0": "jsr:@std/assert@0.221.0",
       "jsr:@std/fmt@^0.221.0": "jsr:@std/fmt@0.221.0",
       "npm:@types/node": "npm:@types/node@18.16.19",
@@ -12,6 +14,15 @@
       "npm:kleur@^4": "npm:kleur@4.1.5"
     },
     "jsr": {
+      "@beast/compat@0.2.5": {
+        "integrity": "f65f509c741584e3282d975d81c91a152441f77ea8c17ec51a4b757e6632d412"
+      },
+      "@crayon/literal@1.0.0-alpha.1": {
+        "integrity": "bcdc1421d1a5db29f5bbc3bc99d646f28cb390202c7afedd4638ddbf559eba20",
+        "dependencies": [
+          "jsr:@crayon/crayon@4.0.0-alpha.2"
+        ]
+      },
       "@std/assert@0.221.0": {
         "integrity": "a5f1aa6e7909dbea271754fd4ab3f4e687aeff4873b4cef9a320af813adb489a",
         "dependencies": [
@@ -91,6 +102,8 @@
   },
   "workspace": {
     "dependencies": [
+      "jsr:@beast/compat@^0.2.5",
+      "jsr:@crayon/literal@1.0.0-alpha.1",
       "jsr:@std/assert@0.221.0"
     ]
   }

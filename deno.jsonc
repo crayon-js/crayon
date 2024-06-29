@@ -3,7 +3,11 @@
   "version": "4.0.0-alpha.2",
 
   "imports": {
-    "@std/assert": "jsr:@std/assert@0.221.0"
+    // tests
+    "@std/assert": "jsr:@std/assert@0.221.0",
+    "@beast/compat": "jsr:@beast/compat@^0.2.5",
+    // bench
+    "@crayon/literal": "jsr:@crayon/literal@1.0.0-alpha.1"
   },
 
   "exports": {
@@ -22,10 +26,12 @@
   "tasks": {
     "test": "deno test --coverage --fail-fast=1 --allow-env",
 
-    "bench": "deno bench --allow-read --ignore=node --allow-env",
+    "bench": "deno bench --no-check --allow-read --allow-env",
     "bench-nocolor": "NO_COLOR=1 deno task bench",
-    "bench-colorless": "COLORTERM='' TERM='' deno task bench",
+    "bench-colorless": "COLORTERM='' TERM='' deno task bench"
+  },
 
-    "gen-badges": "deno run -A build/gen_coverage_badge.ts && deno run -A build/gen_bench_badge.ts"
+  "compilerOptions": {
+    "lib": ["es2023", "dom"]
   }
 }

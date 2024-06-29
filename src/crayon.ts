@@ -71,9 +71,17 @@ interface CrayonPrototypePrivate extends CrayonPrototype {
   $recache: [Crayon, string, () => string][];
 }
 
+const NO_COLOR = "Deno" in globalThis
+  // @ts-expect-error Deno specific code
+  ? Deno.noColor
+  : "process" in globalThis
+  // @ts-expect-error Node specific code
+  ? process.env["NO_COLOR"]
+  : undefined;
+
 export const prototype: CrayonPrototypePrivate = {
   $recache: [],
-  $colorSupport: Deno.noColor ? ColorSupport.NoColor : ColorSupport.TrueColor,
+  $colorSupport: NO_COLOR && NO_COLOR !== "0" ? ColorSupport.NoColor : ColorSupport.TrueColor,
 
   get colorSupport(): ColorSupport {
     return prototype.$colorSupport;
