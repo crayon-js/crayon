@@ -12,20 +12,22 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        node: [21.x, 22.x]
+        node-version: [21.x, 22.x]
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Setup repo
+        uses: actions/checkout@v4
+    
       - name: Setup node
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node }}
+          node-version: ${{ matrix.node-version }}
         
       - name: Prepare environment
         run: 'echo ''{ "type": "module" }'' > package.json'
         run: npx jsr add @beast/compat @std/assert
 
       - name: Run tests
-        run: npx --yes tsx --test **/*.test.ts
-        run: NO_COLOR=1 npx --yes tsx --test **/*.test.ts
-        run: COLORTERM='' TERM='' npx --yes tsx --test **/*.test.ts
+        run: npx --yes tsx --test **/*.test.ts && \
+             NO_COLOR=1 npx --yes tsx --test **/*.test.ts && \
+             COLORTERM='' TERM='' npx --yes tsx --test **/*.test.ts &&
