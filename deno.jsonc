@@ -7,7 +7,7 @@
     "@std/assert": "jsr:@std/assert@0.221.0",
     "@beast/compat": "jsr:@beast/compat@^0.2.5",
     // bench
-    "@crayon/literal": "jsr:@crayon/literal@1.0.0-alpha.1"
+    "@crayon/literal": "jsr:@crayon/literal@1.0.0-alpha.2"
   },
 
   "exports": {

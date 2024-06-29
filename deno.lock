@@ -3,7 +3,7 @@
   "packages": {
     "specifiers": {
       "jsr:@beast/compat@^0.2.5": "jsr:@beast/compat@0.2.5",
-      "jsr:@crayon/literal@1.0.0-alpha.1": "jsr:@crayon/literal@1.0.0-alpha.1",
+      "jsr:@crayon/literal@1.0.0-alpha.2": "jsr:@crayon/literal@1.0.0-alpha.2",
       "jsr:@std/assert@0.221.0": "jsr:@std/assert@0.221.0",
       "jsr:@std/fmt@^0.221.0": "jsr:@std/fmt@0.221.0",
       "npm:@types/node": "npm:@types/node@18.16.19",
@@ -17,10 +17,10 @@
       "@beast/compat@0.2.5": {
         "integrity": "f65f509c741584e3282d975d81c91a152441f77ea8c17ec51a4b757e6632d412"
       },
-      "@crayon/literal@1.0.0-alpha.1": {
-        "integrity": "bcdc1421d1a5db29f5bbc3bc99d646f28cb390202c7afedd4638ddbf559eba20",
+      "@crayon/literal@1.0.0-alpha.2": {
+        "integrity": "9e2b0a3d75c7af52107f50c41635ee520e03017b1efe5c7fe536a9a74b84409f",
         "dependencies": [
-          "jsr:@crayon/crayon@4.0.0-alpha.2"
+          "jsr:@crayon/crayon@4.0.0-alpha.3"
         ]
       },
       "@std/assert@0.221.0": {
@@ -103,7 +103,7 @@
   "workspace": {
     "dependencies": [
       "jsr:@beast/compat@^0.2.5",
-      "jsr:@crayon/literal@1.0.0-alpha.1",
+      "jsr:@crayon/literal@1.0.0-alpha.2",
       "jsr:@std/assert@0.221.0"
     ]
   }
