@@ -144,13 +144,13 @@ export type Crayon<T = unknown> =
 export function buildCrayonBase(styleBuffer: string): CrayonBase {
   if (!styleBuffer) {
     return function dumbCrayon(single, ...many) {
-      if (single?.raw) return prototype.literal(single);
+      if (single?.raw) return prototype.literal(single, ...many);
       return many.length ? `${single} ${many.join(" ")}` : `${single}`;
     };
   }
 
   return function crayon(single, ...many) {
-    if (single?.raw) return prototype.literal(single);
+    if (single?.raw) return prototype.literal(single, ...many);
     const text = many.length ? `${single} ${many.join(" ")}` : `${single}`;
     return styleBuffer +
       replaceAll(text, "\x1b[0m\x1b[0m", "\x1b[0m" + styleBuffer) +
